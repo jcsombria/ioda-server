@@ -1,0 +1,5 @@
+db.sqlite3
+*.pyc
+data
+jobs/static
+jobs_description

@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>CIEMAT Web</title> 
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static "style.css" %}" />
+  </head>
+  <body>
+    <header>
+      <img src="{% static "logo_ciemat.gif" %}" alt="CIEMAT logo" height="50" width="50">
+      <img src="{% static "logo_uned.png" %}" alt="UNED logo" height="50" width="50">
+      <h1>CIEMAT Web</h1>
+      {% if user.is_authenticated %}
+      <div id="id_current_user">user logged as {{ user.username }}</div>
+      {% endif %}
+    </header>
+    {% if user.is_authenticated %}
+    <nav id="id_links">
+      <ul>
+        <li><a href="/" id="id_home">Home</a></li>
+        <li><a href="/jobs/available" id="id_available_jobs">Available Jobs</a></li>
+        <li><a href="/jobs/running" id="id_running_jobs">Running Jobs</a></li>
+        <li><a href="/logout" id="id_logout">Log out</a></li>
+      </ul>
+    </nav>
+    {% endif %}
+    <article>
+      <h1>List of running jobs</h1>
+      <p>These are the jobs you have submitted.</p>
+      <table id="id_running_jobs">
+        <tr>
+          <th></th>
+          <th>Name</th>
+          <th>Date</th>
+          <th>Input Data</th>
+          <th>Results</th>
+          <th>Status</th>
+        </tr>
+      {% for runningjob in list.all %}
+        <tr>
+          <td>
+            <form method="GET" action="/jobs/cancel">
+            <button type="submit" name="job_id" value="{{ runningjob.runningjob_id }}">
+            <img src="{% static "icons/cancel30.png" %}" alt="cancel {{ runningjob.runningjob_id }}" height="10" widht="10" />
+            </button>
+            </form>
+          </td>
+          <td>{{ runningjob.job.name }}</td>
+          <td>{{ runningjob.timestamp }}</td>
+          <td>
+            <form method="GET" action="/jobs/get/">
+            <input type="hidden" name="field" value="job_input" />
+            <button type="submit" name="job_id" value="{{ runningjob.runningjob_id }}">
+            <img src="{% static "icons/diskette18.png" %}" alt="start {{ runningjob.runningjob_id }}" height="10" widht="10" />
+            </button>
+            </form>
+          </td>
+          <td>
+            <form method="GET" action="/jobs/get">
+            <input type="hidden" name="field" value="job_output" />
+            <button type="submit" name="job_id" value="{{ runningjob.runningjob_id }}">
+            <img src="{% static "icons/diskette18.png" %}" alt="start {{ runningjob.runningjob_id }}" height="10" widht="10" />
+            </button>
+            </form>
+          </td>
+          <td>{{ runningjob.status }}</td>
+        </tr>
+      {% endfor %}
+      </table>
+    </article>
+  </body>
+</html>

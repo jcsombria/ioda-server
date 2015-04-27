@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>CIEMAT Web</title>   
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static "style.css" %}" />
+  </head>
+  <body>
+    <header>
+      <img src="{% static "logo_ciemat.gif" %}" alt="CIEMAT logo" height="50" width="50" />
+      <img src="{% static "logo_uned.png" %}" alt="UNED logo" height="50" width="50" />
+      <h1>CIEMAT Web</h1>
+      {% if user.is_authenticated %}
+      <div id="id_current_user">user logged as {{ user.username }}</div>
+      {% endif %}
+    </header>
+    {% if user.is_authenticated %}
+    <nav id="id_links">
+      <ul>
+        <li><a href="/" id="id_home">Home</a></li>
+        <li><a href="/jobs/available" id="id_available_jobs">Available Jobs</a></li>
+        <li><a href="/jobs/running" id="id_running_jobs">Running Jobs</a></li>
+        <li><a href="/logout" id="id_logout">Log out</a></li>
+      </ul>
+    </nav>
+    {% endif %}
+    <article>
+      <h1>List of available jobs</h1>
+      <p>These are the jobs you have available to run.</p>
+      <table id="id_available_jobs">
+        <tr>
+          <th></th>
+          <th>Id</th>
+          <th>Job Name</th>
+          <th>Required Files</th>
+          <th>Output</th>
+          <th>Description</th>
+        </tr>
+      {% for job in list.job_set.all %}
+        <tr>
+          <td>
+          <form method="GET" action="/jobs/submit">
+          <button type="submit" name="job_name" value="{{ job.name }}">
+            <img src="{% static "icons/play128.png" %}" alt="start {{ job.name }}" height="10" width="10" />
+          </button>
+          </form>
+          </td>
+          <td>{{ forloop.counter }}</td>
+          <td>{{ job.name }}</td>
+          <td>{{ job.input }}</td>
+          <td>{{ job.output }}</td>
+          <td>{{ job.description }}</td>
+        </tr>
+      {% endfor %}
+      </table>
+    </article>
+    <!--<footer>Icons made by <a href="http://www.flaticon.com/authors/egor-rumyantsev" title="Egor Rumyantsev">Egor Rumyantsev</a> from <a href="http://www.flaticon.com" title="Flaticon">www.flaticon.com</a>             is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0">CC BY 3.0</a>-->
+    </footer>
+  </body>
+</html>
