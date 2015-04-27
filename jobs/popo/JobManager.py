@@ -2,9 +2,9 @@
 from time import sleep
 import paramiko
 
-from .popo.SSHSession import SSHSession
-from .popo.TorqueExecutor import TorqueExecutor
-from .popo.JobLoader import JobLoader
+from jobs.popo.SSHSession import SSHSession
+from jobs.popo.TorqueExecutor import TorqueExecutor
+from jobs.popo.JobLoader import JobLoader
 
 class JobManager(object):
   ''' L
@@ -36,9 +36,9 @@ class JobManager(object):
 
   def _get_rsa_key_from_ssh_agent(self):
     try:
-      ssh_agent = Agent()
+      ssh_agent = paramiko.Agent()
       ssh_keys = ssh_agent.get_keys()
-    except SSHException:
+    except paramiko.ssh_exception.SSHException:
       print('incompatible protocol')
 
     for key in ssh_keys:
