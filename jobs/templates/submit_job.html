@@ -30,16 +30,6 @@
         <fieldset>
           <legend>User Info</legend>
           {{ form.as_p }}
-<!--
-          <p>
-            <label class="field" id="job_name-label" for="job_name">Job name:</label>
-            <input type="text" name="job_name" value="{{ job_name }}" readonly />
-          </p>
-          <p>
-            <label class="field" id="inputfile-label" for="job_input">Input files:</label>
-            <input type="file" name="job_input" id="id_input" placeholder="Enter username" required />
-          </p>
--->
           <input class="submit" type="submit" value="submit" />
         </fieldset>
         {% csrf_token %}

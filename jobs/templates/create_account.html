@@ -10,12 +10,12 @@
       <img src="{% static "logo_ciemat.gif" %}" alt="CIEMAT logo" height="50" width="50">
       <img src="{% static "logo_uned.png" %}" alt="UNED logo" height="50" width="50">
       <h1>CIEMAT Web</h1>
+      <nav id="id_links">
+        <ul>
+          <li><a href="/" id="id_home">Home</a></li>
+        </ul>
+      </nav>
     </header>
-    <nav id="id_links">
-      <ul>
-        <li><a href="/" id="id_home">Home</a></li>
-      </ul>
-    </nav>
     <article>
       <h1>Fill in your data</h1>
       <form method="POST" action="/account/create/">
@@ -23,29 +23,6 @@
         <fieldset>
           <legend>User Info</legend>
           {{ form.as_p }}
-<!--          
-          <p>
-            <label class="field" id="username-label" for="username">Username:</label>
-            {{ form.username }}
-            <!--input type="text" name="username" id="id_username" placeholder="Username" required /-->
-<!--          
-          </p>
-          <p>
-            <label class="field" id="email-label" for="username">Email address:</label>
-            <!--input type="text" name="email" id="id_email" placeholder="Email address" required /-->
-<!--          
-          </p>
-          <p>
-            <label class="field" id="password-label" for="password">Password:</label>
-            <!--input type="password" name="password" id="id_password" placeholder="Password" required /-->
-<!--          
-          </p>
-          <p>
-            <label class="field" id="confirm-password-label" for="password">Confirm password:</label>
-            <!--input type="password" name="confirm_password" id="id_confirm_password" placeholder="Confirm password" required /-->
-<!--          
-          </p>
--->
         </fieldset>
         <p class="center">
           <input class="submit" type="submit" value="create account" />

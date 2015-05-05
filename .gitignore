@@ -3,3 +3,4 @@ db.sqlite3
 data
 jobs/static/piofivemusic
 jobs_description
+jobs/fixtures/

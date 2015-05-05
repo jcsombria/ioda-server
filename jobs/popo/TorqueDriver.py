@@ -1,4 +1,4 @@
-class TorqueExecutor(object):
+class TorqueDriver(object):
   ''' L
   '''
 
@@ -15,8 +15,8 @@ class TorqueExecutor(object):
       self.GET_JOB_STATUS: 'qstat -f {0} | grep job_state | cut -d= -f2'
     }
 
-  def send_file(self, localpath, remotepath, callback):
-    self.transport.send_file(localpath, remotepath,
+  def send_file(self, localfile, remotepath, callback):
+    self.transport.send_file(localfile, remotepath,
       lambda x, y: self._file_sent(x, y, callback))
 
   def _file_sent(self, bytes_sent, bytes_total, callback):
@@ -28,36 +28,46 @@ class TorqueExecutor(object):
       lambda x, y: self._file_sent(x, y, callback))
 
   def send_job(self, job_name, queue):
-    ''' Sends job_name to queue '''
+    '''
+    Sends job_name to queue
+    '''
     send_job = self.get_send_job_command(job_name, queue)
+    print(send_job)
     stdin, stdout, stderr = self.transport.exec_command(send_job)
     job_id = self._get_job_id(stdout)
+    print(job_id)
+
     return job_id
 
   def get_send_job_command(self, job_name, queue):
-    ''' Build the string for send_job command
+    '''
+    Build the string for send_job command
     '''
     return self.commands[self.SEND_JOB].format(job_name, queue)
 
   def _get_job_id(self, stdout):
-    ''' Parse the job_id
+    '''
+    Parse the job_id
     '''
     job_id = stdout.read()
     return job_id
 
   def cancel_job(self, job_name):
-    ''' Try to cancel job_name
+    '''
+    Try to cancel job_name
     '''
     cancel_job = self.get_cancel_job_command(job_name)
     stdin, stdout, stderr = self.transport.exec_command(cancel_job)
 
   def get_cancel_job_command(self, job_name):
-    ''' Build the string for cancel_job command
+    '''
+    Build the string for cancel_job command
     '''
     return self.commands[self.CANCEL_JOB].format(job_name)
 
   def get_job_status(self, job_name):
-    ''' Query the system to obtain info about the status of job_name
+    '''
+    Query the system to obtain info about the status of job_name
     '''
     get_job_status = self.get_job_status_command(job_name)
     stdin, stdout, stderr = self.transport.exec_command(get_job_status)
@@ -65,7 +75,8 @@ class TorqueExecutor(object):
     return status
 
   def get_job_status_command(self, job_name):
-    ''' Build the string for cancel_job command
+    '''
+    Build the string for cancel_job command
     '''
     return self.commands[self.GET_JOB_STATUS].format(job_name)
 

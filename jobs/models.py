@@ -10,12 +10,27 @@ class List(models.Model):
 
 
 class Job(models.Model):
-  name = models.TextField(default='')
+  TORQUE = 'TO'
+  CONDOR = 'CO'
+  BACKENDS = (
+    (TORQUE, 'Torque'),
+    (CONDOR, 'Condor'),
+  )
+  name = models.TextField(default='', primary_key=True)
   input = models.TextField(default='')
   output = models.TextField(default='')
   description = models.TextField(default='')
-  list = models.ForeignKey(List, default=None)
-
+  host = models.GenericIPAddressField(default='0.0.0.0')
+  user = models.TextField(default='')
+  backend = models.CharField(max_length=2, choices=BACKENDS, default=TORQUE)
+  
+  def __str__(self):
+    return '%s:%s->%s@%s' % (
+      self.get_backend_display(),
+      self.name,
+      self.user,
+      self.host
+    )
 
 def get_upload_path(instance, filename):
   return 'user/{0}/{1}'.format(instance.user.username, filename)
@@ -28,4 +43,12 @@ class RunningJob(models.Model):
   status = models.TextField(default='')
   input = models.FileField(upload_to=get_upload_path, default=None)
   output = models.FileField(default=None)
+  
+  def __str__(self):
+    return '%s %s:%s->%s' % (
+      self.user,
+      self.job.name,
+      self.timestamp,
+      self.status
+    )
 
