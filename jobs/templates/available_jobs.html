@@ -47,7 +47,15 @@
           <td>{{ job.name }}</td>
           <td>{{ job.input }}</td>
           <td>{{ job.output }}</td>
-          <td>{{ job.description }}</td>
+          <td>{{ job.description }}
+          <form method="GET" action="/jobs/submit">
+          </td>
+          <td>
+          <button type="submit" name="job_name" value="{{ job.name }}">
+            <img src="{% static "icons/play128.png" %}" alt="start {{ job.name }}" height="10" width="10" />
+          </button>
+          </form>
+          </td>
         </tr>
       {% endfor %}
       </table>

@@ -75,6 +75,13 @@ class JobManager(object):
 #    while not self._file_received:
 #      pass
 
+  def get_log(self, localfile):
+    '''
+    Get the log from the server
+    '''
+    remotefile = self.job_results_path + self.job_id + '/' + 'log.txt'
+    self._get_file(localfile, remotefile)
+
   def get_status(self):
     '''
     Get the job status
