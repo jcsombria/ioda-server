@@ -178,7 +178,7 @@ def get_job_results(request):
       job_manager = JobManager(job_info)
       job_manager.get_results('jobs/static/salida.txt')
       return redirect('/static/salida.txt')
-    elif field == 'job_log:
+    elif field == 'job_log':
       job_info = {
         'name': job.job.name,
         'host': job.job.host,
@@ -203,5 +203,3 @@ def get_job_results(request):
 def logout_view(request):
   logout(request)
   return redirect('/')
-
-
