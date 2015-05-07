@@ -69,9 +69,11 @@ class JobManager(object):
     def file_received():
       self._file_received = True
     self._file_received = False
+    print(localfile)
+    print(remotefile)
     self.driver.get_file(localfile, remotefile, file_received)
-    while not self._file_received:
-      pass
+#    while not self._file_received:
+#      pass
 
   def get_status(self):
     '''

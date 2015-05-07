@@ -167,17 +167,28 @@ def get_job_results(request):
     job_id = request.GET['job_id']
     field = request.GET['field']
     job = RunningJob.objects.get(runningjob_id=job_id)
-
     if field == 'job_output':
       job_info = {
         'name': job.job.name,
         'host': job.job.host,
         'user': job.job.user,
+        'output': job.job.output,
         'job_id': job.runningjob_id,
       }
       job_manager = JobManager(job_info)
       job_manager.get_results('jobs/static/salida.txt')
       return redirect('/static/salida.txt')
+    elif field == 'job_log:
+      job_info = {
+        'name': job.job.name,
+        'host': job.job.host,
+        'user': job.job.user,
+        'output': job.job.output,
+        'job_id': job.runningjob_id,
+      }
+      job_manager = JobManager(job_info)
+      job_manager.get_log('jobs/static/log.txt')
+      return redirect('/static/log.txt')
     elif field == 'job_input':
       size = os.path.getsize(job.input.path)
       wrapper = FileWrapper(job.input)
