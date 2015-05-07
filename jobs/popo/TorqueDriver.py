@@ -32,10 +32,8 @@ class TorqueDriver(object):
     Sends job_name to queue
     '''
     send_job = self.get_send_job_command(job_name, queue)
-    print(send_job)
     stdin, stdout, stderr = self.transport.exec_command(send_job)
     job_id = self._get_job_id(stdout)
-    print(job_id)
 
     return job_id
 

@@ -31,8 +31,9 @@
           <th>Name</th>
           <th>Date</th>
           <th>Input</th>
-          <th>Results</th>
           <th>Status</th>
+          <th>Results</th>
+          <th>Log</th>
         </tr>
       {% for runningjob in list.all %}
         <tr>
@@ -53,6 +54,7 @@
             </button>
             </form>
           </td>
+          <td>{{ runningjob.status }}</td>
           <td>
             <form method="GET" action="/jobs/get">
             <input type="hidden" name="field" value="job_output" />
@@ -61,7 +63,14 @@
             </button>
             </form>
           </td>
-          <td>{{ runningjob.status }}</td>
+          <td>
+            <form method="GET" action="/jobs/get">
+            <input type="hidden" name="field" value="job_log" />
+            <button type="submit" name="job_id" value="{{ runningjob.runningjob_id }}">
+            <img src="{% static "icons/diskette18.png" %}" alt="start {{ runningjob.runningjob_id }}" height="10" widht="10" />
+            </button>
+            </form>
+          </td>
         </tr>
       {% endfor %}
       </table>
