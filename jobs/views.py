@@ -169,8 +169,13 @@ def get_job_results(request):
     job = RunningJob.objects.get(runningjob_id=job_id)
 
     if field == 'job_output':
-      job_manager = JobManager('jobs_description/suma.job')
-      job_manager.set_job_id(job_id)
+      job_info = {
+        'name': job.job.name,
+        'host': job.job.host,
+        'user': job.job.user,
+        'job_id': job.runningjob_id,
+      }
+      job_manager = JobManager(job_info)
       job_manager.get_results('jobs/static/salida.txt')
       return redirect('/static/salida.txt')
     elif field == 'job_input':

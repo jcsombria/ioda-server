@@ -11,19 +11,17 @@
       <img src="{% static "logo_uned.png" %}" alt="UNED logo" height="50" width="50">
       <h1>CIEMAT Web</h1>
       {% if user.is_authenticated %}
+      <nav id="id_links">
+        <ul>
+          <li><a href="/" id="id_home">Home</a></li>
+          <li><a href="/jobs/available" id="id_available_jobs">Available Jobs</a></li>
+          <li><a href="/jobs/running" id="id_running_jobs">Running Jobs</a></li>
+          <li><a href="/logout" id="id_logout">Log out</a></li>
+        </ul>
+      </nav>
       <div id="id_current_user">User: {{ user.username }}</div>
       {% endif %}
     </header>
-    {% if user.is_authenticated %}
-    <nav id="id_links">
-      <ul>
-        <li><a href="/" id="id_home">Home</a></li>
-        <li><a href="/jobs/available" id="id_available_jobs">Available Jobs</a></li>
-        <li><a href="/jobs/running" id="id_running_jobs">Running Jobs</a></li>
-        <li><a href="/logout" id="id_logout">Log out</a></li>
-      </ul>
-    </nav>
-    {% endif %}
     <article>
       <h1>Submit a new job</h1>
       <form method="POST" action="/jobs/submit/" enctype="multipart/form-data">
