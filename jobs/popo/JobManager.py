@@ -62,9 +62,7 @@ class JobManager(object):
     '''
     Get the results from the server
     '''
-    results_path = self.job_options['results_path']
-    output_files = self.job_options['output']
-    remotefile = results_path + self.job_id + '/' + output_files
+    remotefile = self.job_results_path + self.job_id + '/' + self.job_output
     self._get_file(localfile, remotefile)
 
   def _get_file(self, localfile, remotefile):
