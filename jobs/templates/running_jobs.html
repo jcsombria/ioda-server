@@ -30,8 +30,8 @@
           <th></th>
           <th>Name</th>
           <th>Date</th>
-          <th>Input</th>
           <th>Status</th>
+          <th>Input</th>
           <th>Results</th>
           <th>Log</th>
         </tr>
@@ -46,6 +46,7 @@
           </td>
           <td>{{ runningjob.job.name }}</td>
           <td>{{ runningjob.timestamp }}</td>
+          <td>{{ runningjob.status }}</td>
           <td>
             <form method="GET" action="/jobs/get/">
             <input type="hidden" name="field" value="job_input" />
@@ -54,7 +55,6 @@
             </button>
             </form>
           </td>
-          <td>{{ runningjob.status }}</td>
           <td>
             <form method="GET" action="/jobs/get">
             <input type="hidden" name="field" value="job_output" />

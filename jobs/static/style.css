@@ -13,7 +13,7 @@ body {
   margin-right: auto;
   padding-top: 120px;
   color: #204a87;
-  background: url('background.png') no-repeat center center;
+  background: url('background.png') repeat-x center center;
   background-attachment: fixed;
   background-position: 0;
 }

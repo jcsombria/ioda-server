@@ -79,7 +79,7 @@ def available_jobs(request):
   ''' This view shows a list of the jobs available to the logged user
   '''
   try:
-    jobs = Job.objects.filter(name='suma')
+    jobs = Job.objects.all()
   except (Job.DoesNotExist, Job.MultipleObjectsReturned):
     return HttpResponse('Server Error: Invalid Job Definition')    
   return render(request, 'available_jobs.html', {'list': jobs})
