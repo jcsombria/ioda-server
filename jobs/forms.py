@@ -26,3 +26,13 @@ class NewJobForm(forms.Form):
       widget=forms.FileInput(attrs={'required':True})
   )
 
+
+class LoginForm(forms.Form):
+  username = forms.CharField(label='User Name',
+    max_length=100,
+    widget=forms.TextInput(attrs={'required':True}),
+  )
+  password = forms.CharField(label='Password',
+    max_length=100,
+    widget=forms.PasswordInput(attrs={'required':True})
+  )

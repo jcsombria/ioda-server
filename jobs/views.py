@@ -8,7 +8,7 @@ from django.core.servers.basehttp import FileWrapper
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
-from .forms import NewUserForm, NewJobForm
+from .forms import NewUserForm, NewJobForm, LoginForm
 from .models import Job, List, RunningJob, RunningUser
 from .popo.JobManager import JobManager
 
@@ -22,24 +22,21 @@ def login_view(request):
   ''' This view shows the login form.
   '''
   if request.method == 'POST':
-    username = request.POST['username']
-    password = request.POST['password']
-    user = authenticate(username=username, password=password)
-    if user is not None:
-      if user.is_active:
+    form = LoginForm(request.POST)
+    if form.is_valid():
+      username = request.POST['username']
+      password = request.POST['password']
+      user = authenticate(username=username, password=password)
+      if user is not None and user.is_active:
         login(request, user)
-        request.session.set_expiry(300)
-        try:
-          url = request.POST['next']
-        except KeyError:
-          url = '/'
+        request.session.set_expiry(900)
+        url = request.POST.get('next', '/')
         return redirect(url)
       else:
-        return HttpResponse('disabled account')
-    else:
-      return HttpResponse('invalid login')
-#  else:
-  return render(request, 'login.html')
+        return HttpResponse('invalid login')
+  else:
+    form = LoginForm()
+  return render(request, 'login.html', {'form': form})
 
 
 def create_account(request):
@@ -49,26 +46,23 @@ def create_account(request):
     form = NewUserForm(request.POST)
     if form.is_valid():
       data = form.cleaned_data
-      if data.password == data.confirm_password:
-        return HttpResponse('Valid request')
+      is_valid_password = (data['password'] == data['confirm_password'])
+      is_valid_user = not User.objects.filter(username=data['username']).exists()
+      if is_valid_password and is_valid_user:
+        new_user = User.objects.create_user(
+          data['username'],
+          data['email'],
+          data['password']
+        )
+        new_user.is_active = False
+        new_user.save()
+        send_mail('User account activation', 'New user xxx ask for account activation.', 'jcsombria@koshirae.com', ['jcsombria@gmail.com'])
+        return HttpResponse('User account created.')
+#      return redirect('/')
       else:
         return render(request, 'create_account.html', {'form': form})
     else:
       return HttpResponse('Invalid request')
-
-#      is_valid_password = (password == confirm_password)
-#      is_valid_user = not User.objects.filter(username=username).exists()
-#      if is_valid_password and is_valid_user:
-#        new_user = User.objects.create_user(
-#          username,
-#          email,
-#          password
-#        )
-#        new_user.is_active = False
-#        new_user.save()
-#      else:
-#        return HttpResponse('Invalid request')
-#      return redirect('/')
   else:
     form = NewUserForm()
     return render(request, 'create_account.html', {'form': form})

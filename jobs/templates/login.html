@@ -17,18 +17,12 @@
       </nav>
     </header>
     <article>
-      <h1>Sign in with your CIEMAT account</h1>
+      <h1>Sign in</h1>
       <form method="POST" action="/login/">
-      <fieldset>
-        <p>
-          <label class="field" id="username-label" for="username">Username:</label>
-          <input type="text" name="username" id="id_username" placeholder="Enter username" required />
-        </p>
-        <p>
-  				<label class="field" id="password-label" for="password">Password:</label>
-          <input type="password" name="password" id="id_password" placeholder="Enter password" required />
-        </p>
-      </fieldset>
+        <fieldset>
+          <legend>Sign in with your account</legend>
+          {{ form.as_p }}
+        </fieldset>
       <p class="center">
         <input class="submit" type="submit" value="sign in" />
       </p>
