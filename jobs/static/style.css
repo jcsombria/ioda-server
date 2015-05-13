@@ -158,3 +158,8 @@ button {
   border: none;
   background: none;
 }
+
+input#id_job_name {
+  background: none;
+  border: none;
+}

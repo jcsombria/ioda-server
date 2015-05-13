@@ -23,12 +23,12 @@
           <legend>Sign in with your account</legend>
           {{ form.as_p }}
         </fieldset>
-      <p class="center">
-        <input class="submit" type="submit" value="sign in" />
-      </p>
-      <p class="center">
-        <a href="/account/create">Create an account</a>
-      </p>
+        <p class="center">
+          <input class="submit" type="submit" value="sign in" />
+        </p>
+        <p class="center">
+          <a href="/account/create">Create an account</a>
+        </p>
         {% csrf_token %}
       </form>
     </article>

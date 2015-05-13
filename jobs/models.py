@@ -32,13 +32,16 @@ class Job(models.Model):
       self.host
     )
 
+
 def get_upload_path(instance, filename):
   return 'user/{0}/{1}'.format(instance.user.username, filename)
+
 
 class RunningJob(models.Model):
   job = models.ForeignKey(Job, default=None)
   user = models.ForeignKey(User, default=None)
   timestamp = models.DateTimeField(auto_now_add=True, default=None)
+#  expiration_date = models.DateTimeField(default=None)
   runningjob_id = models.TextField(default='')
   status = models.TextField(default='')
   input = models.FileField(upload_to=get_upload_path, default=None)

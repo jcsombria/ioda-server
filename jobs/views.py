@@ -99,8 +99,36 @@ def running_jobs(request):
     if job_status != job.status:
       job.status = job_status
       job.save(update_fields=['status'])
-  return render(request, 'running_jobs.html', {'list': list_})
+  context = {
+    'list': list_.exclude(status='completed'),
+    'status': 'not completed',
+  }
+  return render(request, 'running_jobs.html', context)
 
+@login_required(login_url='/login/')
+def finished_jobs(request):  
+  ''' This view shows a list of the jobs which are completed.
+  '''
+  list_ = RunningJob.objects.filter(user=request.user)
+  # Update status
+  for job in list_:
+    job_info = {
+      'name': job.job.name,
+      'host': job.job.host,
+      'user': job.job.user,
+      'job_id': job.runningjob_id,
+    }
+    job_manager = JobManager(job_info)
+    job_manager.set_job_id(job.runningjob_id)
+    job_status = job_manager.get_status()
+    if job_status != job.status:
+      job.status = job_status
+      job.save(update_fields=['status'])
+  context = {
+    'list': list_.filter(status='completed'),
+    'status': 'completed',
+  }
+  return render(request, 'running_jobs.html', context)
 
 @login_required(login_url='/login/')
 def submit_job(request):

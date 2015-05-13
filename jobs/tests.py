@@ -9,49 +9,54 @@ from jobs.views import home_page, running_jobs
 from jobs.models import List, Job, RunningJob, RunningUser
 
 
-###class LoginTest(TestCase):
-###  def setUp(self):
-###    self.username = 'sakura'
-###    self.password = 'sakura'
-###    self.email = 'sakura@ciematweb.com'
-###    self.user = User.objects.create_user(self.username, self.email, self.password)
+class LoginTest(TestCase):
+  def setUp(self):
+    self.username = 'sakura'
+    self.password = 'sakura'
+    self.email = 'sakura@ciematweb.com'
+    self.user = User.objects.create_user(
+      self.username,
+      self.email,
+      self.password
+    )
 
-###  def test_user_can_log_in(self):
-###    response = self.client.post( '/login/', 
-###      data={'username': self.username, 'password': self.password}
-###    )
-###    self.assertRedirects(response, '/')
+  def test_user_can_log_in(self):
+    response = self.client.post( '/login/', 
+      data={'username': self.username, 'password': self.password}
+    )
+    self.assertEqual(response.status_code, 302)
+    self.assertRedirects(response, '/')
 
-###  def test_user_can_log_out(self):
-###    user_data = {'username': self.username, 'password': self.password}
-###    response = self.client.post('/login/', data=user_data)
-###    response = self.client.get('/logout/')    
-###    self.assertRedirects(response, '/')
+  def test_user_can_log_out(self):
+    user_data = {'username': self.username, 'password': self.password}
+    response = self.client.post('/login/', data=user_data)
+    response = self.client.get('/logout/')    
+    self.assertRedirects(response, '/')
 
 
-###class HomePageTest(TestCase):
+class HomePageTest(TestCase):
 
-###  def test_root_url_resolves_to_home_page_view(self):
-###    found = resolve('/')
-###    self.assertEqual(found.func, home_page)
+  def test_root_url_resolves_to_home_page_view(self):
+    found = resolve('/')
+    self.assertEqual(found.func, home_page)
 
-###  def test_home_page_returns_correct_html_before_login(self):
-###    expected_html = render_to_string('home.html')
-###    response = self.client.get('/')
-###    self.assertEqual(response.content.decode(), expected_html)
+  def test_home_page_returns_correct_html_before_login(self):
+    expected_html = render_to_string('home.html')
+    response = self.client.get('/')
+    self.assertEqual(response.content.decode(), expected_html)
 
-###  def test_home_page_returns_correct_html_after_login(self):
-###    username = 'sakura'
-###    password = 'sakura'
-###    email = 'sakura@ciematweb.com'
-###    user = User.objects.create_user(username, email, password)
-###    
-###    response = self.client.post( '/login/', 
-###      data={'username': username, 'password': password}
-###    )
-###    expected_html = render_to_string('home.html', {'user': user})
-###    response = self.client.get('/')
-###    self.assertEqual(response.content.decode(), expected_html)
+  def test_home_page_returns_correct_html_after_login(self):
+    username = 'sakura'
+    password = 'sakura'
+    email = 'sakura@ciematweb.com'
+    user = User.objects.create_user(username, email, password)
+    
+    response = self.client.post( '/login/', 
+      data={'username': username, 'password': password}
+    )
+    expected_html = render_to_string('home.html', {'user': user})
+    response = self.client.get('/')
+    self.assertEqual(response.content.decode(), expected_html)
 
 
 ###class JobsTest(TestCase):
@@ -181,7 +186,6 @@ class JobsTest(TestCase):
       description='Add numbers',
       host='62.204.199.200',
       user='jchacon',
-      list=List.objects.create()
     )
     self.job_input = tempfile.TemporaryFile(mode='w+')
     tmp_data = '1\n1 2\n1 2 3\n1 2 3 4\n' 
@@ -197,7 +201,6 @@ class JobsTest(TestCase):
 
     for key in ssh_keys:
       print(key.get_name())
-
 
   def test_user_can_send_file(self):
     self.job_input.seek(0)
@@ -215,9 +218,7 @@ class JobsTest(TestCase):
       'output': self.job.output,
       'host': self.job.host,
       'user': self.job.user,
-    })
-    
+    })    
     self.job_submitter.submit_job()
     job_id = self.job_submitter.get_job_id().strip('\n')
-    print(job_id)
     self.assertNotEqual(job_id, '')
