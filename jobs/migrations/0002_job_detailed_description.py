@@ -7,13 +7,13 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('jobs', '0003_user_name'),
+        ('jobs', '0001_initial'),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='list',
-            name='user',
+            model_name='job',
+            name='detailed_description',
             field=models.TextField(default=''),
             preserve_default=True,
         ),

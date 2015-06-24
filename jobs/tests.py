@@ -6,7 +6,7 @@ from django.template.loader import render_to_string
 from django.core.context_processors import csrf
 
 from jobs.views import home_page, running_jobs
-from jobs.models import List, Job, RunningJob, RunningUser
+from jobs.models import List, Job, RunningJob
 
 
 class LoginTest(TestCase):
@@ -170,55 +170,57 @@ class HomePageTest(TestCase):
 ###    self.assertLess(delta, onesecond)
 
 
-from paramiko.agent import Agent, AgentKey
-from jobs.popo.SSHSession import SSHSession
-from jobs.popo.JobManager import JobManager
-import tempfile
-import time
+#from paramiko.agent import Agent, AgentKey
+#from jobs.popo.SSHSession import SSHSession
+#from jobs.popo.JobManager import JobManager
+#import tempfile
+#import time
 
-class JobsTest(TestCase):
+#class JobsTest(TestCase):
 
-  def setUp(self):
-    self.job = Job.objects.create(
-      name='suma',
-      input='entrada.txt',
-      output='salida.txt',
-      description='Add numbers',
-      host='62.204.199.200',
-      user='jchacon',
-    )
-    self.job_input = tempfile.TemporaryFile(mode='w+')
-    tmp_data = '1\n1 2\n1 2 3\n1 2 3 4\n' 
-    self.job_input.write(tmp_data)
-    self.job_input.flush()
+#  def setUp(self):
+#    self.job = Job.objects.create(
+#      name='suma',
+#      input='entrada.txt',
+#      output='salida.txt',
+#      description='Add numbers',
+#      host='62.204.199.200',
+#      user='jchacon',
+#    )
+#    self.job_input = tempfile.TemporaryFile(mode='w+')
+#    tmp_data = '1\n1 2\n1 2 3\n1 2 3 4\n' 
+#    self.job_input.write(tmp_data)
+#    self.job_input.flush()
 
-  def test_user_can_get_ssh_keys(self):
-    try:
-      ssh_agent = Agent()
-      ssh_keys = ssh_agent.get_keys()
-    except SSHException:
-      print('incompatible protocol')
+#  def test_user_can_get_ssh_keys(self):
+#    try:
+#      ssh_agent = Agent()
+#      ssh_keys = ssh_agent.get_keys()
+#    except SSHException:
+#      print('incompatible protocol')
 
-    for key in ssh_keys:
-      print(key.get_name())
+#    for key in ssh_keys:
+#      print(key.get_name())
 
-  def test_user_can_send_file(self):
-    self.job_input.seek(0)
-    session = SSHSession('62.204.199.200', 'jchacon')
-    session.connect()
-    session.send_file(self.job_input, '/home/jchacon/ciemat/tmp/prueba.txt', None)
+#  def test_user_can_send_file(self):
+#    self.job_input.seek(0)
+#    session = SSHSession('62.204.199.200', 'jchacon')
+#    session.connect()
+#    session.send_file(self.job_input, '/home/jchacon/ciemat/tmp/prueba.txt', None)
 
-    self.assertEqual(session.connect(), True)
+#    self.assertEqual(session.connect(), True)
 
-  def test_user_can_submit_job(self):
-    self.job_submitter = JobManager({
-      'name': self.job.name,
-      'input': self.job.input,
-      'localfile': self.job_input,
-      'output': self.job.output,
-      'host': self.job.host,
-      'user': self.job.user,
-    })    
-    self.job_submitter.submit_job()
-    job_id = self.job_submitter.get_job_id().strip('\n')
-    self.assertNotEqual(job_id, '')
+#  def test_user_can_submit_job(self):
+#    self.job_submitter = JobManager({
+#      'name': self.job.name,
+#      'input': self.job.input,
+#      'localfile': self.job_input,
+#      'output': self.job.output,
+#      'host': self.job.host,
+#      'user': self.job.user,
+#    },
+#      self.job
+#    )    
+#    self.job_submitter.submit_job()
+#    job_id = self.job_submitter.get_job_id().strip('\n')
+#    self.assertNotEqual(job_id, '')

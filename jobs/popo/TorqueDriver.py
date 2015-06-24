@@ -10,43 +10,46 @@ class TorqueDriver(object):
     self.CANCEL_JOB = 'cancel_job'
     self.GET_JOB_STATUS = 'get_job_status'
     self.commands = {
-      self.SEND_JOB: 'qsub {0} -q {1}',
+      self.SEND_JOB: 'qsub {0} -q {1} -v{2}',
       self.CANCEL_JOB: 'qrun {0}',
       self.GET_JOB_STATUS: 'qstat -f {0} | grep job_state | cut -d= -f2'
     }
 
   def send_file(self, localfile, remotepath, callback):
+    '''
+    Sends a file to the server
+    '''
     self.transport.send_file(localfile, remotepath,
       lambda x, y: self._file_sent(x, y, callback))
 
   def _file_sent(self, bytes_sent, bytes_total, callback):
     if bytes_sent == bytes_total:
-      callback()
+      try:
+        callback()
+      except:
+        pass
 
   def get_file(self, localpath, remotepath, callback):
     self.transport.get_file(localpath, remotepath,
       lambda x, y: self._file_sent(x, y, callback))
 
-  def send_job(self, job_name, queue):
+  def send_job(self, job_name, queue, args):
     '''
     Sends job_name to queue
     '''
-    send_job = self.get_send_job_command(job_name, queue)
+    send_job = self.get_send_job_command(job_name, queue, args)
     stdin, stdout, stderr = self.transport.exec_command(send_job)
     job_id = self._get_job_id(stdout)
 
     return job_id
 
-  def get_send_job_command(self, job_name, queue):
+  def get_send_job_command(self, job_name, queue, args):
     '''
     Build the string for send_job command
     '''
-    return self.commands[self.SEND_JOB].format(job_name, queue)
+    return self.commands[self.SEND_JOB].format(job_name, queue, args)
 
   def _get_job_id(self, stdout):
-    '''
-    Parse the job_id
-    '''
     job_id = stdout.read()
     return job_id
 

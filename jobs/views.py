@@ -1,6 +1,8 @@
 import os
+from datetime import datetime, timedelta
 
 from django.conf import settings
+from django.core.mail import send_mail
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -9,7 +11,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from .forms import NewUserForm, NewJobForm, LoginForm
-from .models import Job, List, RunningJob, RunningUser
+from .models import Job, RunningJob, UserProfile
 from .popo.JobManager import JobManager
 
 def home_page(request):
@@ -56,7 +58,16 @@ def create_account(request):
         )
         new_user.is_active = False
         new_user.save()
-        send_mail('User account activation', 'New user xxx ask for account activation.', 'jcsombria@koshirae.com', ['jcsombria@gmail.com'])
+        new_user_profile = UserProfile.objects.create(
+          user=new_user,
+          expiration_date=datetime.now()+timedelta(days=365)
+        )
+        send_mail(
+          'User account activation',
+          'User ' + new_user.username + ' ask for account activation.',
+          'jcsombria@koshirae.com',
+          ['jcsombria@gmail.com']
+        )
         return HttpResponse('User account created.')
 #      return redirect('/')
       else:
@@ -81,27 +92,19 @@ def available_jobs(request):
 
 @login_required(login_url='/login/')
 def running_jobs(request):  
-  ''' This view shows a list of the jobs which the logged user has 
+  ''' This view shows a list of the jobs the logged user has 
   already submitted.
   '''
   list_ = RunningJob.objects.filter(user=request.user)
-  # Update status
   for job in list_:
-    job_info = {
-      'name': job.job.name,
-      'host': job.job.host,
-      'user': job.job.user,
-      'job_id': job.runningjob_id,
-    }
-    job_manager = JobManager(job_info)
-    job_manager.set_job_id(job.runningjob_id)
+    job_manager = JobManager(job)
     job_status = job_manager.get_status()
     if job_status != job.status:
       job.status = job_status
       job.save(update_fields=['status'])
   context = {
     'list': list_.exclude(status='completed'),
-    'status': 'not completed',
+    'status': 'uncompleted',
   }
   return render(request, 'running_jobs.html', context)
 
@@ -110,16 +113,8 @@ def finished_jobs(request):
   ''' This view shows a list of the jobs which are completed.
   '''
   list_ = RunningJob.objects.filter(user=request.user)
-  # Update status
   for job in list_:
-    job_info = {
-      'name': job.job.name,
-      'host': job.job.host,
-      'user': job.job.user,
-      'job_id': job.runningjob_id,
-    }
-    job_manager = JobManager(job_info)
-    job_manager.set_job_id(job.runningjob_id)
+    job_manager = JobManager(job)
     job_status = job_manager.get_status()
     if job_status != job.status:
       job.status = job_status
@@ -129,6 +124,7 @@ def finished_jobs(request):
     'status': 'completed',
   }
   return render(request, 'running_jobs.html', context)
+
 
 @login_required(login_url='/login/')
 def submit_job(request):
@@ -141,25 +137,17 @@ def submit_job(request):
       job_name = data['job_name']
       job_input = request.FILES['job_input']
       job = Job.objects.filter(name=job_name)[0]
-      # Actually submit job
-      job_info = {
-        'name': job.name,
-        'input': job.input,
-        'localfile': job_input,
-        'output': job.output,
-        'host': job.host,
-        'user': job.user,
-      }
-      job_manager = JobManager(job_info)
-      job_manager.submit_job()
-      job_id = job_manager.get_job_id().strip('\n')
-      running_job = RunningJob.objects.create(
+      running_job = RunningJob(
         job=job,
-        runningjob_id=job_id,
         user=request.user,
         input=job_input,
         output=job.output,
       )
+      job_manager = JobManager(running_job)
+      job_manager.submit_job()
+      running_job.runningjob_id = job_manager.get_job_id().strip('\n')
+      if running_job.runningjob_id != '':
+        running_job.save()
     return redirect('/jobs/running')
   else:
     try:
@@ -179,10 +167,10 @@ def cancel_job(request):
     for job in jobs:
       job.delete()
   except Job.DoesNotExist:
-    pass    
+    pass
   return redirect('/jobs/running')
 
-
+import tempfile
 @login_required(login_url='/login/')
 def get_job_results(request):
   try:
@@ -190,27 +178,21 @@ def get_job_results(request):
     field = request.GET['field']
     job = RunningJob.objects.get(runningjob_id=job_id)
     if field == 'job_output':
-      job_info = {
-        'name': job.job.name,
-        'host': job.job.host,
-        'user': job.job.user,
-        'output': job.job.output,
-        'job_id': job.runningjob_id,
-      }
-      job_manager = JobManager(job_info)
-      job_manager.get_results('jobs/static/salida.txt')
-      return redirect('/static/salida.txt')
+      job_manager = JobManager(job)
+      tmpfile = tempfile.TemporaryFile()
+      job_manager.get_results(tmpfile)
+      tmpfile.seek(0)
+      response = HttpResponse(tmpfile, content_type='application/zip')
+      response['Content-Disposition'] = 'attachment; filename="results.zip"'
+      return response
     elif field == 'job_log':
-      job_info = {
-        'name': job.job.name,
-        'host': job.job.host,
-        'user': job.job.user,
-        'output': job.job.output,
-        'job_id': job.runningjob_id,
-      }
-      job_manager = JobManager(job_info)
-      job_manager.get_log('jobs/static/log.txt')
-      return redirect('/static/log.txt')
+      job_manager = JobManager(job)
+      tmpfile = tempfile.TemporaryFile()
+      job_manager.get_log(tmpfile)
+      tmpfile.seek(0)
+      response = HttpResponse(tmpfile, content_type='text/plain')
+      response['Content-Disposition'] = 'attachment; filename="log.txt"'
+      return response
     elif field == 'job_input':
       size = os.path.getsize(job.input.path)
       wrapper = FileWrapper(job.input)

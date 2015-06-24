@@ -2,6 +2,7 @@
 import os
 from time import sleep
 import paramiko
+import uuid
 
 from jobs.popo.SSHSession import SSHSession
 from jobs.popo.TorqueDriver import TorqueDriver
@@ -10,26 +11,15 @@ class JobManager(object):
   ''' L
   '''
 
-  def __init__(self, job_info):
+  def __init__(self, job_instance):
     self.queue = 'fast'
-    self.data_sent = False
-    self.data_received = False
-
-    self.root_path = '/home/jchacon/ciemat/'
-    self.job_path = self.root_path + 'tareas/' + job_info['name'] + '/'
-    self.job_results_path = self.root_path + 'resultados/'
-    self.job_tmp_path = self.root_path + 'tmp/'
-    self.job_name = job_info['name'] + '.pbs'
-    self.job_host = job_info['host']
-    self.job_user = job_info['user']
-    self.job_input = job_info.get('input', '')
-    self.job_input_localfile = job_info.get('localfile', '')
-    self.job_output = job_info.get('output', '')
-    self.job_id = job_info.get('job_id', '')
-    self.driver = self._get_driver()
+    self.job = job_instance
+    self.job_model = job_instance.job
+    self.job_id = uuid.uuid4()
+    self.driver = self._get_driver()  
 
   def _get_driver(self):
-    session = SSHSession(self.job_host, self.job_user)
+    session = SSHSession(self.job_model.host, self.job_model.user)
     session.connect()
     return TorqueDriver(session)
 
@@ -41,51 +31,46 @@ class JobManager(object):
     self._run_job()
 
   def _prepare_job(self):
-    filename = self.job_input
-    localfile = self.job_input_localfile
-    remotefile = self.job_tmp_path + filename
-    self._put_file(localfile, remotefile)
+    localfile = self.job.input
+    remotefile = self._get_name_for_sending(self.job_model.input)
+    self.driver.send_file(localfile, remotefile, None)
 
-  def _put_file(self, localfile, remotepath):
-    def file_sent():
-      self._file_sent = True
-    self._file_sent = False
-    self.driver.send_file(localfile, remotepath, file_sent)
-#    while not self._file_sent:
-#      pass
+  def _get_name_for_sending(self, name):
+    return self.job_model.tmp_path + str(self.job_id) + '_' + name
 
   def _run_job(self):
-    job = self.job_path + self.job_name
-    self.job_id = self.driver.send_job(job, self.queue).decode('utf-8')
+    job = self._get_job_path()
+    args = 'INPUT_PREFIX=%s_' % self.job_id
+    self.job_id = self.driver.send_job(job, self.queue, args).decode('utf-8').strip('\n')
+
+  def _get_job_path(self):
+    return self.job_model.job_path + self.job_model.name + '/' + self.job_model.name + '.pbs'
 
   def get_results(self, localfile):
     '''
     Get the results from the server
     '''
-    remotefile = self.job_results_path + self.job_id + '/' + self.job_output
-    self._get_file(localfile, remotefile)
-
-  def _get_file(self, localfile, remotefile):
-    def file_received():
-      self._file_received = True
-    self._file_received = False
-    self.driver.get_file(localfile, remotefile, file_received)
-#    while not self._file_received:
-#      pass
+    remotefile = self.job_model.results_path + self.job.runningjob_id + '/' + self.job_model.output
+    print(remotefile)
+    self.driver.get_file(localfile, remotefile, None)
 
   def get_log(self, localfile):
     '''
     Get the log from the server
     '''
-    remotefile = self.job_results_path + self.job_id + '/' + 'log.txt'
-    self._get_file(localfile, remotefile)
+    remotefile = self.job_model.results_path + self.job.runningjob_id + '/log.txt'
+    print(remotefile)      
+    self.driver.get_file(localfile, remotefile, None)
 
   def get_status(self):
     '''
     Get the job status
     '''
-    return self.driver.get_job_status(self.job_id)
+    return self.driver.get_job_status(self.job.runningjob_id)
 
+  def set_input_file(self, input_file):
+    self.job_input_file = input_file 
+  
   def set_job_id(self, job_id):
     self.job_id = job_id
 

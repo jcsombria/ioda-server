@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html>
   <head>
-    <title>CIEMAT Web</title>   
+    <title>HPC</title>   
     {% load staticfiles %}
     <link rel="stylesheet" type="text/css" href="{% static "style.css" %}" />
   </head>
@@ -9,7 +9,7 @@
     <header>
       <img src="{% static "logo_ciemat.gif" %}" alt="CIEMAT logo" height="50" width="50" />
       <img src="{% static "logo_uned.png" %}" alt="UNED logo" height="50" width="50" />
-      <h1>CIEMAT Web</h1>
+      <h1>HPC</h1>
       {% if user.is_authenticated %}
       <nav id="id_links">
         <ul>
@@ -34,6 +34,8 @@
           <th>Required Files</th>
           <th>Output</th>
           <th>Description</th>
+          <th></th>
+          <th></th>
         </tr>
       {% for job in list %}
         <tr>
@@ -48,9 +50,14 @@
           <td>{{ job.name }}</td>
           <td>{{ job.input }}</td>
           <td>{{ job.output }}</td>
-          <td>{{ job.description }}
-          <form method="GET" action="/jobs/submit">
+          <td>{{ job.description }}</td>
+          <td>
+            <a href="#" class="tooltip">
+              more...
+              <span>{{ job.detailed_description }}</span>
+            </a>
           </td>
+          <form method="GET" action="/jobs/submit">
           <td>
           <button type="submit" name="job_name" value="{{ job.name }}">
             <img src="{% static "icons/diskette18.png" %}" alt="start {{ job.name }}" height="10" width="10" />

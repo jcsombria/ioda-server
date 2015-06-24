@@ -47,15 +47,16 @@ class SSHSession(object):
     '''
     sftp = self.client.open_sftp()
     localfile.seek(0)
-    sftp.putfo(localfile, remotepath, callback=callback, confirm=True)
+    status = sftp.putfo(localfile, remotepath, callback=callback, confirm=True)
     sftp.close()
+    return status
 
   def get_file(self, localpath, remotepath, callback):
     '''
     Get a file from the host
     '''
     sftp = self.client.open_sftp()
-    sftp.get(remotepath, localpath, callback)
+    sftp.getfo(remotepath, localpath, callback)
     sftp.close()
 
   def exec_command(self, command):
