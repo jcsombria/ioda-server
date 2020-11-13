@@ -44,7 +44,7 @@ class Migration(migrations.Migration):
                 ('output', models.FileField(default=None, upload_to='')),
                 ('notified_completed', models.BooleanField(default=False)),
                 ('notified_expiration', models.BooleanField(default=False)),
-                ('job', models.ForeignKey(to='jobs.Job', default=None)),
+                ('job', models.ForeignKey(to='jobs.Job', default=None, on_delete=models.RESTRICT)),
             ],
             options={
             },
@@ -53,7 +53,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UserProfile',
             fields=[
-                ('user', models.OneToOneField(serialize=False, primary_key=True, to=settings.AUTH_USER_MODEL, default=None)),
+                ('user', models.OneToOneField(serialize=False, primary_key=True, to=settings.AUTH_USER_MODEL, default=None, on_delete=models.CASCADE)),
                 ('expiration_date', models.DateTimeField(default=jobs.models._get_expiration_date)),
             ],
             options={
@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='runningjob',
             name='user',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, default=None),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, default=None, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

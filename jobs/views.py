@@ -6,9 +6,10 @@ from django.core.mail import send_mail
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from django.core.servers.basehttp import FileWrapper
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+
+from wsgiref.util import FileWrapper
 
 from .forms import NewUserForm, NewJobForm, LoginForm
 from .models import Job, RunningJob, UserProfile
@@ -65,8 +66,8 @@ def create_account(request):
         send_mail(
           'User account activation',
           'User ' + new_user.username + ' ask for account activation.',
-          'jcsombria@koshirae.com',
-          ['jcsombria@gmail.com']
+          'src@mail',
+          ['dst@mail']
         )
         return HttpResponse('User account created.')
 #      return redirect('/')
@@ -96,12 +97,12 @@ def running_jobs(request):
   already submitted.
   '''
   list_ = RunningJob.objects.filter(user=request.user)
-  for job in list_:
-    job_manager = JobManager(job)
-    job_status = job_manager.get_status()
-    if job_status != job.status:
-      job.status = job_status
-      job.save(update_fields=['status'])
+#  for job in list_:
+#    job_manager = JobManager(job)
+#    job_status = job_manager.get_status()
+#    if job_status != job.status:
+#      job.status = job_status
+#      job.save(update_fields=['status'])
   context = {
     'list': list_.exclude(status='completed'),
     'status': 'uncompleted',
@@ -113,12 +114,12 @@ def finished_jobs(request):
   ''' This view shows a list of the jobs which are completed.
   '''
   list_ = RunningJob.objects.filter(user=request.user)
-  for job in list_:
-    job_manager = JobManager(job)
-    job_status = job_manager.get_status()
-    if job_status != job.status:
-      job.status = job_status
-      job.save(update_fields=['status'])
+#  for job in list_:
+#    job_manager = JobManager(job)
+#    job_status = job_manager.get_status()
+#    if job_status != job.status:
+#      job.status = job_status
+#      job.save(update_fields=['status'])
   context = {
     'list': list_.filter(status='completed'),
     'status': 'completed',

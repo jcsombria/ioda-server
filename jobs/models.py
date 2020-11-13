@@ -10,7 +10,7 @@ def _get_expiration_date():
 
 
 class UserProfile(models.Model):
-  user = models.OneToOneField(User, primary_key=True, default=None)
+  user = models.OneToOneField(User, primary_key=True, default=None, on_delete=models.CASCADE)
   expiration_date = models.DateTimeField(default=_get_expiration_date)
 
   def __str__(self):
@@ -49,9 +49,9 @@ class Job(models.Model):
 
 
 class RunningJob(models.Model):
-  job = models.ForeignKey(Job, default=None)
-  user = models.ForeignKey(User, default=None)
-  timestamp = models.DateTimeField(auto_now_add=True, default=None)
+  job = models.ForeignKey(Job, default=None, on_delete=models.RESTRICT)
+  user = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
+  timestamp = models.DateTimeField(auto_now_add=True)
   expiration_date = models.DateTimeField(default=_get_expiration_date)
   runningjob_id = models.CharField(max_length=255, default='')
   status = models.CharField(max_length=255, default='')
