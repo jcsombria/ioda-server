@@ -13,7 +13,7 @@ from wsgiref.util import FileWrapper
 
 from .forms import NewUserForm, NewJobForm, LoginForm
 from .models import Job, RunningJob, UserProfile
-from .popo.JobManager import JobManager
+from .drivers.JobManager import JobManager
 
 def home_page(request):
   ''' This view shows the main page to the user.

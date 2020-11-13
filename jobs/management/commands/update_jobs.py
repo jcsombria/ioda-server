@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.mail import send_mail
 
 from jobs.models import RunningJob
-from jobs.popo.JobManager import JobManager
+from jobs.drivers.JobManager import JobManager
 
 import time
 from datetime import datetime, timedelta

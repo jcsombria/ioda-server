@@ -4,8 +4,8 @@ from time import sleep
 import paramiko
 import uuid
 
-from jobs.popo.SSHSession import SSHSession
-from jobs.popo.TorqueDriver import TorqueDriver
+from jobs.drivers.SSHSession import SSHSession
+from jobs.drivers.TorqueDriver import TorqueDriver
 
 class JobManager(object):
   ''' L
