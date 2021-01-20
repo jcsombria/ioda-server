@@ -8,3 +8,4 @@ activate
 id_rsa
 start_ssh_agent.sh
 start_server.sh
+.metadata/
