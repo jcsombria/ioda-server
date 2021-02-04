@@ -51,7 +51,7 @@ class Command(BaseCommand):
         of the job. 
     '''
     if job.status == 'completed' and not job.notified_completed:
-      self.stdout.write('job_notified: '+job.notified_completed)
+      self.stdout.write('job_notified: '+ str(job.notified_completed))
       modified_fields.append('notified_completed')
       job.notified_completed = True
       self.notify(job.user.email, notification='completed')
@@ -76,7 +76,7 @@ class Command(BaseCommand):
   def notify(self, email, notification):
     message = self.messages.get(notification)
     src_email = 'noreply@hpc.dia.uned.es'
-    send_mail(message['issue'], message['body'], src_email, [email])
+    #send_mail(message['issue'], message['body'], src_email, [email])
 
   def save_if_modified(self, job, modified_fields):
     if modified_fields:

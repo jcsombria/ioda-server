@@ -113,8 +113,8 @@ class MatlabDriver(object):
 		#}
 		status_code = stdout.read().strip().decode("utf-8")	 
 		print(status_code)
-		#if(status_code == ''):
-		#	status = 'completed'
+		if(status_code == ''):
+			status = 'waiting'
 		#else:
 		#status = torque_states.get(status_code, 'completed')
 		return status_code
