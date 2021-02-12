@@ -1,96 +1,128 @@
 <!DOCTYPE HTML>
 <html>
+
+   {% load static %}   
+   
   <head>
     <title>HPC</title>   
-    {% load static %}
-	{% load crispy_forms_tags %}
 	    <meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 		<meta name="description" content="">
 		<meta name="author" content="">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
  
-    <title>HPC</title>    
+    <title>HPC</title>
 
-    <!-- Custom fonts for this template-->
-    <link href="{% static "vendor/fontawesome-free/css/all.min.css" %}" rel="stylesheet" type="text/css">
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-        rel="stylesheet">
+	<!-- Favicon - loaded as static -->
+	<link href="{% static 'logo_uned.png' %}" rel="icon" type="image/png">
+
+	<!-- Fonts -->
+    <!--<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700"rel="stylesheet"> -->
+	
+	<!-- Icons -->
+	<link href="/static/assets/js/plugins/nucleo/css/nucleo.css" rel="stylesheet" />
+	<link href="/static/assets/js/plugins/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet" />
+		
+	<!-- CSS Files -->
+    <!-- <link href="/static/assets/css/argon-dashboard.css?v=1.1.0"	rel="stylesheet" /> -->
+
+
+<!-- Custom fonts for this template-->
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"  rel="stylesheet">
+        
     <!-- Custom styles for this template-->
-    <link rel="stylesheet" href="{% static "css/sb-admin-2.min.css" %}" >
+		  <!--<link rel="stylesheet" href="{% static 'css/sb-admin-2.min.css' %}" >   -->
+          <link rel="stylesheet" href="{% static 'css/mio.css' %}" >  
   </head>
   
   
-<body class="bg-gradient-primary">
-    
-	<!-- <header> -->
-      <!-- <img src="{% static "logo_ciemat.gif" %}" alt="CIEMAT logo" height="50" width="50"> -->
-      <!-- <img src="{% static "logo_uned.png" %}" alt="UNED logo" height="50" width="50"> -->
-        <!-- <nav id="id_links"> -->
-        <!-- <ul> -->
-          <!-- <li><a href="/" id="id_home">Home</a></li> -->
-        <!-- </ul> -->
-      <!-- </nav> -->
-    <!-- </header> -->
-	
-	
-	
-	<div class="container">
-		    <div class="row justify-content-center">
-				<div class="col">1</div> 
-				<div class="col">2</div> 
-				<div class="col">3</div>
-				<div class="col">4</div>
-			</div>
-	</div>
-	
-    <div class="row justify-content-center">
+<body>
+<!--         {% load crispy_forms_tags %} -->
 
-        <div class="col-xl-8 col-lg-10 col-md-9">
-        <div class="card o-hidden border-0 shadow-lg my-3">
-        <div class="card-body p-5">
-        <!-- Nested Row within Card Body -->
-        <div class="row">
-        <div class="col-lg-4 d-none d-lg-block"></div>
-        <div class="col-lg-4">
-            <div class="p-4">
+	<div class="modal-dialog text-center">
+		<div class="col-sm-8 main-section">
+			<div class="modal-content">
+				<div class="col-12 user-img">
+					<img src="/static/logos.png" width="254" height="58">
+				</div>
+				<h3>HPC Server | Login</h3>
+				<br>
 
-            <div class="text-center"><h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1></div>
-            
-            <p class="bottom-three">
-			<form method="post" action="/login/" class="user">
-			
-				{% csrf_token %}										
-				{{ form|crispy }}
-		    </p>		
-				<button type="submit" class="btn btn-info btn-user btn-block">Login</button>
 				<div class="form-group">
-					<div class="custom-control custom-checkbox small">
-						<input type="checkbox" class="custom-control-input" id="customCheck">
-						<label class="custom-control-label" for="customCheck">Remember Me</label>
+					<form method="post" action="/login/" class="col-12">
+						{% csrf_token %}
+						<!--	{{ form|crispy }} -->
+						<div class="form-group" id="user-group">
+							<input type="text" class="form-control" name="username"
+								placeholder="User">
+						</div>
+						<div class="form-group" id="contrasena-group">
+							<input type="password" class="form-control" name="password"
+								placeholder="Password">
+						</div>
+
+						<div class="form-group">
+							<button type="submit" class="btn btn-primary btn-user">
+								<i class="fas fa-sign-in-alt"></i> Login
+							</button>
+						</div>
+					</form>
+					<div class="form-group">
+						<div class="custom-control custom-checkbox small">
+							<input type="checkbox" class="custom-control-input"	id="customCheck"> 
+							<label class="custom-control-label"	for="customCheck"><small>Remember Me</small></label>
+						</div>
+						<div class="text-center">
+							<a class="small" href="/account/create"><small>Create an Account!</small></a>
+						</div>
 					</div>
 				</div>
-				<div class="text-center">
-					<a class="small" href="/account/create">Create an Account!</a>
-				</div>
-			</form>		
-            </div>
-            </div>
-            </div>
-            </div>
+			</div>
 		</div>
-
-        </div>
 	</div>
-	  	
-	
-	 <!-- Bootstrap core JavaScript-->
-    <script src="{% static "vendor/jquery/jquery.min.js" %}"></script>
-    <script src="{% static "vendor/bootstrap/js/bootstrap.bundle.min.js" %}"></script>
-    <!-- Core plugin JavaScript-->
-    <script src="{% static "vendor/jquery-easing/jquery.easing.min.js" %}"></script>
-    <!-- Custom scripts for all pages-->
-    <script src="{% static "js/sb-admin-2.min.js" %}"></script>	
-	
+
+
+			<!-- 	<div class="container"> -->
+			<!-- 		<div class="row justify-content-center pt-5 mt-5"> -->
+			<!-- 			<div class="col-md-4 formulario"> -->
+			<!-- 					<div class="form-group text-center"> -->
+
+			<!-- 						<h1>HPC Server</h1>						 -->
+			<!-- 					</div>											 -->
+			<!-- 						<form method="post" action="/login/" class="user"> -->
+			<!-- 							{% csrf_token %} {{ form|crispy }}							 -->
+			<!-- 							<p> </p>							 -->
+			<!-- 							<button type="submit" class="btn btn-primary btn-user"> <i class="fas fa-sign-in-alt"></i> Login </button> -->
+
+
+			<!-- 							<div class="form-group"> -->
+			<!-- 								<div class="custom-control custom-checkbox small"> -->
+			<!-- 									<input type="checkbox" class="custom-control-input"	id="customCheck">  -->
+			<!-- 									<label class="custom-control-label"for="customCheck">Remember Me</label> -->
+			<!-- 								</div> -->
+			<!-- 							</div> -->
+			<!-- 							<div class="text-center"> -->
+			<!-- 								<a class="small" href="/account/create">Create an Account!</a> -->
+			<!-- 							</div> -->
+			<!-- 						</form> -->
+
+			<!-- 			</div> -->
+			<!-- 		</div> -->
+			<!-- 	</div> -->
+
+			<!-- 	 	<!-- Footer -->
+			<!-- 	<footer class="sticky-footer bg-white"> -->
+			<!-- 		<div class="container my-auto"> -->
+			<!-- 			<div class="copyright text-center my-auto"> -->
+			<!-- 				<span>Copyright &copy; HPC - Server 2021</span> -->
+			<!-- 			</div> -->
+			<!-- 		</div> -->
+			<!-- 	</footer> -->
+			<!-- 	<!-- End of Footer -->
+
+			{% include "includes/scripts.html" %}
 </body>
 </html>

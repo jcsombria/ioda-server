@@ -1,34 +1,83 @@
 <!DOCTYPE HTML>
 <html>
+
+   {% load static %}   
+   
   <head>
     <title>HPC</title>   
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static "style.css" %}" />
+	    <meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<meta name="description" content="">
+		<meta name="author" content="">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+ 
+    <title>HPC</title>
+
+	<!-- Favicon - loaded as static -->
+	<link href="{% static 'logo_uned.png' %}" rel="icon" type="image/png">
+
+	<!-- Fonts -->
+    <!--<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700"rel="stylesheet"> -->
+	
+	<!-- Icons -->
+	<link href="/static/assets/js/plugins/nucleo/css/nucleo.css" rel="stylesheet" />
+	<link href="/static/assets/js/plugins/@fortawesome/fontawesome-free/css/all.min.css" rel="stylesheet" />
+		
+	<!-- CSS Files -->
+    <!-- <link href="/static/assets/css/argon-dashboard.css?v=1.1.0"	rel="stylesheet" /> -->
+
+
+<!-- Custom fonts for this template-->
+    <link href="{% static 'vendor/fontawesome-free/css/all.min.css' %}" rel="stylesheet" type="text/css">
+    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"  rel="stylesheet">
+        
+    <!-- Custom styles for this template-->
+		  <!--<link rel="stylesheet" href="{% static 'css/sb-admin-2.min.css' %}" >   -->
+          <link rel="stylesheet" href="{% static 'css/mio.css' %}" >  
   </head>
-  <body>
-    <header>
-      <img src="{% static "logo_ciemat.gif" %}" alt="CIEMAT logo" height="50" width="50">
-      <img src="{% static "logo_uned.png" %}" alt="UNED logo" height="50" width="50">
-      <h1>HPC</h1>
-      <nav id="id_links">
-        <ul>
-          <li><a href="/" id="id_home">Home</a></li>
-        </ul>
-      </nav>
-    </header>
-    <article>
-      <h1>Fill in your data</h1>
-      <p>Provide your personal data to request for an user account. Please note that your profile will not be activated until the administrator authorize your request. You will be notified to the email address provided in the form below.<p/>
-      <form method="POST" action="/account/create/">
-        {% csrf_token %}
-        <fieldset>
-          <legend>User Info</legend>
-          {{ form.as_p }}
-        </fieldset>
-        <p class="center">
-          <input class="submit" type="submit" value="create account" />
-        <p>
-      </form>
-    </article>
-  </body>
-</html>
+
+<body>
+     {% load crispy_forms_tags %} 
+
+      <div class="modal-dialog text-center">
+		<div class="col-sm-8 main-section">
+			<div class="modal-content">
+				<div class="col-12 user-img">
+					<img src="/static/logos.png" width="254" height="58">
+				</div>
+				<h3>HPC Server | Register </h3>
+				<br>
+				<div class="form-group">
+				      <form method="POST" action="/account/create/" class="col-12">
+				              {% csrf_token %}
+				              {{ form.as_p }}
+       				 	<p class="center">
+          						<input class="submit" type="submit" value="create account" />
+        				<p>
+        				</form>
+        		</div>
+			</div>
+		</div>
+	</div>       			
+        			
+        			
+        			
+     			
+      
+
+      
+
+       
+    
+    
+{% include "includes/scripts.html" %}
+
+<!-- Specific JS goes HERE --> 
+{% block javascripts %}{% endblock javascripts %}
+    
+    
+    
+<!--   </body> -->
+<!-- </html> -->

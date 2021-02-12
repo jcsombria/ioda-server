@@ -207,4 +207,4 @@ def get_job_results(request):
 @login_required(login_url='/login/')
 def logout_view(request):
   logout(request)
-  return redirect('/')
+  return redirect('/login/')

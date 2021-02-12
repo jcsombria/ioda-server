@@ -95,3 +95,7 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_ROOT = 'data/'
+
+
+#template formularios bootstrap 4
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
