@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
+#from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
+#from django.utils import timezone
 
 def get_upload_path(instance, filename):
 	return 'user/{0}/{1}'.format(instance.user.username, filename)
