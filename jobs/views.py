@@ -61,7 +61,7 @@ class InteractiveTask(TemplateView):
         form.initial = {'job_name':job_name}
         return render(request, 'task/interactive.html', { 'form': form })
 
-
+@login_required(login_url='/login')
 def home_page(request):
     ''' This view shows the main page to the user.
     '''
@@ -254,7 +254,6 @@ def get_job_results(request):
 
 @login_required(login_url='/login/')
 def logout_view(request):
-
   logout(request)
   return redirect('/login/')
 

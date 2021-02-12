@@ -7,6 +7,9 @@ from django.contrib.auth.models import User
 def get_upload_path(instance, filename):
 	return 'user/{0}/{1}'.format(instance.user.username, filename)
 
+def get_code_upload_path(instance, filename):
+    return 'elements/{0}/{1}'.format(instance.path, filename)
+
 def _get_expiration_date():
 	return datetime.now() + timedelta(days=90);
 

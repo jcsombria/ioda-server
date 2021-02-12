@@ -5,10 +5,11 @@ import jobs
 from jobs import views
 
 urlpatterns = [
-    path('login/', jobs.views.login_view),
-    re_path(r'^logout/', jobs.views.logout_view),
+    path('login/', jobs.views.login_view, name='login'),
+    re_path(r'^logout/', jobs.views.logout_view, name='logout'),
     re_path(r'^account/create/', jobs.views.create_account),
-    path('', jobs.views.home_page),
+    path('', jobs.views.home_page, name='home'),
+    path('/profile', jobs.views.home_page, name='profile'),
 
     path('jobs/', include('jobs.urls')),
     path('api/', include('eda.urls')),
