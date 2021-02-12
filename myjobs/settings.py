@@ -27,13 +27,15 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = (
+    'channels',
+    'jobs',
+    'eda',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'jobs',
 )
 
 MIDDLEWARE = (
@@ -63,7 +65,7 @@ TEMPLATES = [
 ]
 
 ROOT_URLCONF = 'myjobs.urls'
-WSGI_APPLICATION = 'myjobs.wsgi.application'
+#WSGI_APPLICATION = 'myjobs.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
@@ -73,9 +75,9 @@ DATABASES = {
         # 'ENGINE': 'mysql.connector.django',
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'NAME': 'job_scheduler',
-        'USER': 'root',
-        'PASSWORD': 'Admin',
+#        'NAME': 'job_scheduler',
+#         'USER': 'root',
+#         'PASSWORD': 'Admin',
     }
 }
 
@@ -93,3 +95,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 MEDIA_ROOT = 'data/'
+
+ASGI_APPLICATION = "myjobs.asgi.application"
