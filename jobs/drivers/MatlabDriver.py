@@ -25,7 +25,7 @@ class MatlabDriver(object):
 		self.commands = {
 			self.SEND_JOB: 'python3.6 runUserScript.py -t {0} -p {1} &',
 			self.CANCEL_JOB: 'python3.6 runUserScript.py -k {0}',
-			self.GET_JOB_STATUS: 'cat ./status{0}.txt'
+			self.GET_JOB_STATUS: 'cat {0}status{1}.txt'
 		}
 		self.job_id = 0
 
@@ -33,7 +33,6 @@ class MatlabDriver(object):
 		'''
 		Sends a file to the server
 		'''
-		#print(localfile)
 		self.transport.send_file(localfile, remotepath,
 			lambda x, y: self._file_sent(x, y, callback))
 		
@@ -98,7 +97,7 @@ class MatlabDriver(object):
 		Build the string for cancel_job command
 		'''
 		print('retrieved job id : ' + str(job_name))
-		return self.commands[self.GET_JOB_STATUS].format(job_name)
+		return self.commands[self.GET_JOB_STATUS].format('./Temp/',job_name)
 		
 	def parse_get_job_status_response(self, stdin, stdout, stderr):
 		'''
