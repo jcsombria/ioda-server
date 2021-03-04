@@ -162,12 +162,12 @@ def finished_jobs(request):
     ''' This view shows a list of the jobs which are completed.
     '''
     list_ = RunningJob.objects.filter(user=request.user)
-    #  for job in list_:
-    #    job_manager = JobManager(job)
-    #    job_status = job_manager.get_status()
-    #    if job_status != job.status:
-    #      job.status = job_status
-    #      job.save(update_fields=['status'])
+    for job in list_:
+      job_manager = JobManager(job)
+      job_status = job_manager.get_status()
+      if job_status != job.status:
+        job.status = job_status
+        job.save(update_fields=['status'])
     context = {
         'list': list_.filter(status='completed'),
         'status': 'completed',
