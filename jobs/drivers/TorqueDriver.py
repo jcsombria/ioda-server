@@ -66,7 +66,7 @@ class TorqueDriver(object):
     '''
     return self.commands[self.CANCEL_JOB].format(job_name)
 
-  def get_job_status(self, job_name):
+  def get_job_status(self, job_name, remotePath = None):
     '''
     Query the system to obtain info about the status of job_name
     '''

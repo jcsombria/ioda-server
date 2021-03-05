@@ -61,7 +61,7 @@ class JobManager(object):
 		args = 'INPUT_PREFIX=%s_' % self.job_id
 		#try:
 		self.job_id = self.driver.send_job(job, self.queue, args).decode('utf-8').strip('\n')
-		print(self.job_id)
+		#print(self.job_id)
 		#except AttributeError:
 		#	self.job_id = self.driver.send_job(job, self.queue, args)
 	def _get_job_path(self):
@@ -71,9 +71,9 @@ class JobManager(object):
 		'''
 		Get the results from the server
 		'''
-		print(self.job_model.results_path)
+		#print(self.job_model.results_path)
 		remotefile = self.job_model.results_path + self.job.runningjob_id + '/' + self.job_model.output
-		print(remotefile)
+		#print(remotefile)
 		self.driver.get_file(localfile, remotefile, None)
 
 	def get_log(self, localfile):
@@ -82,14 +82,14 @@ class JobManager(object):
 		'''
 		
 		remotefile = self.job_model.results_path + self.job.runningjob_id + '/log.txt'
-		print(remotefile)			
+		#print(remotefile)			
 		self.driver.get_file(localfile, remotefile, None)
 
 	def get_status(self):
 		'''
 		Get the job status
 		'''
-		return self.driver.get_job_status(self.job.runningjob_id)
+		return self.driver.get_job_status(self.job.runningjob_id, self.job_model.tmp_path)
 
 	def set_input_file(self, input_file):
 		self.job_input_file = input_file 

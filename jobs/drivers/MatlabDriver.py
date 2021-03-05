@@ -73,7 +73,7 @@ class MatlabDriver(object):
 		Try to cancel job_name
 		'''
 		cancel_job = self.get_cancel_job_command(self.job_id)
-		print(cancel_job)
+		#print(cancel_job)
 		stdin, stdout, stderr = self.transport.exec_command(cancel_job)
 
 	def get_cancel_job_command(self, job_name):
@@ -82,22 +82,22 @@ class MatlabDriver(object):
 		'''
 		return self.commands[self.CANCEL_JOB].format(job_name)
 
-	def get_job_status(self, job_name):
+	def get_job_status(self, job_name, remotePath = None):
 		'''
 		Query the system to obtain info about the status of job_name
 		'''
-		get_job_status = self.get_job_status_command(job_name)
-		print(get_job_status)
+		get_job_status = self.get_job_status_command(job_name, remotePath)
+		#print(get_job_status)
 		stdin, stdout, stderr = self.transport.exec_command(get_job_status)
 		status = self.parse_get_job_status_response(stdin, stdout, stderr)
 		return status
 
-	def get_job_status_command(self, job_name):
+	def get_job_status_command(self, job_name, remotePath = None):
 		'''
 		Build the string for cancel_job command
 		'''
-		print('retrieved job id : ' + str(job_name))
-		return self.commands[self.GET_JOB_STATUS].format('./Temp/',job_name)
+		#print('retrieved job id : ' + str(job_name))
+		return self.commands[self.GET_JOB_STATUS].format(remotePath,job_name)
 		
 	def parse_get_job_status_response(self, stdin, stdout, stderr):
 		'''
@@ -111,7 +111,7 @@ class MatlabDriver(object):
 		#	'T':'stopped'
 		#}
 		status_code = stdout.read().strip().decode("utf-8")	 
-		print(status_code)
+		#print(status_code)
 		if(status_code == ''):
 			status = 'waiting'
 		#else:
