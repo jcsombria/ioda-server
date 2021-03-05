@@ -26,9 +26,9 @@
       {% endif %}
     </header>
     
- 		<div class="container" style="display: flex; width:1280px">
+ 		<div class="container" style="display: flex; flex-direction: column; width: 640px">
  		  <canvas id="canvas_in" width="640" height="480"></canvas>
- 		  <canvas id="canvas_out" width="640" height="480"></canvas>
+		  <span id="label">Sin etiquetar</span>
  		</div>
 		<div class="video-wrap"><video id="video" hidden playsinline autoplay></video></div>
     {{ job_name|json_script:"job-name" }}
@@ -38,7 +38,6 @@
 	    const video = document.getElementById('video');
 	    const snap = document.getElementById("snap");
 	    const canvas_in = document.getElementById('canvas_in');
-      const canvas_out = document.getElementById('canvas_out');
       const errorMsgElement = document.querySelector('span#errorMsg');
 	
 	    const constraints = {
@@ -63,7 +62,6 @@
 	    init();
 	    // Dibuja la imagen
 	    var context_in = canvas_in.getContext('2d');
-	    var context_out = canvas_out.getContext('2d');
 
 	    const jobName = JSON.parse(document.getElementById('job-name').textContent);
 
@@ -76,15 +74,8 @@
       );
 
       jobSocket.onmessage = function(e) {
-    	    var data = atob(e.data);
-    	    var pixels = new Uint8ClampedArray(data.length);
-    	    for (var i=0; i<pixels.length; i++) {
-    	    	pixels[i] = data.charCodeAt(i);
-    	    }
-
-          var imageData_out = context_out.createImageData(640, 480);
-          imageData_out.data.set(pixels);
-          context_out.putImageData(imageData_out, 0, 0);
+	console.log(e);
+	$('#label')[0].innerHTML = 'Etiquetado como: <strong>' + e.data + '</strong>';
        }
 
 
