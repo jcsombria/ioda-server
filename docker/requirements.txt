@@ -1,0 +1,8 @@
+amqp==5.0.5
+channels==3.0.3
+celery==5.0.5
+daphne==3.0.1
+django-crispy-forms==1.11.0
+paramiko==2.7.2
+Django==3.2.7
+Pillow==8.1.0

@@ -12,6 +12,6 @@ urlpatterns = [
     path('/profile', jobs.views.home_page, name='profile'),
 
     path('jobs/', include('jobs.urls')),
-    path('api/', include('eda.urls')),
+    path('ioda/', include('eda.urls')),
     path('admin/', admin.site.urls),
 ]

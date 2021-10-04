@@ -1,7 +1,7 @@
 from django.shortcuts import render
 
 def index(request):
-    return render(request, 'chat/index.html')
+    return render(request, 'index.html')
 
 def job(request, job_name):
     return render(request, 'task/interactive.html', {
