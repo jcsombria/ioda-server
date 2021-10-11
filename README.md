@@ -1,2 +1,3 @@
-# myjobs
-A web application to launch and manage distributed high performance computing tasks.
+# IODA Server
+
+A Dyango-based server for Fusion IODA
