@@ -1,5 +1,5 @@
 """
-Django settings for myjobs project.
+Django settings for ioda_server project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.7/topics/settings/
@@ -65,8 +65,8 @@ TEMPLATES = [
     },
 ]
 
-ROOT_URLCONF = 'myjobs.urls'
-#WSGI_APPLICATION = 'myjobs.wsgi.application'
+ROOT_URLCONF = 'ioda_server.urls'
+#WSGI_APPLICATION = 'ioda_server.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
@@ -101,5 +101,5 @@ MEDIA_ROOT = 'data/'
 #template formularios bootstrap 4
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
-ASGI_APPLICATION = "myjobs.asgi.application"
+ASGI_APPLICATION = "ioda_server.asgi.application"
 

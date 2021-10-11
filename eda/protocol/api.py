@@ -27,7 +27,8 @@ class UserSession(object):
             'login': self.login,
             'logout': self.logout,
             'get_projects_info': self.getProjectsInfo,
-#             'set_project': 
+            'set_project': self.setProject,            
+            'run_graph': self.runGraph, 
         }
     
          
@@ -70,11 +71,7 @@ class UserSession(object):
         elif self.user == user:
             return { 'result': 'already_connected'}
 
-        return {
-            'result': 'ok', #Logged as user %s.' % username,
-            'project_types': self._getProjectTemplates(),
-            'project_list': self._getProjects(),
-        }
+        return { 'result': 'ok' }
  
 
     @with_key(key='projects_info')
@@ -86,38 +83,14 @@ class UserSession(object):
     
     def _getProjectTemplates(self):
         templates = ProjectTemplate.objects.all()
-        names = [t.name for t in templates]
-        # Testing
-        names = [{
-            'type' : 'python',
-            'image': 'data/images/data_analysis.png', 
-            'description':'Generic Data analysis in Python'
-        }, {
-            'type': 'python-series',
-            'image': 'data/images/time_series.png',
-            'description': 'Time-Series analysis in Python',
-        }]
+        names = [{'type':t.name, 'image': t.image.name, 'description': t.description} for t in templates]
         return names # '[%s]' % ', '.join(names)
 
     
     def _getProjects(self):
         try:
             projects = Project.objects.all()
-            names = [p.name for p in projects]
-            # Testing
-            names = [{
-                'name': 'MyFirstDataAnalysis', 
-                'type': 'python', 
-                'description': 'This is my first data analysis example' 
-            }, { 
-                'name': 'MySecondDataAnalysis', 
-                'type': 'python',  
-                'description': 'This is a second analysis example' 
-            }, {
-                'name': 'ATimeSeriesAnalysis',
-                'type': 'python-series', 
-                'description': 'A time series example' 
-            }]
+            names = [{'name': p.name, 'type':p.type.name, 'description': p.description} for p in projects]
         except Project.DoesNotExist:
             names = []
         return names #'[%s]' % ', '.join(names)
@@ -141,4 +114,112 @@ class UserSession(object):
             self.user = None
             #self.socket.close();
             return { 'result': 'ok' }
+        return { 'result': 'error' }
+
+    @with_key(key='project')
+    def setProject(self, params):
+        name = params.get('name')
+        type = params.get('type')
+        description = params.get('description')
+        project = Project.objects.filter(name=name).first()
+        if not project:
+            Project.objects.create(name=name, type=type, description=description)
+        return {
+            'name': name,
+            'elements': self._getElements(),
+            'workfile': '',
+        }
+
+    # ONLY FOR TESTING!! The elements should be read from the database.
+    def _getElements(self):
+        return {
+            "Path" : "PythonElements",
+            # NOTA: Esto hay que verlo, la implementación del editor no coincide con el documento
+            "groups" : [
+                {"name": "Data", "image": "PythonElements/Data/icon.png"},
+                {"name": "Visualization", "image": "PythonElements/Visualization/icon.png"},
+                {"name": "Model", "image": "PythonElements/Model/icon.png"},
+                {"name": "Evaluation", "image": "PythonElements/Evaluation/icon.png"}
+            ],
+            "Data" : [
+                "Data.FileLoader",
+                "Data.DataBaseLoader",
+                "Data.CloudLoader",
+                "Data.DataCleaner",
+                "Data.FeatureSelector",
+                "Data.DataMerger",
+                "Data.DataSaver"
+            ],
+            "Visualization" :[
+                "Visualization.DataTable",
+                "Visualization.PairPlot",
+                "Visualization.ScatterPlot",
+                "Visualization.BoxPlot"
+            ],
+            "Model" : [           
+            ],
+            "Evaluation" : [
+            ],
+            "Data.DataCleaner" : {
+                "name" : "Data Cleaner",
+                "description" : "Removes or fills empty data",
+                "image" : "PythonElements/Data/DataCleaner/icon.png"
+            },          
+            "Data.FileLoader" : {
+              "name" : "File Loader",
+              "description" : "Load data from a file",
+            "image" : "PythonElements/Data/FileLoader/icon.png"
+            },
+            
+            "Data.DataBaseLoader": {
+              "name" : "DataBase Loader",
+              "description" : "Load data from a DB",
+              "image" : "PythonElements/Data/DataBaseLoader/icon.png"
+            },
+            "Data.CloudLoader": {
+              "name" : "Cloud Loader",
+              "description" : "Load data from the Cloud",
+              "image" : "PythonElements/Data/CloudLoader/icon.png"
+            },
+            "Data.FeatureSelector": {
+              "name" : "Feature Selector",
+              "description" : "Selects features from data",
+              "image" : "PythonElements/Data/FeatureSelector/icon.png"
+            },
+            "Data.DataMerger": {
+              "name" : "Data Merger",
+              "description" : "Merges sets of data",
+              "input" : "DataFrame,Series",
+              "image" : "PythonElements/Data/DataMerger/icon.png"
+            },
+            "Data.DataSaver": {
+              "name" : "Data Saver",
+              "description" : "Saves data to disk",
+              "image" : "PythonElements/Data/DataSaver/icon.png"
+            },
+            
+            "Visualization.DataTable": {
+              "name" : "Data Table",
+              "description" : "Shows data in table",
+              "image" : "PythonElements/Visualization/DataTable/icon.png"
+            },
+            "Visualization.PairPlot": {
+              "name" : "Pair Plot",
+              "description" : "Shows pair plot of data",
+              "image" : "PythonElements/Visualization/PairPlot/icon.png"
+            },
+            "Visualization.ScatterPlot": {
+              "name" : "Scatter Plot",
+              "description" : "Shows scatter plot of data",
+              "image" : "PythonElements/Visualization/ScatterPlot/icon.png"
+            },
+            "Visualization.BoxPlot": {
+              "name" : "Box Plot",
+              "description" : "Shows box plot of data",
+              "image" : "PythonElements/Visualization/BoxPlot/icon.png"
+            }            
+        }
+
+    @with_key(key='run_result')
+    def runGraph(self):
         return { 'result': 'error' }

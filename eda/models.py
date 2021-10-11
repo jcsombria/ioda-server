@@ -21,7 +21,9 @@ class Element(models.Model):
 
 class ProjectTemplate(models.Model):
     name = models.CharField(max_length=250, default='New_Template', primary_key=True)
-    elements = models.ManyToManyField(Element)
+    description = models.CharField(max_length=250, default='A new template for projects.')
+    image = models.ImageField(upload_to ='project_templates/')
+#     elements = models.ManyToManyField(Element)
 
     def __str__(self):
         return '%s' % (
@@ -31,8 +33,9 @@ class ProjectTemplate(models.Model):
 
 class Project(models.Model):
     name = models.CharField(max_length=250, default='New_Project', primary_key=True)
-    elements = models.ManyToManyField(Element)
-    template = models.ForeignKey(ProjectTemplate, on_delete=models.RESTRICT)
+#     elements = models.ManyToManyField(Element)
+    type = models.ForeignKey(ProjectTemplate, on_delete=models.RESTRICT)
+    description = models.CharField(max_length=250, default='A new template for projects.')
 
     def __str__(self):
         return '%s' % (

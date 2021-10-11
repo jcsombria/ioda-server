@@ -6,3 +6,7 @@ How to run server with docker
 ```
 docker-compose up
 ```
+4 Initialize the server's database
+```
+docker-compose exec python manage.py loaddata fixtures/*.json
+```

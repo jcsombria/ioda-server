@@ -9,4 +9,6 @@ urlpatterns = [
     re_path(r'^submit', views.submit_job),
     re_path(r'^cancel', views.cancel_job),
     re_path(r'^get', views.get_job_results),
+# Url para notificar los resultados y finalización de tareas en nodos de computo   
+#    path('notify/', views.InteractiveTask.as_view()), # pasar token, node_id + result
 ]

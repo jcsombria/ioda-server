@@ -9,7 +9,7 @@ urlpatterns = [
     re_path(r'^logout/', jobs.views.logout_view, name='logout'),
     re_path(r'^account/create/', jobs.views.create_account),
     path('', jobs.views.home_page, name='home'),
-    path('/profile', jobs.views.home_page, name='profile'),
+    path('profile', jobs.views.home_page, name='profile'),
 
     path('jobs/', include('jobs.urls')),
     path('ioda/', include('eda.urls')),

@@ -1,0 +1,42 @@
+[
+  {
+    "model": "eda.ProjectTemplate",
+    "pk": "Programming",
+    "fields": {
+      "description" : "Programming data flow",
+      "image" : "images/programming.png"
+     }
+  },
+  {
+    "model": "eda.ProjectTemplate",
+    "pk": "Fusion",
+    "fields": {
+      "description" : "Fusion data analysis",
+      "image" : "images/data_analysis.png"
+     }
+  },
+  {
+    "model": "eda.ProjectTemplate",
+    "pk": "Discharges",
+    "fields": {
+      "description" : "Discharge analysis",
+      "image" : "images/data_analysis.png"
+     }
+  },
+  {
+    "model": "eda.ProjectTemplate",
+    "pk": "python-da",
+    "fields": {
+      "description" : "Data analysis in Python",
+      "image" : "images/data_analysis.png"
+     }
+  },
+  {
+    "model": "eda.ProjectTemplate",
+    "pk": "python-series",
+    "fields": {
+      "description" : "Time series analysis in Python",
+      "image" : "images/time_series.png"
+     }
+  }
+]
