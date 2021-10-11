@@ -1,0 +1,26 @@
+[
+  {
+    "model": "eda.Project",
+    "pk": "MyFirstDataAnalysis",
+    "fields": {
+      "type": "python-da", 
+      "description": "This is my first data analysis example" 
+    }
+  },
+  { 
+    "model": "eda.Project",
+    "pk": "MySecondDataAnalysis", 
+    "fields": {
+      "type": "python-da",
+      "description": "This is a second analysis example" 
+    }
+  },
+  {
+    "model": "eda.Project",
+    "pk": "ATimeSeriesAnalysis",
+    "fields": {
+      "type": "python-series", 
+      "description": "A time series example" 
+    }
+  }
+]

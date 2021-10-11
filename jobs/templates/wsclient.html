@@ -1,0 +1,32 @@
+<html>
+  <body>
+<!-- <script type="text/javascript">var ws = new WebSocket('ws://localhost:8000/ws/foobar?subscribe-broadcast&publish-broadcast');
+ws.onopen = function() {
+    console.log("websocket connected");
+};
+ws.onmessage = function(e) {
+    console.log("Received: " + e.data.toString());
+};
+ws.onerror = function(e) {
+    console.error(e);
+};
+ws.onclose = function(e) {
+    console.log("connection closed");
+}
+function send_message(msg) {
+  payload = {
+    'load': 'file',
+  }
+  console.log(payload);
+  ws.send(JSON.stringify(payload));
+}
+
+</script>
+
+<input src="send" type="button" onclick="send_message();" />
+ -->
+		<script>
+			new WebSocket('ws://localhost:8000/ws/chat/jdjdjd');
+		</script>
+	</body>
+</html>

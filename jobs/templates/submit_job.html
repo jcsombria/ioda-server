@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <title>HPC</title>   
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static "style.css" %}" />
+  </head>
+  <body>
+    <header>
+      <img src="{% static "logo_ciemat.gif" %}" alt="CIEMAT logo" height="50" width="50">
+      <img src="{% static "logo_uned.png" %}" alt="UNED logo" height="50" width="50">
+      <h1>HPC</h1>
+      {% if user.is_authenticated %}
+      <nav id="id_links">
+        <ul>
+          <li><a href="/" id="id_home">Home</a></li>
+          <li><a href="/jobs/available" id="id_available_jobs">Available Jobs</a></li>
+          <li><a href="/jobs/running" id="id_running_jobs">Running Jobs</a></li>
+          <li><a href="/jobs/finished" id="id_running_jobs">Finished Jobs</a></li>
+          <li><a href="/logout" id="id_logout">Log out</a></li>
+        </ul>
+      </nav>
+      <div id="id_current_user">User: {{ user.username }}</div>
+      {% endif %}
+    </header>
+    <article>
+      <h1>Submit a new job</h1>
+      <form method="POST" action="/jobs/submit/" enctype="multipart/form-data">
+        <fieldset>
+          <legend>User Info</legend>
+          {{ form.as_p }}
+          <input class="submit" type="submit" value="submit" />
+        </fieldset>
+        {% csrf_token %}
+      </form>
+      <table id="id_running_jobs">
+      {% for job in list.job_set.all %}
+        <tr><td>{{ forloop.counter }}: {{ job.name }}</td></tr>
+      {% endfor %}
+      </table>
+    </article>
+  </body>
+</html>
