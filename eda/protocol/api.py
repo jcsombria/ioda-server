@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 
 from eda.models import ProjectTemplate, Project
 
-
 class UserSession(object):
      
     # Add 'key, data' response format
@@ -23,12 +22,18 @@ class UserSession(object):
     def __init__(self, socket):
         self.socket = socket
         self.user = None
+        self.project = None
         self.commands = {
             'login': self.login,
             'logout': self.logout,
             'get_projects_info': self.getProjectsInfo,
-            'set_project': self.setProject,            
-            'run_graph': self.runGraph, 
+            'set_project': self.setProject,
+            'edit_project': self.editProject,
+            'get_workfile': self.getWorkfile,
+            'save_workfile': self.saveWorkfile,
+            'run_graph': self.runGraph,
+#             'set_element': self.setElement,
+#             'edit_element': self.editElement,
         }
     
          
@@ -55,8 +60,18 @@ class UserSession(object):
                 result = { 'result': 'incorrect arguments'}
         self.socket.send(text_data=json.dumps(result))
 
+
     @with_key('login_result')
     def login(self, params):
+        ''' Used by the user to log into the system.
+        
+        Servers can opt for a different login mechanism. Login is prior to the server accepting any other message.
+        
+        Parameters
+        ----------
+        params
+            A dict-like object that contains 'name' and 'password'
+        '''
         username = params.get('name')
         password = params.get('password')
 
@@ -73,42 +88,13 @@ class UserSession(object):
 
         return { 'result': 'ok' }
  
-
-    @with_key(key='projects_info')
-    def getProjectsInfo(self):
-        return {
-            'project_types': self._getProjectTemplates(),
-            'project_list': self._getProjects(),
-        }
-    
-    def _getProjectTemplates(self):
-        templates = ProjectTemplate.objects.all()
-        names = [{'type':t.name, 'image': t.image.name, 'description': t.description} for t in templates]
-        return names # '[%s]' % ', '.join(names)
-
-    
-    def _getProjects(self):
-        try:
-            projects = Project.objects.all()
-            names = [{'name': p.name, 'type':p.type.name, 'description': p.description} for p in projects]
-        except Project.DoesNotExist:
-            names = []
-        return names #'[%s]' % ', '.join(names)
-    
-    
-    def _logout(self, params):
-        try:
-            result = self.logout()
-        except:
-            result = 'logout_exception'
-        return {
-            'key': 'login_result',
-            'data': result
-        }
-
-
+ 
     @with_key(key='logout_result')
     def logout(self):
+        ''' Log out of the system.
+        
+        Servers can opt for a different log out mechanism.
+        '''
         if self.user is not None:
             # Acciones necesarias para el logout
             self.user = None
@@ -116,30 +102,67 @@ class UserSession(object):
             return { 'result': 'ok' }
         return { 'result': 'error' }
 
+
+    @with_key(key='projects_info')
+    def getProjectsInfo(self):
+        ''' get_projects_info
+         Used to obtain the list of project types and of user projects in the server.
+        '''
+        return {
+            'project_types': self._getProjectTemplates(),
+            'project_list': self._getProjects(),
+        }
+
+    def _getProjectTemplates(self):
+        templates = ProjectTemplate.objects.all()
+        names = [{'type':t.name, 'image': t.image.name, 'description': t.description} for t in templates]
+        return names # '[%s]' % ', '.join(names)
+
+    
+    def _getProjects(self):        
+        try:
+            projects = Project.objects.all()
+            names = [{'name': p.name, 'type':p.type.name, 'description': p.description} for p in projects]
+        except Project.DoesNotExist:
+            names = []
+        return names
+
+    
     @with_key(key='project')
     def setProject(self, params):
+        ''' set_project
+        Used to select an existing user project or create a new one.
+        Setting a project using a non-existing name will effectively
+        create a new project of the given type with the provided description
+        
+        Parameters
+        ----------
+        params
+            A dict-like object that contains project's 'name', 'type' and 'description'.
+        '''
         name = params.get('name')
-        type = params.get('type')
+        type_ = params.get('type')
         description = params.get('description')
         project = Project.objects.filter(name=name).first()
         if not project:
-            Project.objects.create(name=name, type=type, description=description)
+            project = Project.objects.create(name=name, type=type_, description=description)
+        self.project = project
         return {
             'name': name,
             'elements': self._getElements(),
-            'workfile': '',
+            'workfile': project.workfile,
         }
 
     # ONLY FOR TESTING!! The elements should be read from the database.
     def _getElements(self):
         return {
-            "Path" : "PythonElements",
             # NOTA: Esto hay que verlo, la implementación del editor no coincide con el documento
             "groups" : [
-                {"name": "Data", "image": "PythonElements/Data/icon.png"},
-                {"name": "Visualization", "image": "PythonElements/Visualization/icon.png"},
-                {"name": "Model", "image": "PythonElements/Model/icon.png"},
-                {"name": "Evaluation", "image": "PythonElements/Evaluation/icon.png"}
+                { "name": "Data", "image": "PythonElements/Data/icon.png"},
+                { "name": "Visualization", "image": "PythonElements/Visualization/icon.png"},
+                { "name": "Model", "image": "PythonElements/Model/icon.png"},
+                { "name": "Evaluation", "image": "PythonElements/Evaluation/icon.png"},
+                { "name" : "Program", "image": "ProgramFlow/Program/icon.png" },
             ],
             "Data" : [
                 "Data.FileLoader",
@@ -154,11 +177,19 @@ class UserSession(object):
                 "Visualization.DataTable",
                 "Visualization.PairPlot",
                 "Visualization.ScatterPlot",
-                "Visualization.BoxPlot"
+                "Visualization.BoxPlot",
+                "Visualization.TextAndValue"
             ],
             "Model" : [           
             ],
             "Evaluation" : [
+            ],
+            "Program" : [
+                "Program.BinaryOperation",
+                "Program.FunctionOneVar",
+                "Program.LogicalComparison",
+                "Program.NumberVariable",
+                "Program.PolishCalculation"
             ],
             "Data.DataCleaner" : {
                 "name" : "Data Cleaner",
@@ -170,7 +201,6 @@ class UserSession(object):
               "description" : "Load data from a file",
             "image" : "PythonElements/Data/FileLoader/icon.png"
             },
-            
             "Data.DataBaseLoader": {
               "name" : "DataBase Loader",
               "description" : "Load data from a DB",
@@ -197,7 +227,6 @@ class UserSession(object):
               "description" : "Saves data to disk",
               "image" : "PythonElements/Data/DataSaver/icon.png"
             },
-            
             "Visualization.DataTable": {
               "name" : "Data Table",
               "description" : "Shows data in table",
@@ -217,9 +246,85 @@ class UserSession(object):
               "name" : "Box Plot",
               "description" : "Shows box plot of data",
               "image" : "PythonElements/Visualization/BoxPlot/icon.png"
-            }            
+            },
+            "Visualization.TextAndValue": {
+              "name" : "Text And Value",
+              "image" : "ProgramFlow/Visualization/TextAndValue/icon.png"
+            },
+            "Program.BinaryOperation": {
+              "name" : "Binary Operation",
+              "image" : "ProgramFlow/Program/BinaryOperation/icon.png"
+            },
+            "Program.FunctionOneVar": {
+              "name" : "Function One Var",
+              "image" : "ProgramFlow/Program/FunctionOneVar/icon.png"
+            },
+            "Program.LogicalComparison": {
+              "name" : "Logical Comparison",
+              "image" : "ProgramFlow/Program/LogicalComparison/icon.png"
+            },
+            "Program.NumberVariable": {
+              "name" : "Number Variable",
+              "image" : "ProgramFlow/Program/NumberVariable/icon.png"
+            },
+            "Program.PolishCalculation": {
+              "name" : "Polish Calculation",
+              "image" : "ProgramFlow/Program/PolishCalculation/icon.png"
+            }
         }
 
+    @with_key(key='project')
+    def editProject(self, params):
+        '''  Modify an existing user project.
+
+        Parameters
+        ----------
+        params
+            A dict-like object that contains project's 'name', 'type' and 'description'.
+        '''
+        name = params.get('name')
+        newname = params.get('new_name') 
+        description = params.get('description')
+        delete = params.get('delete')
+        
+        project = Project.objects.filter(name=name).first()
+        if project:
+            if delete:
+                project.delete()
+            else:
+                if newname:
+                    project.name = newname
+                if description:
+                    project.description = description
+                project.save()
+
     @with_key(key='run_result')
-    def runGraph(self):
+    def saveWorkfile(self, params):
+        # save_workfile: The client requests the server to save the current status of the work file.
+        workfile = params.get('workfile')
+        resources_list = params.get('resources_list')
+        
+        return 'NOT IMPLEMENTED'
+
+
+    @with_key(key='workfile')
+    def getWorkfile(self):
+        # get_workfile: Used by the client to request the latest saved status of a project work file.
+        if self.project:
+            return { 'workfile': self.project.workfile }
+        return { 'workfile_error': 'There is no active project.' }
+
+
+    @with_key(key='run_result')
+    def runGraph(self, params):
+        ''' run_graph
+        Used by the client to request the execution of a graph.
+        '''
+        graph = params
+        print(graph)
         return { 'result': 'error' }
+    
+    
+# set_element: Used by the client to create a user-defined data analysis element.
+# edit_element: Used by the client to edit a user-defined data analysis element.
+# delete_element: Used by the client to delete a user-defined data analysis element. NOTA: Hacer como con los proyectos, edit_element incluye el delete_element.

@@ -36,6 +36,7 @@ class Project(models.Model):
 #     elements = models.ManyToManyField(Element)
     type = models.ForeignKey(ProjectTemplate, on_delete=models.RESTRICT)
     description = models.CharField(max_length=250, default='A new template for projects.')
+    workfile = models.JSONField()
 
     def __str__(self):
         return '%s' % (
