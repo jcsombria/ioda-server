@@ -20,7 +20,6 @@ class EditorConsumer(WebsocketConsumer):
 
     def receive(self, text_data=None):
         request = json.loads(text_data)
-        print(request)
         response = self.session.process(request)
 #         try:
 #             encoded = base64.b64encode(content).decode('ascii')

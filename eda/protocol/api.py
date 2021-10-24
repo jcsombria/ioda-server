@@ -1,10 +1,15 @@
 import json
-import time
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-
+ 
 from eda.models import ProjectTemplate, Project
+from eda.protocol.graph import Graph
+
+from celery import Celery
+app = Celery('tasks', backend='rpc://', broker='amqp://guest:guest@rabbitmq')
+
+# import threading
 
 class UserSession(object):
      
@@ -13,7 +18,7 @@ class UserSession(object):
         def w(action):
             def f(self, *args, **kwargs):
                 data = action(self, *args, **kwargs)
-                print('data: {0}'.format(data))
+                #print('data: {0}'.format(data))
                 return { 'key': key, 'data': data }
             return f
         return w
@@ -248,31 +253,79 @@ class UserSession(object):
               "image" : "PythonElements/Visualization/BoxPlot/icon.png"
             },
             "Visualization.TextAndValue": {
-              "name" : "Text And Value",
-              "image" : "ProgramFlow/Visualization/TextAndValue/icon.png"
+                "name" : "HTML variable output", 
+                "description" : "Creates or adds to an HTML div a text message and a value",
+                "image" : "ProgramFlow/Visualization/TextAndValue/icon.png",
+                "properties" : [
+                    {    "name" : "Text",
+                        "local_name": "Text to display",
+                        "type" : "String",
+                        "attributes" : "input|output|manual"
+                    },
+                    {    "name" : "Value",
+                        "local_name": "Second operand",
+                        "type" : "Number",
+                        "attributes" : "input|output|manual"
+                    },
+                    {    "name" : "Div",
+                        "local_name": "HTML result (as a div)",
+                        "type" : "String",
+                        "attributes" : "input|output|manual"
+                    }
+                ]
             },
             "Program.BinaryOperation": {
-              "name" : "Binary Operation",
-              "image" : "ProgramFlow/Program/BinaryOperation/icon.png"
+                "name" : "Binary operation",
+                "description" : "Does one of several possible binary operations",
+                "image" : "ProgramFlow/Program/BinaryOperation/icon.png",
+                "properties" : [
+                    {    "name" : "Operand1",
+                        "local_name": "First operand",
+                        "type" : "Number",
+                        "attributes" : "required|input|manual"
+                    },
+                    {    "name" : "Operand2",
+                        "local_name": "Second operand",
+                        "type" : "Number",
+                        "attributes" : "required|input|manual"
+                    },
+                    {    "name" : "Operation",
+                        "local_name": "Operation to apply",
+                        "type" : "OPTION['plus','minus', 'times', 'divided by']",
+                        "attributes" : "required|manual"
+                    },
+                    {    "name" : "Result",
+                        "local_name": "Operation result",
+                        "type" : "Number",
+                        "attributes" : "output"
+                    }
+                ]
             },
             "Program.FunctionOneVar": {
               "name" : "Function One Var",
               "image" : "ProgramFlow/Program/FunctionOneVar/icon.png"
             },
             "Program.LogicalComparison": {
-              "name" : "Logical Comparison",
-              "image" : "ProgramFlow/Program/LogicalComparison/icon.png"
+                "name" : "Logical Comparison",
+                "image" : "ProgramFlow/Program/LogicalComparison/icon.png"
             },
             "Program.NumberVariable": {
-              "name" : "Number Variable",
-              "image" : "ProgramFlow/Program/NumberVariable/icon.png"
+                "name" : "Numeric Variable",
+                "description" : "Creates and/or keeps a numeric variable",
+                "image" : "ProgramFlow/Program/NumberVariable/icon.png",
+                "properties" : [{
+                    "name" : "Value",
+                    "local_name": "Value",
+                    "type" : "Number",
+                    "attributes" : "required|manual|input|output"
+                }]
             },
             "Program.PolishCalculation": {
-              "name" : "Polish Calculation",
-              "image" : "ProgramFlow/Program/PolishCalculation/icon.png"
+                "name" : "Polish Calculation",
+                "image" : "ProgramFlow/Program/PolishCalculation/icon.png"
             }
         }
-
+    
     @with_key(key='project')
     def editProject(self, params):
         '''  Modify an existing user project.
@@ -320,11 +373,10 @@ class UserSession(object):
         ''' run_graph
         Used by the client to request the execution of a graph.
         '''
-        graph = params
-        print(graph)
-        return { 'result': 'error' }
-    
-    
+        graph = Graph(params)
+        result = graph.run() 
+        return result
+
 # set_element: Used by the client to create a user-defined data analysis element.
 # edit_element: Used by the client to edit a user-defined data analysis element.
 # delete_element: Used by the client to delete a user-defined data analysis element. NOTA: Hacer como con los proyectos, edit_element incluye el delete_element.
