@@ -9,6 +9,8 @@ class Graph:
 
     def __init__(self, graph):
         self.graph = graph
+        self.graph['resources'] = []
+        self.graph['run_information'] = []
         self.nodes = []
         self.connections = []
 
@@ -27,12 +29,12 @@ class Graph:
                     print("Next Node to run: ", n.getID())
                     targetInfo = self.callNode(n)
                     self.updateConnections(n, targetInfo["output"])
+                    self.graph['resources'].append(int(10000*rnd.random()))
+                    self.graph['run_information'].append(targetInfo)
                 except:
                     print('Exception running node: ', n.getID())
 
-        self.graph['resources'] = int(10000*rnd.random())
-        self.graph['run_information'] = targetInfo
-
+        print(self.graph)
         return self.graph
 
     def addNode(self, n):

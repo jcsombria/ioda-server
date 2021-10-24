@@ -373,9 +373,7 @@ class UserSession(object):
         ''' run_graph
         Used by the client to request the execution of a graph.
         '''
-        graph = Graph(params)
-        result = graph.run() 
-        return result
+        return Graph(params).run()
 
 # set_element: Used by the client to create a user-defined data analysis element.
 # edit_element: Used by the client to edit a user-defined data analysis element.
