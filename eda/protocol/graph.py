@@ -11,9 +11,13 @@ class Graph:
         self.originalGraph = graph
         self.graph = graph
         self.graph['resources'] = []
-        self.graph['run_information'] = []
+        self.graph['nodes'] = []
+        self.graph['graph'] =  {}
+        self.graph['graph']['code'] = ""
+        self.graph['graph']['output'] = "google.com"
         self.nodes = []
         self.connections = []
+        self.startTime = time.time()
 
     def run(self):
         print('Running graph ' + self.graph['name'])
@@ -25,12 +29,28 @@ class Graph:
                 try:
                     print('Next Node to run: ', n.getID())
                     targetInfo = self.callNode(n)
+                    #print('Updating connections... ')
                     self.updateConnections(n, targetInfo['output'])
                     self.graph['resources'].append(int(10000*rnd.random()))
-                    self.graph['run_information'].append(targetInfo)
+                    self.graph['nodes'].append(targetInfo)
                 except:
                     print('Exception running node: ', n.getID())
+                    self.graph['graph']['code'] = self.graph['graph']['code'] + "Error " + 'Exception running node: ', str(n.getID())
             runnableNodes = self.findRunnableNodes()
+        
+        self.startTime = time.time()
+        self.stopTime = time.time()
+        
+        self.graph['graph']['start'] = self.startTime
+        self.graph['graph']['stop'] = self.stopTime
+        self.graph['graph']['lapsed'] = self. stopTime - self.startTime
+        self.graph['graph']['code'] = self.graph['graph']['code']
+        if(not self.graph['graph']['code']):
+                self.graph['graph']['code'] = "Graph run Ok"
+        
+        MAKE OUTPUTS HTML
+        #for nod in self.graph['nodes']:
+         #   nod['output'] = "google.com"
         
         return { 'graph': self.originalGraph, 'results': self.graph }
 
@@ -54,11 +74,12 @@ class Graph:
     def updateConnections(self, node, nodeOutputs):
         result = nodeOutputs['data']['output']
         expectedOutputs = node.getExpectedOutputs()
-        if(len(result) != len(expectedOutputs)):
+        if(len(expectedOutputs) > 1 and len(result) != len(expectedOutputs)):
             raise Exception('The number of node outputs does not match the number of values returned by the task')
         for oconn in self.getOutConnections(node):
             oconn['visited'] = True
             oconn['load'] = result
+            print("Connection from : ", oconn['source'], " to : ", oconn['target'], " updated with : " , result)
         for iconn in self.getInConnections(node):
             if(iconn['clear_after_run']):
                 oconn['visited'] = False
@@ -80,7 +101,9 @@ class Graph:
         inputs = [ c['target_property'] for c in self.getInConnections(node) if c['visited'] or not c['required_to_run'] ]
         data = properties + inputs
         intersection = set(expectedInputs).intersection(data)
-        return len(intersection) == len(expectedInputs)
+        isReady =  len(intersection) == len(expectedInputs) 
+        #print("Node : ", node.getID(), " needs the inputs : [", expectedInputs, "] and has ", data)
+        return isReady
 
     def callNode(self, node):
         node.visited = True
@@ -99,8 +122,8 @@ class Graph:
                 'node'   : node.getID(),
                 'start'  : startTime,
                 'end'    : stopTime,
-                'lapsed' : startTime - stopTime,
-                'code'   : '',
+                'lapsed' : stopTime - startTime,
+                'code'   : 'Node run OK',
                 'output' : result
             }
         inlineParams = ','.join(targetParams)
@@ -116,8 +139,8 @@ class Graph:
         
     def returnStr(self, parameters):
         text = json.loads(parameters)['Text']
-        result = json.loads(parameters)['Result']
-        out = str(text) + '\t' + 'Result'
+        result = json.loads(parameters)['Value']
+        out = str(text) + '    ' + 'Result : ' + str(result)
         return JSONFormatter.format(out)
     
     def resultHandler(self,result):
@@ -153,7 +176,7 @@ class Node:
             'end'    : r['info']['stopTime'],
             'lapsed' : r['info']['duration'],
             'code'   : code,
-            'output' : r['data']['output'],
+            'output' : r,
         }
 
     def getID(self):
@@ -176,7 +199,7 @@ class Node:
             'Program.FunctionOneVar'    : ['Function', 'Argument'],
             'Program.LogicalComparison' : ['Operation', 'Operand1', 'Operand2'],
             'Program.NumberVariable'    : ['Value'],
-            'Visualization.TextAndValue': ['Text', 'Result']
+            'Visualization.TextAndValue': ['Text', 'Value']
         }
         return expectedInputsDictionary[self.getType()]
         

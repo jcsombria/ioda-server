@@ -287,29 +287,37 @@ IODA_GUI.graphEditPage = function(mID, mTitle, mParent, mIsRunReplay) {
 	self.displayRunInfo = function(nodeInfo) {
 		var runDiv = $('#'+ mID+'-graph_run_div')
 		runDiv.empty();
+		//console.log("nodeInfo : ")
+		//console.log(nodeInfo)
 		if (nodeInfo!=null) {
 			var node = mGraph.findNode(nodeInfo.node);
+			/*console.log(node.getName().toString())
+			console.log(nodeInfo.iteration_string.toString())
+			console.log(nodeInfo.code.toString())
+			console.log(nodeInfo.start.toString())
+			console.log(nodeInfo.output.toString())
+			*/
 			runDiv.append(mINFO_LINE.replace( /#\{label\}/g, (mID+'-run_name') )
 				.replace( /#\{name\}/g, sMainRes.getString('Node') )
-				.replace( /#\{value\}/g, node.getName() ));			
+				.replace( /#\{value\}/g, node.getName().toString() ));			
 			runDiv.append(mINFO_LINE.replace( /#\{label\}/g, (mID+'-run_iteration') )
 				.replace( /#\{name\}/g, sMainRes.getString('Iteration') )
-				.replace( /#\{value\}/g, nodeInfo.iteration_string ));			
+				.replace( /#\{value\}/g, nodeInfo.iteration_string.toString() ));			
 			runDiv.append(mINFO_LINE.replace( /#\{label\}/g, (mID+'-run_code') )
 				.replace( /#\{name\}/g, sMainRes.getString('Result') )
-				.replace( /#\{value\}/g, nodeInfo.code ));			
+				.replace( /#\{value\}/g, nodeInfo.code.toString() ));			
 			runDiv.append(mINFO_LINE.replace( /#\{label\}/g, (mID+'-run_start') )
 				.replace( /#\{name\}/g, sMainRes.getString('Started') )
-				.replace( /#\{value\}/g, nodeInfo.start ));			
+				.replace( /#\{value\}/g, nodeInfo.start.toString() ));			
 			runDiv.append(mINFO_LINE.replace( /#\{label\}/g, (mID+'-run_end') )
 				.replace( /#\{name\}/g, sMainRes.getString('Ended') )
-				.replace( /#\{value\}/g, nodeInfo.end ));			
+				.replace( /#\{value\}/g, nodeInfo.end.toString() ));			
 			runDiv.append(mINFO_LINE.replace( /#\{label\}/g, (mID+'-run_lapsed') )
 				.replace( /#\{name\}/g, sMainRes.getString('Lapsed') )
-				.replace( /#\{value\}/g, nodeInfo.lapsed ));			
+				.replace( /#\{value\}/g, nodeInfo.lapsed.toString() ));			
 			runDiv.append(mLINK_BUTTON.replace( /#\{label\}/g, (mID+'-run_url') )
 				.replace( /#\{name\}/g, sMainRes.getString('Output') )
-				.replace( /#\{link\}/g, nodeInfo.output ));				
+				.replace( /#\{link\}/g, nodeInfo.output.toString() ));				
 		}
 		else {
 			runDiv.append(mCOMMENT_LINE
