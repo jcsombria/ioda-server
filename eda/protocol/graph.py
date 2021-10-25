@@ -48,7 +48,6 @@ class Graph:
         if(not self.graph['graph']['code']):
                 self.graph['graph']['code'] = "Graph run Ok"
         
-        MAKE OUTPUTS HTML
         #for nod in self.graph['nodes']:
          #   nod['output'] = "google.com"
         
