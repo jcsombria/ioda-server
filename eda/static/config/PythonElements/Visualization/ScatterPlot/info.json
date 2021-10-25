@@ -1,0 +1,13 @@
+{
+
+      "name" : "Scatter Plot",
+      "description" : "Shows scatter plot of data",
+      "input" : "DataFrame",
+      "minimum_input" : 1,
+      "maximum_input" : 1,
+      "output" : "DataFrame",
+      "properties" : [
+        { "name" : "Hue", "type": "String", "required" : "ALWAYS" }
+      ]
+
+}

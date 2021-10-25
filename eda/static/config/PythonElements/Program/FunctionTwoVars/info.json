@@ -1,0 +1,26 @@
+{
+	"name" : "Two variables function", 
+	"description" : "Applies one of several possible functions to two variables",
+	"properties" : [
+		{	"name" : "Argument1",
+			"local_name": "First argument of the function",
+			"type" : "Number",
+			"attributes" : "required|input|output|manual"
+		},
+		{	"name" : "Argument2",
+			"local_name": "Second argument of the function",
+			"type" : "Number",
+			"attributes" : "required|input|output|manual"
+		},
+		{	"name" : "Function",
+			"local_name": "Function to apply",
+			"type" : "OPTION['min','max', 'pow', 'atan']",
+			"attributes" : "required|manual"
+		},
+		{	"name" : "Result",
+			"local_name": "Function result",
+			"type" : "Number",
+			"attributes" : "output"
+		}
+	]
+}

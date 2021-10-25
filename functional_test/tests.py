@@ -50,7 +50,7 @@ class NewVisitorTest(LiveServerTestCase):
   def test_can_submit_job(self):
     # Sakura necesita realizar un cálculo importantísimo
     # y muy difícil, consistente en sumar números. Entra en la 
-    # página principal de "myjobs" para lanzar la tarea
+    # página principal de "ioda_server" para lanzar la tarea
     self.browser.get(self.live_server_url)
 
     # Comprueba en el título de la página que se trata del

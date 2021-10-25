@@ -378,3 +378,15 @@ class UserSession(object):
 # set_element: Used by the client to create a user-defined data analysis element.
 # edit_element: Used by the client to edit a user-defined data analysis element.
 # delete_element: Used by the client to delete a user-defined data analysis element. NOTA: Hacer como con los proyectos, edit_element incluye el delete_element.
+
+#         threading.Thread(target=worker, args=(input,)).start()
+# def worker(input):
+#     content = json.loads(input)
+#     result = send_task("tasks.worker_Python.nodoPython", ['basicOps._operation', content])
+#     response = result.get()
+#     messageResponse = json.dumps(response, indent=4, sort_keys=True)
+#     if(len(messageResponse)>600):
+#         print(messageResponse[0:400] + '(...)')
+#         print(messageResponse[-200:])
+#     else:
+#         print(messageResponse)

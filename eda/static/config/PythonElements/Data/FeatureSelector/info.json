@@ -1,0 +1,21 @@
+{
+	"name" : "Feature Selector",
+	"description" : "Selects features from data",
+	"properties" : [
+		{	"name" : "InputData",
+			"local_name": "Data to select feature",
+			"type" : "DataFrame",
+			"attributes" : "required|input|output"
+		},
+		{	"name" : "Feature",
+			"local_name": "Feature to select",
+			"type" : "String",
+			"attributes" : "required|input|manual"
+		},
+		{	"name" : "FeatureData",
+			"local_name": "Feature selected",
+			"type" : "DataFrame",
+			"attributes" : "output"
+		}
+	]
+}

@@ -1,0 +1,21 @@
+{
+	"name" : "SeriesFeature",
+	"description" : "Gets one feature from a signal series",
+	"properties" : [
+		{	"name" : "InputSeries",
+			"local_name": "Input series",
+			"type" : "Series",
+			"attributes" : "required|input|output"
+		},
+		{	"name" : "min",
+			"local_name": "Minimum",
+			"type" : "Double",
+			"attributes" : "output"
+		},
+		{	"name" : "max",
+			"local_name": "Maximum",
+			"type" : "Double",
+			"attributes" : "output"
+		}
+	]
+}

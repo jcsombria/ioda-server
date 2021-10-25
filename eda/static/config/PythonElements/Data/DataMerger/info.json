@@ -1,0 +1,10 @@
+{
+
+      "name" : "Data Merger",
+      "description" : "Merges sets of data",
+      "input" : ["DataFrame","Series"],
+      "minimum_input" : 2,
+      "maximum_input" : 2,
+      "output" : "DataFrame"
+
+}

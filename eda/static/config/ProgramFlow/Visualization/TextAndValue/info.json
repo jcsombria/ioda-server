@@ -1,0 +1,21 @@
+{
+	"name" : "HTML variable output", 
+	"description" : "Creates or adds to an HTML div a text message and a value",
+	"properties" : [
+		{	"name" : "Text",
+			"local_name": "Text to display",
+			"type" : "String",
+			"attributes" : "input|output|manual"
+		},
+		{	"name" : "Value",
+			"local_name": "Second operand",
+			"type" : "Number",
+			"attributes" : "input|output|manual"
+		},
+		{	"name" : "Div",
+			"local_name": "HTML result (as a div)",
+			"type" : "String",
+			"attributes" : "input|output|manual"
+		}
+	]
+}

@@ -1,0 +1,18 @@
+{
+
+      "name" : "SeriesFeature",
+      "description" : "Gets one feature from a signal series",
+      "input" : "Series",
+      "minimum_input" : 1,
+      "output" : "dict",
+      "properties" : [
+        { "name" : "Feature", "type": "String", "required" : "NEVER",
+          "options" : ["'max'", "'min'" ] }
+      ],
+      "parameters" : [
+        { "name" : "Series",  "type": "Series", "required" : "ALWAYS" },
+        { "name" : "Feature", "type": "String", "required" : "NEVER",
+          "options" : ["'max'", "'min'" ] }
+      ],
+			"returns" : { "name" : "feature", "type" : "Double" }
+}

@@ -1,0 +1,21 @@
+{
+	"name" : "Discharge Preprocessing",
+	"description" : "Cuts to a common time frame with a given sampling period",
+	"properties" : [
+		{	"name" : "InputData",
+			"local_name": "Data to sample",
+			"type" : "DataFrame",
+			"attributes" : "required|input|output"
+		},
+		{	"name" : "SamplingPeriod",
+			"local_name": "Sampling period",
+			"type" : "Double",
+			"attributes" : "required|input|manual"
+		},
+		{	"name" : "OutputData",
+			"local_name": "Data sampled",
+			"type" : "DataFrame",
+			"attributes" : "output"
+		}
+	]
+}

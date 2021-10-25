@@ -4,7 +4,19 @@ services:
   ioda:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
+    environment:
+      - BROKER_URL=amqp://guest:guest@rabbitmq
+      - CELERY_IMPORTS=['tasks_Python', 'tasks_Matlab']
+      - RESULT_BACKEND=rpc
     volumes:
       - ../:/code
     ports:
       - "8000:8000"
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672

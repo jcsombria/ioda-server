@@ -1,0 +1,46 @@
+{
+	"name" : "Subplots",
+	"description" : "Combines several images of plots into a single HTML",
+	"properties" : [
+		{	"name" : "Subplot1",
+			"local_name": "First subplot",
+			"type" : "HTML",
+			"attributes" : "input"
+		},
+		{	"name" : "Subplot2",
+			"local_name": "Second subplot",
+			"type" : "HTML",
+			"attributes" : "input"
+		},
+		{	"name" : "Subplot3",
+			"local_name": "Third subplot",
+			"type" : "HTML",
+			"attributes" : "input"
+		},
+		{	"name" : "Subplot4",
+			"local_name": "Fourth subplot",
+			"type" : "HTML",
+			"attributes" : "input"
+		},
+		{	"name" : "Header",
+			"local_name": "Header title",
+			"type" : "String",
+			"attributes" : "input|manual"
+		},
+		{	"name" : "Rows",
+			"local_name": "Rows",
+			"type" : "Integer",
+			"attributes" : "input|manual"
+		},
+		{	"name" : "Columns",
+			"local_name": "Columns",
+			"type" : "Integer",
+			"attributes" : "input|manual"
+		},
+		{	"name" : "ImageDiv",
+			"local_name": "Image in div",
+			"type" : "HTML",
+			"attributes" : "output"
+		}
+	]
+}

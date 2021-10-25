@@ -1,0 +1,36 @@
+{
+	"name" : "Series Feature Plot",
+	"description" : "Shows a plot of a series with an optional feature",
+	"properties" : [
+		{	"name" : "InputSeries",
+			"local_name": "Input series",
+			"type" : "Series",
+			"attributes" : "input|manual"
+		},
+		{	"name" : "InputDict",
+			"local_name": "Input dictionary",
+			"type" : "Dictionary",
+			"attributes" : "input|manual"
+		},
+		{	"name" : "Title",
+			"local_name": "Title",
+			"type" : "String",
+			"attributes" : "input|manual"
+		},
+		{	"name" : "FeatureStyle",
+			"local_name": "Feature style",
+			"type" : "String",
+			"attributes" : "input|manual"
+		},
+		{	"name" : "MarkerSize",
+			"local_name": "Marker size",
+			"type" : "Integer",
+			"attributes" : "input|manual"
+		},
+		{	"name" : "ImageDiv",
+			"local_name": "Image in div",
+			"type" : "HTML",
+			"attributes" : "output"
+		}
+	]
+}

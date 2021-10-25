@@ -1,0 +1,36 @@
+{
+	"name" : "Matlab Plot",
+	"description" : "Shows pair plot of data",
+	"properties" : [
+		{	"name" : "InputInfo",
+			"local_name": "Input information",
+			"type" : "Dictionary",
+			"attributes" : "required|input|output"
+		},
+		{	"name" : "MatlabImage",
+			"local_name": "Matlab image",
+			"type" : "MatlabImage",
+			"attributes" : "output"
+		},
+		{	"name" : "Keyword",
+			"local_name": "Keyword",
+			"type" : "String",
+			"attributes" : "required|input|manual"
+		},
+		{	"name" : "Index",
+			"local_name": "Index",
+			"type" : "Integer",
+			"attributes" : "required|input|manual"
+		},
+		{	"name" : "Resolution",
+			"local_name": "Resolution",
+			"type" : "String",
+			"attributes" : "required|input|manual"
+		},
+		{	"name" : "Transpose",
+			"local_name": "Transpose",
+			"type" : "Boolean",
+			"attributes" : "input|manual"
+		}
+	]
+}

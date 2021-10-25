@@ -1,0 +1,21 @@
+{
+	"name" : "DataBase Loader",
+	"description" : "Load data from a DB",
+	"properties" : [
+		{ "name" : "Filename" , 
+			"local_name" : "File name",
+			"type": "String", 
+			"attributes" : "required|input|manual"
+		},
+		{ "name" : "DataFolder",
+			"local_name" : "Data Folder",
+			"type": "String",
+			"attributes" : "input|manual"
+		},
+		{ "name" : "Data",
+			"local_name" : "Discharge data",
+			"type": "DataFrame",
+			"attributes" : "output"
+		}
+	]
+}

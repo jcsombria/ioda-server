@@ -1,0 +1,111 @@
+{
+	"name" : "Polish calculator", 
+	"description" : "Polish calculation of up to 5 operands",
+	"properties" : [
+		{	"name" : "Operand1",
+			"local_name": "First operand",
+			"type" : "Number",
+			"attributes" : "required|input|output|manual"
+		},
+		{	"name" : "Operator1",
+			"local_name": "First operator",
+			"type" : "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']",
+			"attributes" : "manual"
+		},
+		{	"name" : "Operand2",
+			"local_name": "Second operand",
+			"type" : "Number",
+			"attributes" : "input|output|manual"
+		},
+		{	"name" : "Operator2",
+			"local_name": "Second operator",
+			"type" : "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']",
+			"attributes" : "manual"
+		},
+		{	"name" : "Operand3",
+			"local_name": "Third operand",
+			"type" : "Number",
+			"attributes" : "input|output|manual"
+		},
+		{	"name" : "Operator3",
+			"local_name": "Third operator",
+			"type" : "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']",
+			"attributes" : "manual"
+		},
+		{	"name" : "Operand4",
+			"local_name": "Fourth operand",
+			"type" : "Number",
+			"attributes" : "input|output|manual"
+		},
+		{	"name" : "Operator4",
+			"local_name": "Fourth operator",
+			"type" : "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']",
+			"attributes" : "manual"
+		},
+		{	"name" : "Operand5",
+			"local_name": "Fifth operand",
+			"type" : "Number",
+			"attributes" : "input|output|manual"
+		},
+		{	"name" : "Operator5",
+			"local_name": " Fifth operator",
+			"type" : "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']",
+			"attributes" : "manual"
+		},
+		{	"name" : "Operand6",
+			"local_name": "Sixth operand",
+			"type" : "Number",
+			"attributes" : "input|output|manual"
+		},
+		{	"name" : "Operator6",
+			"local_name": " Sixth operator",
+			"type" : "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']",
+			"attributes" : "manual"
+		},
+		{	"name" : "Operand7",
+			"local_name": "Seventh operand",
+			"type" : "Number",
+			"attributes" : "input|output|manual"
+		},
+		{	"name" : "Operator7",
+			"local_name": " Seventh operator",
+			"type" : "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']",
+			"attributes" : "manual"
+		},
+		{	"name" : "Operand8",
+			"local_name": "Eighth operand",
+			"type" : "Number",
+			"attributes" : "input|output|manual"
+		},
+		{	"name" : "Operator8",
+			"local_name": " Eighth operator",
+			"type" : "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']",
+			"attributes" : "manual"
+		},
+		{	"name" : "Operand9",
+			"local_name": "Nineth operand",
+			"type" : "Number",
+			"attributes" : "input|output|manual"
+		},
+		{	"name" : "Operator9",
+			"local_name": " Nineth operator",
+			"type" : "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']",
+			"attributes" : "manual"
+		},
+		{	"name" : "Operand10",
+			"local_name": "Tenth operand",
+			"type" : "Number",
+			"attributes" : "input|output|manual"
+		},
+		{	"name" : "Operator10",
+			"local_name": " Tenth operator",
+			"type" : "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']",
+			"attributes" : "manual"
+		},
+		{	"name" : "Result",
+			"local_name": "Operation result",
+			"type" : "Number",
+			"attributes" : "output"
+		}
+	]
+}

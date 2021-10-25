@@ -1,0 +1,21 @@
+{
+	"name" : "File Loader",
+	"description" : "Load data from a file",
+	"properties" : [
+		{	"name" : "Filename",
+			"local_name": "Filename",
+			"type" : "File",
+			"attributes" : "required|input|output|manual"
+		},
+		{	"name" : "Style",
+			"local_name": "Format style",
+			"type" : "Integer",
+			"attributes" : "input|manual"
+		},
+		{	"name" : "Data",
+			"local_name": "Data read",
+			"type" : "DataFrame",
+			"attributes" : "output"
+		}
+	]
+}

@@ -1,0 +1,101 @@
+{ "id" : 10, 
+  "name" : "Node 10 Graph", 
+  "description" : "This graph plots one of the signals of the data and it maximum.",
+  "node_list" : [ 
+    { "id":1, "name":"C15a/65988", "type":"DischargeLoader",
+      "properties":[
+        {"name":"Campaign","type":"String","value":"C15a"},
+        {"name":"Discharge","type":"String","value":"65988"}
+       ],
+      "incoming":[]},
+    { "id":2, "name":"Crop and resample","type":"DischargePreprocessing",
+      "properties":[
+        {"name":"SamplingPeriod","type":"Double","value":"0.001"}
+      ],
+      "incoming":[1]
+    },
+    { "id":12, "name":"Inductance", "type":"SignalSelection",
+      "properties":[
+	    {"name":"Signal","type":"String","value":"Inductance"},
+        {"name":"LowerLimit","type":"double","value":"13"},
+        {"name":"LowerValue","type":"double","value":"1"}
+      ],
+      "incoming":[2]
+    },
+    { "id":6, "name":"C15a/66027", "type":"DischargeLoader",
+      "properties":[
+	    {"name":"Campaign","type":"String","value":"C15a"},
+        {"name":"Discharge","type":"String","value":"66027"}
+      ],
+      "incoming":[]
+    },
+    { "id":7, "name":"Crop and resample", "type":"DischargePreprocessing",
+       "properties":[
+         {"name":"SamplingPeriod","type":"Double","value":"0.001"}
+       ],
+       "incoming":[6]
+    },
+    { "id":13, "name":"Inductance", "type":"SignalSelection",
+      "properties":[
+        {"name":"Signal","type":"String","value":"signal_03"},
+        {"name":"UpperLimit","type":"double","value":"13"},
+        {"name":"UpperValue","type":"double","value":"1"}
+      ],
+      "incoming":[7]
+    },
+    { "id":10, "name":"Node 10", "type":"SeriesFeaturePlot",
+      "properties":[
+        {"name":"Title","type":"String","value":"Signal 03 plot and maximum"}
+      ],
+      "incoming":[12,13]
+    }
+  ] 
+}
+
+
+
+{
+  "key":"code",
+  "data": {
+	"id":10,"name":"Scatter Plot-run",
+	"node_list":[
+		{"id":11,"name":"Iris flowers","classname":"Data.FileLoader",
+			"properties":[{"name":"Filename","type":"File","value":"data/iris_flower.csv"},{"name":"Style","type":"int","value":""}],
+			"call_list":[]},
+		{"id":10,"name":"Scatter Plot","classname":"Visualization.ScatterPlot",
+			"properties":[{"name":"Hue","type":"String","value":"\"class: \""}],
+			"call_list":[11]}
+	],
+  "run":true}
+} 
+
+{
+  "key":"code",
+   "data": {
+	"id":10,"name":"Node 10-run",
+	"node_list":[
+		{"id":1,"name":"C15a/65988","classname":"Data.DischargeLoader",
+			"properties":[{"name":"Campaign","type":"String","value":"\"C15a\""},{"name":"Discharge","type":"String","value":"65988"},{"name":"DataDir","type":"String","value":""}],
+			"call_list":[]},
+		{"id":2,"name":"Crop and resample","classname":"Data.DischargePreprocessing",
+			"properties":[{"name":"SamplingPeriod","type":"Double","value":"0.001"}],
+			"call_list":[1]},
+		{"id":12,"name":"Inductance","classname":"Model.SignalSelection",
+			"properties":[{"name":"Signal","type":"int","value":"\"signal_03\""},{"name":"UpperLimit","type":"double","value":""},{"name":"UpperValue","type":"double","value":""},{"name":"LowerLimit","type":"double","value":"13"},{"name":"LowerValue","type":"double","value":"1"}],
+			"call_list":[2]},
+		{"id":6,"name":"C15a/66027","classname":"Data.DischargeLoader",
+			"properties":[{"name":"Campaign","type":"String","value":"\"C15a\""},{"name":"Discharge","type":"String","value":"66027"},{"name":"DataDir","type":"String","value":""}],
+			"call_list":[]},
+		{"id":7,"name":"Crop and resample","classname":"Data.DischargePreprocessing",
+			"properties":[{"name":"SamplingPeriod","type":"Double","value":"0.001"}],
+			"call_list":[6]},
+		{"id":13,"name":"Inductance","classname":"Model.SignalSelection",
+			"properties":[{"name":"Signal","type":"int","value":"\"signal_03\""},{"name":"UpperLimit","type":"double","value":"13"},{"name":"UpperValue","type":"double","value":"1"},{"name":"LowerLimit","type":"double","value":""},{"name":"LowerValue","type":"double","value":""}],
+			"call_list":[7]},
+		{"id":10,"name":"Node 10","classname":"Visualization.SeriesFeaturePlot",
+			"properties":[{"name":"Title","type":"String","value":""},{"name":"FeatureStyle","type":"String","value":""},{"name":"MarkerSize","type":"int","value":""}],
+			"call_list":[12,13]}
+	],
+  "run":true}
+} 
+

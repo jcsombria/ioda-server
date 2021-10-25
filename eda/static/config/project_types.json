@@ -1,0 +1,32 @@
+{
+	"Programming" : { 
+    "description" : "Programming data flow",
+    "image" : "images/programming.png",
+    "elements_filename": "ProgramFlow/ProgramElements.json",
+    "command" : "/users/paco/opt/anaconda3/bin/python"    
+   },
+  "Fusion" : { 
+    "description" : "Fusion data analysis",
+    "image" : "images/data_analysis.png",
+    "elements_filename": "PythonElements/Elements.json",
+    "command" : "/users/paco/opt/anaconda3/bin/python"    
+   },
+  "Discharges" : { 
+    "description" : "Discharge analysis",
+    "image" : "images/data_analysis.png",
+    "elements_filename": "PythonElements/Elements.json",
+    "command" : "/users/paco/opt/anaconda3/bin/python"    
+   },
+  "python-da" : { 
+    "description" : "Data analysis in Python",
+    "image" : "images/data_analysis.png",
+    "elements_filename": "PythonElements/Elements.json",
+    "command" : "/users/paco/opt/anaconda3/bin/python"    
+   },
+  "python-series" : { 
+    "description" : "Time series analysis in Python",
+    "image" : "images/time_series.png",
+    "elements_filename": "PythonElements/SeriesElements.json",
+    "command" : "/users/paco/opt/anaconda3/bin/python"    
+  }
+}

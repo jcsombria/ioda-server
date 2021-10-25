@@ -1,0 +1,16 @@
+{
+	"name" : "Data cleaner",
+	"description" : "Removes or fills empty data",
+	"properties" : [
+		{	"name" : "RawData",
+			"local_name": "Data to clean",
+			"type" : "DataFrame|Series",
+			"attributes" : "required|input|output"
+		},
+		{	"name" : "CleanData",
+			"local_name": "Data cleaned",
+			"type" : "DataFrame|Series",
+			"attributes" : "output"
+		}
+	]
+}

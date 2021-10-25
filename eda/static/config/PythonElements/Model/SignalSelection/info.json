@@ -1,0 +1,41 @@
+{
+	"name" : "Signal Selection",
+	"description" : "Selects, and optionally saturates, one signal from a discharge",
+	"properties" : [
+		{	"name" : "InputData",
+			"local_name": "Input dataframe",
+			"type" : "DataFrame",
+			"attributes" : "required|input|output|manual"
+		},
+		{	"name" : "OutputSeries",
+			"local_name": "OutputSeries",
+			"type" : "Series",
+			"attributes" : "output"
+		},
+		{	"name" : "Signal",
+			"local_name": "Signal to process",
+			"type" : "Integer",
+			"attributes" : "required|input|output|manual"
+		},
+		{	"name" : "UpperLimit",
+			"local_name": "Upper limit",
+			"type" : "Double",
+			"attributes" : "input|output|manual"
+		},
+		{	"name" : "UpperValue",
+			"local_name": "Upper value",
+			"type" : "Double",
+			"attributes" : "input|output|manual"
+		},
+		{	"name" : "LowerLimit",
+			"local_name": "Lower limit",
+			"type" : "Double",
+			"attributes" : "input|output|manual"
+		},
+		{	"name" : "LowerValue",
+			"local_name": "Lower value",
+			"type" : "Double",
+			"attributes" : "input|output|manual"
+		}
+	]
+}

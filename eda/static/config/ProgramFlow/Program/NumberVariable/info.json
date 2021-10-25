@@ -1,0 +1,11 @@
+{
+	"name" : "Numeric variable", 
+	"description" : "Creates and/or keeps a numeric variable",
+	"properties" : [
+		{	"name" : "Value",
+			"local_name": "Value",
+			"type" : "Number",
+			"attributes" : "required|manual|input|output"
+		}
+	]
+}

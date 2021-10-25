@@ -1,0 +1,47 @@
+{
+	"path" : "PythonElements",
+	"groups": [
+		{"name" : "Data"},
+		{"name" : "Visualization"},
+		{"name" : "Model"},
+		{"name" : "Program" },
+		{"name" : "Evaluation"}
+	],
+	"Data": [
+        "Data.DischargeLoader",
+        "Data.DischargePreprocessing",
+        "Data.MatlabLoader",
+        "Data.FileLoader",
+        "Data.DataBaseLoader",
+        "Data.CloudLoader",
+        "Data.DataCleaner",
+        "Data.FeatureSelector",
+        "Data.DataMerger",
+        "Data.DataSaver"
+	],
+	"Visualization": [
+        "Visualization.DataTable",
+        "Visualization.SeriesFeaturePlot",
+        "Visualization.SubPlots",
+        "Visualization.MatlabPlot",
+        "Visualization.WaveletPlot",
+        "Visualization.PairPlot",
+        "Visualization.ScatterPlot",
+        "Visualization.BoxPlot",
+        "Visualization.TextAndValue"
+	],
+	"Model": [
+        "Model.SignalSelection",
+        "Model.SeriesFeature",
+        "Model.NeuralNetwork",
+        "Model.SVM"
+	],
+		"Program" : [
+		"Program.BinaryOperation",
+		"Program.FunctionOneVar",
+		"Program.LogicalComparison",
+		"Program.NumberVariable",
+		"Program.PolishCalculation"
+	],
+	"Evaluation": []
+}

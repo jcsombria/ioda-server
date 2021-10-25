@@ -1,0 +1,21 @@
+{
+	"name" : "Matlab Loader",
+	"description" : "Loads a Matlab data file",
+	"properties" : [
+		{	"name" : "Filename",
+			"local_name": "Filename",
+			"type" : "File",
+			"attributes" : "required|input|output|manual"
+		},
+		{	"name" : "Keywords",
+			"local_name": "Keywords",
+			"type" : "String",
+			"attributes" : "input|manual"
+		},
+		{	"name" : "Data",
+			"local_name": "Data read",
+			"type" : "Dictionary",
+			"attributes" : "output"
+		}
+	]
+}

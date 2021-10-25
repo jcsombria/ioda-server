@@ -1,0 +1,26 @@
+{
+	"name" : "Logical check", 
+	"description" : "Does one of several possible logical comparisons",
+	"properties" : [
+		{	"name" : "Operand1",
+			"local_name": "First operand",
+			"type" : "ANY",
+			"attributes" : "required|input|manual|output"
+		},
+		{	"name" : "Operand2",
+			"local_name": "Second operand",
+			"type" : "ANY",
+			"attributes" : "required|input|manual|output"
+		},
+		{	"name" : "Comparison",
+			"local_name": "Comparison to apply",
+			"type" : "OPTION['>','>=', '<', '<=', '==', '!=']",
+			"attributes" : "required|manual"
+		},
+		{	"name" : "Result",
+			"local_name": "Comparison result",
+			"type" : "Boolean",
+			"attributes" : "output"
+		}
+	]
+}

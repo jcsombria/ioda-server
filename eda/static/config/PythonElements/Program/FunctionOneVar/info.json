@@ -1,0 +1,21 @@
+{
+	"name" : "One variable function", 
+	"description" : "Applies to a variable one of several possible functions",
+	"properties" : [
+		{	"name" : "Argument",
+			"local_name": "Argument of the function",
+			"type" : "Number",
+			"attributes" : "required|input|output|manual"
+		},
+		{	"name" : "Function",
+			"local_name": "Function to apply",
+			"type" : "OPTION['exp','sqrt', 'log']",
+			"attributes" : "required|manual"
+		},
+		{	"name" : "Result",
+			"local_name": "Function result",
+			"type" : "Number",
+			"attributes" : "output"
+		}
+	]
+}

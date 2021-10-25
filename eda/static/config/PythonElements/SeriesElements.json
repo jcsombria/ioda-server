@@ -1,0 +1,109 @@
+{
+  "Path" : "PythonElements",
+  "Groups" : [ "Data" , "Visualization" , "Model", "Evaluation" ],
+
+  "Data" : [
+      "Data.FileLoader",
+      "Data.DataBaseLoader",
+      "Data.CloudLoader",
+      "Data.DataCleaner",
+      "Data.FeatureSelector",
+      "Data.DataMerger",
+      "Data.DataSaver"
+  ],
+  "Visualization" :[
+      "Visualization.DataTable",
+      "Visualization.PairPlot",
+      "Visualization.ScatterPlot",
+      "Visualization.BoxPlot"
+  ],
+  "Model" : [
+
+  ],
+  "Evaluation" : [
+
+  ],
+
+    "Data.DataCleaner" : {
+      "name" : "Data Cleaner",
+      "description" : "Removes or fills empty data",
+      "input" : "DataFrame,Series",
+      "minimum_input" : 1,
+      "maximum_input" : 1,
+      "output" : "SAME_AS_INPUT"
+    },
+
+    "Data.FileLoader" : {
+      "name" : "File Loader",
+      "description" : "Load data from a file",
+      "input" : "File",
+      "minimum_input" : 0,
+      "maximum_input" : 1,
+      "output" : "DataFrame",
+      "properties" : [
+        { "name" : "Filename", "type": "File", "required" : "SHORT_INPUT" },
+        { "name" : "Style", "type": "int" }
+      ]
+    },
+
+    "Data.DataBaseLoader": {
+      "name" : "DataBase Loader",
+      "description" : "Load data from a DB"
+    },
+    "Data.CloudLoader": {
+      "name" : "Cloud Loader",
+      "description" : "Load data from the Cloud"
+    },
+    "Data.FeatureSelector": {
+      "name" : "Feature Selector",
+      "description" : "Selects features from data"
+    },
+    "Data.DataMerger": {
+      "name" : "Data Merger",
+      "description" : "Merges sets of data",
+      "input" : "DataFrame,Series",
+      "minimum_input" : 2,
+      "maximum_input" : 2,
+      "output" : "DataFrame"
+    },
+    "Data.DataSaver": {
+      "name" : "Data Saver",
+      "description" : "Saves data to disk"
+    },
+
+
+
+
+    "Visualization.DataTable": {
+      "name" : "Data Table",
+      "description" : "Shows data in table"
+    },
+    "Visualization.PairPlot": {
+      "name" : "Pair Plot",
+      "description" : "Shows pair plot of data",
+      "input" : "DataFrame",
+      "minimum_input" : 1,
+      "maximum_input" : 1,
+      "output" : "DataFrame",
+      "properties" : [
+        { "name" : "Hue", "type": "String", "required" : "NEVER" }
+      ]
+    },
+    "Visualization.ScatterPlot": {
+      "name" : "Scatter Plot",
+      "description" : "Shows scatter plot of data",
+      "input" : "DataFrame",
+      "minimum_input" : 1,
+      "maximum_input" : 1,
+      "output" : "DataFrame",
+      "properties" : [
+        { "name" : "Hue", "type": "String", "required" : "ALWAYS" }
+      ]
+    },
+    "Visualization.BoxPlot": {
+      "name" : "Box Plot",
+      "description" : "Shows box plot of data"
+    }
+
+
+  }

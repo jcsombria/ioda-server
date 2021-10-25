@@ -1,0 +1,21 @@
+{
+
+      "name" : "NeuralNetwork",
+      "description" : "Neural Network Training",
+      "input" : "Dictionary",
+      "minimum_input" : 1,
+      "maximum_input" : 1,
+      "output" : "NN_object",
+      "properties" : [
+        { "name" : "Keyword", "type": "String", "required" : "ALWAYS" },
+        { "name" : "Resolution", "type": "String", "required" : "ALWAYS" },
+        { "name" : "Transpose", "type": "Boolean", "required" : "NEVER" },
+        { "name" : "Wavemother", "type": "String", "required" : "NEVER",
+          "options" : ["<default>", "'haar'", "'dbl'" ] },
+        { "name" : "Level", "type": "Integer", "required" : "NEVER" },
+        { "name" : "Mode", "type": "String", "required" : "NEVER", 
+          "options" : ["<default>", "'symmetric'" ] },
+        { "name" : "Ones", "type": "Array", "required" : "ALWAYS" }
+      ]
+
+}

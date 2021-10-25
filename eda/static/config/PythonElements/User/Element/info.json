@@ -1,0 +1,9 @@
+{
+    "name": "Element",
+    "description": "nuevo",
+    "image": "../config/PythonElements/User/Element/icon.png",
+    "inputs": "1",
+    "outputs": "2",
+    "code": "/**Enter your Element code here...**/\n\t\t\t\t\t\t\t\t\t\t\t",
+    "codeType": "Python"
+}

@@ -1,0 +1,27 @@
+{
+	"name" : "Discharge Loader",
+	"description" : "Loads data for a discharge from a file or from a folder",
+	"properties" : [
+		{ "name" : "Campaign" , 
+			"local_name" : "Campaign",
+			"type": "String", 
+			"attributes" : "required|input|manual"
+		},
+		{ "name" : "Discharge", 
+			"local_name" : "Discharge",
+			"type": "String", 
+			"attributes" : "required|input|manual"
+		},
+		{ "name" : "DataFolder",
+			"local_name" : "Data Folder",
+			"type": "String",
+			"attributes" : "input|manual"
+		},
+		{ "name" : "Data",
+			"local_name" : "Discharge data",
+			"type": "DataFrame",
+			"attributes" : "output"
+		}
+	]
+
+}

@@ -1,0 +1,35 @@
+{
+	"name" : "Wavelet Plot",
+	"description" : "Applies wavelet to a Matlab Plot",
+	"properties" : [
+		{	"name" : "MatlabImage",
+			"local_name": "Matlab image",
+			"type" : "MatlabImage",
+			"attributes" : "required|input|output"
+		},
+		
+		
+		{	"name" : "Wavemother",
+			"local_name": "Wavemother",
+			"type" : "OPTION['haar','dbl']",
+			"attributes" : "input|manual"
+		},
+		{	"name" : "Level",
+			"local_name": "Level",
+			"type" : "Integer",
+			"attributes" : "input|manual"
+		},
+		{	"name" : "Mode",
+			"local_name": "Mode",
+			"type" : "OPTION['symmetric']",
+			"attributes" : "manual"
+		},
+
+		
+		{	"name" : "OutputMatlabImage",
+			"local_name": "Output matlab image",
+			"type" : "MatlabImage",
+			"attributes" : "required|input|output"
+		}
+	]
+}
