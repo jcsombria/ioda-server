@@ -1,0 +1,80 @@
+[  
+  {
+    "model": "eda.Element",
+    "pk": "Visualization.TextAndValue",
+    "fields": {
+        "name" : "HTML variable output", 
+        "description" : "Creates or adds to an HTML div a text message and a value",
+        "image" : "ProgramFlow/Visualization/TextAndValue/icon.png",
+        "properties" : [
+            {    "name" : "Text",
+                "local_name": "Text to display",
+                "type" : "String",
+                "attributes" : "input|output|manual"
+            },
+            {    "name" : "Value",
+                "local_name": "Second operand",
+                "type" : "Number",
+                "attributes" : "input|output|manual"
+            },
+            {    "name" : "Div",
+                "local_name": "HTML result (as a div)",
+                "type" : "String",
+                "attributes" : "input|output|manual"
+            }
+        ],
+        "help": "www.google.com"
+    }
+  },
+  
+  {
+    "model": "eda.Element",
+    "pk": "Program.BinaryOperation",
+    "fields": {
+      "name" : "Binary operation",
+      "description" : "Does one of several possible binary operations",
+      "image" : "ProgramFlow/Program/BinaryOperation/icon.png",
+      "properties" : [
+          {    "name" : "Operand1",
+              "local_name": "First operand",
+              "type" : "Number",
+              "attributes" : "required|input|manual"
+          },
+          {    "name" : "Operand2",
+              "local_name": "Second operand",
+              "type" : "Number",
+              "attributes" : "required|input|manual"
+          },
+          {    "name" : "Operation",
+              "local_name": "Operation to apply",
+              "type" : "OPTION['plus','minus', 'times', 'divided by']",
+              "attributes" : "required|manual"
+          },
+          {    "name" : "Result",
+              "local_name": "Operation result",
+              "type" : "Number",
+              "attributes" : "output"
+          }
+      ],
+      "help": "www.google.com"
+    }
+  },
+
+  {
+    "model": "eda.Element",
+    "pk": "Program.NumberVariable",
+    "fields": {
+      "name" : "Program.NumberVariable",
+      "description" : "Creates and/or keeps a numeric variable",
+      "image" : "ProgramFlow/Program/NumberVariable/icon.png",
+      "properties" : [{
+          "name" : "Value",
+          "local_name": "Value",
+          "type" : "Number",
+          "attributes" : "required|manual|input|output"
+      }],
+      "help": "www.google.com"
+    }
+  }
+
+]

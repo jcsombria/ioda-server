@@ -317,7 +317,7 @@ IODA_GUI.graphEditPage = function(mID, mTitle, mParent, mIsRunReplay) {
 				.replace( /#\{value\}/g, nodeInfo.lapsed.toString() ));			
 			runDiv.append(mLINK_BUTTON.replace( /#\{label\}/g, (mID+'-run_url') )
 				.replace( /#\{name\}/g, sMainRes.getString('Output') )
-				.replace( /#\{link\}/g, nodeInfo.output.toString() ));				
+				.replace( /#\{link\}/g, nodeInfo.output.data.output.toString() ));				
 		}
 		else {
 			runDiv.append(mCOMMENT_LINE

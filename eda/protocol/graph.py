@@ -1,57 +1,56 @@
 import json
-from celery.execute import send_task
 import random as rnd
 import time
 
+from celery import Celery
 
 class Graph:
     ''' A graph representing an algorithm that can be ran '''
 
     def __init__(self, graph):
         self.originalGraph = graph
-        self.graph = graph
-        self.graph['resources'] = []
-        self.graph['nodes'] = []
-        self.graph['graph'] =  {}
-        self.graph['graph']['code'] = ""
-        self.graph['graph']['output'] = "google.com"
+        self.graphInformation = {}
         self.nodes = []
         self.connections = []
-        self.startTime = time.time()
-
+        self.resources = []
+        self.run_information = []
+        [self.addNode(n) for n in graph['node_list']]
+        [self.addConnection(c) for c in graph['connection_list']]
+ 
     def run(self):
-        print('Running graph ' + self.graph['name'])
-        [self.addNode(n) for n in self.graph['node_list']]
-        [self.addConnection(c) for c in self.graph['connection_list']]
+        print('Running graph ' + self.originalGraph['name'])
+        startTime = time.time()
         runnableNodes = self.findRunnableNodes()
         while len(runnableNodes) > 0:
             for n in runnableNodes:
                 try:
                     print('Next Node to run: ', n.getID())
                     targetInfo = self.callNode(n)
-                    #print('Updating connections... ')
-                    self.updateConnections(n, targetInfo['output'])
-                    self.graph['resources'].append(int(10000*rnd.random()))
-                    self.graph['nodes'].append(targetInfo)
-                except:
+                    self.updateConnections(n, targetInfo['output']['data']['output'])
+                    self.resources.append(int(10000*rnd.random()))
+                    self.run_information.append(targetInfo)
+                except Exception as e:
                     print('Exception running node: ', n.getID())
-                    self.graph['graph']['code'] = self.graph['graph']['code'] + "Error " + 'Exception running node: ', str(n.getID())
+                    self.graphInformation['code'] = self.graphInformation['code'] + "Error " + 'Exception running node: ', str(n.getID())
             runnableNodes = self.findRunnableNodes()
-        
-        self.startTime = time.time()
-        self.stopTime = time.time()
-        
-        self.graph['graph']['start'] = self.startTime
-        self.graph['graph']['stop'] = self.stopTime
-        self.graph['graph']['lapsed'] = self. stopTime - self.startTime
-        self.graph['graph']['code'] = self.graph['graph']['code']
-        if(not self.graph['graph']['code']):
-                self.graph['graph']['code'] = "Graph run Ok"
-        
-        #for nod in self.graph['nodes']:
-         #   nod['output'] = "google.com"
-        
-        return { 'graph': self.originalGraph, 'results': self.graph }
+        stopTime = time.time()
+        self.graphInformation.update({
+            'start': startTime,
+            'end': stopTime,
+            'lapsed': stopTime - startTime,
+            'output': "google.com"
+        })
+        if not 'code' in self.graphInformation:
+            self.graphInformation['code'] = "Graph run Ok"
+        print(self.run_information)
+        return {
+            'graph': self.originalGraph,
+            'results': {
+                'resources': self.resources,
+                'graph': self.graphInformation,
+                'nodes': self.run_information
+            }
+        }
 
     def addNode(self, n):
         self.nodes.append(Node(n))
@@ -70,10 +69,9 @@ class Graph:
                 result.append(n)
         return result
 
-    def updateConnections(self, node, nodeOutputs):
-        result = nodeOutputs['data']['output']
+    def updateConnections(self, node, result):
         expectedOutputs = node.getExpectedOutputs()
-        if(len(expectedOutputs) > 1 and len(result) != len(expectedOutputs)):
+        if len(expectedOutputs) > 1 and len(result) != len(expectedOutputs):
             raise Exception('The number of node outputs does not match the number of values returned by the task')
         for oconn in self.getOutConnections(node):
             oconn['visited'] = True
@@ -159,11 +157,16 @@ class Node:
     #Now the execution is blocked while waiting the results, just for testing
     def run(self, nodeInfo):
         taskName = nodeInfo['task']
-        parameters = nodeInfo['parameters']
-        inputs = self.formatInputs(parameters)
-        print('Obtaining Results from fusion server for: ', [taskName, inputs])
-        result = send_task('tasks.worker_Python.nodoPython', args=(taskName, inputs))
-        r = result.get()
+        inputs = self.formatInputs(nodeInfo['parameters'])
+        try:
+            app = Celery('tasks', backend='rpc://', broker='amqp://guest:guest@rabbitmq')
+            node = 'tasks.worker_Python.nodoPython'
+#             node = 'tasks.worker_Python.binaryNode'
+#             taskName = 'C/basicOps/run'
+            result = app.send_task(node, args=(taskName, inputs))
+            r = result.get()
+        except Exception as e:
+            print(e)
         error = r['data']['error']
         if not error:
             code = 'Node run OK'

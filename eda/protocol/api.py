@@ -3,13 +3,10 @@ import json
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
  
-from eda.models import ProjectTemplate, Project
+from eda.models import ProjectTemplate, Project, Element
 from eda.protocol.graph import Graph
 
 from celery import Celery
-app = Celery('tasks', backend='rpc://', broker='amqp://guest:guest@rabbitmq')
-
-# import threading
 
 class UserSession(object):
      
@@ -152,6 +149,7 @@ class UserSession(object):
         if not project:
             project = Project.objects.create(name=name, type=type_, description=description)
         self.project = project
+        
         return {
             'name': name,
             'elements': self._getElements(),
@@ -160,7 +158,7 @@ class UserSession(object):
 
     # ONLY FOR TESTING!! The elements should be read from the database.
     def _getElements(self):
-        return {
+        testingElements = {
             # NOTA: Esto hay que verlo, la implementación del editor no coincide con el documento
             "groups" : [
                 { "name": "Data", "image": "PythonElements/Data/icon.png"},
@@ -252,55 +250,55 @@ class UserSession(object):
               "description" : "Shows box plot of data",
               "image" : "PythonElements/Visualization/BoxPlot/icon.png"
             },
-            "Visualization.TextAndValue": {
-                "name" : "HTML variable output", 
-                "description" : "Creates or adds to an HTML div a text message and a value",
-                "image" : "ProgramFlow/Visualization/TextAndValue/icon.png",
-                "properties" : [
-                    {    "name" : "Text",
-                        "local_name": "Text to display",
-                        "type" : "String",
-                        "attributes" : "input|output|manual"
-                    },
-                    {    "name" : "Value",
-                        "local_name": "Second operand",
-                        "type" : "Number",
-                        "attributes" : "input|output|manual"
-                    },
-                    {    "name" : "Div",
-                        "local_name": "HTML result (as a div)",
-                        "type" : "String",
-                        "attributes" : "input|output|manual"
-                    }
-                ]
-            },
-            "Program.BinaryOperation": {
-                "name" : "Binary operation",
-                "description" : "Does one of several possible binary operations",
-                "image" : "ProgramFlow/Program/BinaryOperation/icon.png",
-                "properties" : [
-                    {    "name" : "Operand1",
-                        "local_name": "First operand",
-                        "type" : "Number",
-                        "attributes" : "required|input|manual"
-                    },
-                    {    "name" : "Operand2",
-                        "local_name": "Second operand",
-                        "type" : "Number",
-                        "attributes" : "required|input|manual"
-                    },
-                    {    "name" : "Operation",
-                        "local_name": "Operation to apply",
-                        "type" : "OPTION['plus','minus', 'times', 'divided by']",
-                        "attributes" : "required|manual"
-                    },
-                    {    "name" : "Result",
-                        "local_name": "Operation result",
-                        "type" : "Number",
-                        "attributes" : "output"
-                    }
-                ]
-            },
+#             "Visualization.TextAndValue": {
+#                 "name" : "HTML variable output", 
+#                 "description" : "Creates or adds to an HTML div a text message and a value",
+#                 "image" : "ProgramFlow/Visualization/TextAndValue/icon.png",
+#                 "properties" : [
+#                     {    "name" : "Text",
+#                         "local_name": "Text to display",
+#                         "type" : "String",
+#                         "attributes" : "input|output|manual"
+#                     },
+#                     {    "name" : "Value",
+#                         "local_name": "Second operand",
+#                         "type" : "Number",
+#                         "attributes" : "input|output|manual"
+#                     },
+#                     {    "name" : "Div",
+#                         "local_name": "HTML result (as a div)",
+#                         "type" : "String",
+#                         "attributes" : "input|output|manual"
+#                     }
+#                 ]
+#             },
+#             "Program.BinaryOperation": {
+#                 "name" : "Binary operation",
+#                 "description" : "Does one of several possible binary operations",
+#                 "image" : "ProgramFlow/Program/BinaryOperation/icon.png",
+#                 "properties" : [
+#                     {    "name" : "Operand1",
+#                         "local_name": "First operand",
+#                         "type" : "Number",
+#                         "attributes" : "required|input|manual"
+#                     },
+#                     {    "name" : "Operand2",
+#                         "local_name": "Second operand",
+#                         "type" : "Number",
+#                         "attributes" : "required|input|manual"
+#                     },
+#                     {    "name" : "Operation",
+#                         "local_name": "Operation to apply",
+#                         "type" : "OPTION['plus','minus', 'times', 'divided by']",
+#                         "attributes" : "required|manual"
+#                     },
+#                     {    "name" : "Result",
+#                         "local_name": "Operation result",
+#                         "type" : "Number",
+#                         "attributes" : "output"
+#                     }
+#                 ]
+#             },
             "Program.FunctionOneVar": {
               "name" : "Function One Var",
               "image" : "ProgramFlow/Program/FunctionOneVar/icon.png"
@@ -309,22 +307,31 @@ class UserSession(object):
                 "name" : "Logical Comparison",
                 "image" : "ProgramFlow/Program/LogicalComparison/icon.png"
             },
-            "Program.NumberVariable": {
-                "name" : "Numeric Variable",
-                "description" : "Creates and/or keeps a numeric variable",
-                "image" : "ProgramFlow/Program/NumberVariable/icon.png",
-                "properties" : [{
-                    "name" : "Value",
-                    "local_name": "Value",
-                    "type" : "Number",
-                    "attributes" : "required|manual|input|output"
-                }]
-            },
+#             "Program.NumberVariable": {
+#                 "name" : "Numeric Variable",
+#                 "description" : "Creates and/or keeps a numeric variable",
+#                 "image" : "ProgramFlow/Program/NumberVariable/icon.png",
+#                 "properties" : [{
+#                     "name" : "Value",
+#                     "local_name": "Value",
+#                     "type" : "Number",
+#                     "attributes" : "required|manual|input|output"
+#                 }]
+#             },
             "Program.PolishCalculation": {
                 "name" : "Polish Calculation",
                 "image" : "ProgramFlow/Program/PolishCalculation/icon.png"
             }
         }
+        elements = { e.id : {
+            'name': e.name,
+            'description': e.description,
+            'image': e.image.name,
+            'properties': e.properties,
+        } for e in Element.objects.all() }
+        testingElements.update(elements)
+        print(testingElements)
+        return testingElements
     
     @with_key(key='project')
     def editProject(self, params):
@@ -380,13 +387,14 @@ class UserSession(object):
 # delete_element: Used by the client to delete a user-defined data analysis element. NOTA: Hacer como con los proyectos, edit_element incluye el delete_element.
 
 #         threading.Thread(target=worker, args=(input,)).start()
-# def worker(input):
-#     content = json.loads(input)
-#     result = send_task("tasks.worker_Python.nodoPython", ['basicOps._operation', content])
-#     response = result.get()
-#     messageResponse = json.dumps(response, indent=4, sort_keys=True)
-#     if(len(messageResponse)>600):
-#         print(messageResponse[0:400] + '(...)')
-#         print(messageResponse[-200:])
-#     else:
-#         print(messageResponse)
+def worker(input):
+    content = json.loads(input)
+    app = Celery('tasks', backend='rpc://', broker='amqp://guest:guest@rabbitmq')
+    result = app.send_task("tasks.worker_Python.nodoPython", ['basicOps._operation', content])
+    response = result.get()
+    messageResponse = json.dumps(response, indent=4, sort_keys=True)
+    if(len(messageResponse)>600):
+        print(messageResponse[0:400] + '(...)')
+        print(messageResponse[-200:])
+    else:
+        print(messageResponse)
