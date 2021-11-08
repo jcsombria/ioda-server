@@ -3,6 +3,7 @@ from channels.generic.websocket import WebsocketConsumer
 # from celery.execute import send_task
 # import base64
 import json
+import threading
 
 from .protocol.api import UserSession
 
@@ -20,7 +21,13 @@ class EditorConsumer(WebsocketConsumer):
 
     def receive(self, text_data=None):
         request = json.loads(text_data)
-        response = self.session.process(request)
+        def worker(request):
+            self.session.process(request) 
+        threading.Thread(target=worker, args=(request,)).start()
+
+        # response = self.session.process(request)
+
+
 #         try:
 #             encoded = base64.b64encode(content).decode('ascii')
 #             result = send_task("tasks.echo", [encoded])

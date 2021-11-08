@@ -53,7 +53,7 @@ class UserSession(object):
         if command is not None:
             params = message.get('data')
             try:
-                print(params)
+                # print(params)
                 if params:
                     result = method(params)
                 else:
@@ -118,7 +118,7 @@ class UserSession(object):
     def _getProjectTemplates(self):
         templates = ProjectTemplate.objects.all()
         names = [{'type':t.name, 'image': t.image.name, 'description': t.description} for t in templates]
-        return names # '[%s]' % ', '.join(names)
+        return names
 
     
     def _getProjects(self):        
@@ -250,55 +250,6 @@ class UserSession(object):
               "description" : "Shows box plot of data",
               "image" : "PythonElements/Visualization/BoxPlot/icon.png"
             },
-#             "Visualization.TextAndValue": {
-#                 "name" : "HTML variable output", 
-#                 "description" : "Creates or adds to an HTML div a text message and a value",
-#                 "image" : "ProgramFlow/Visualization/TextAndValue/icon.png",
-#                 "properties" : [
-#                     {    "name" : "Text",
-#                         "local_name": "Text to display",
-#                         "type" : "String",
-#                         "attributes" : "input|output|manual"
-#                     },
-#                     {    "name" : "Value",
-#                         "local_name": "Second operand",
-#                         "type" : "Number",
-#                         "attributes" : "input|output|manual"
-#                     },
-#                     {    "name" : "Div",
-#                         "local_name": "HTML result (as a div)",
-#                         "type" : "String",
-#                         "attributes" : "input|output|manual"
-#                     }
-#                 ]
-#             },
-#             "Program.BinaryOperation": {
-#                 "name" : "Binary operation",
-#                 "description" : "Does one of several possible binary operations",
-#                 "image" : "ProgramFlow/Program/BinaryOperation/icon.png",
-#                 "properties" : [
-#                     {    "name" : "Operand1",
-#                         "local_name": "First operand",
-#                         "type" : "Number",
-#                         "attributes" : "required|input|manual"
-#                     },
-#                     {    "name" : "Operand2",
-#                         "local_name": "Second operand",
-#                         "type" : "Number",
-#                         "attributes" : "required|input|manual"
-#                     },
-#                     {    "name" : "Operation",
-#                         "local_name": "Operation to apply",
-#                         "type" : "OPTION['plus','minus', 'times', 'divided by']",
-#                         "attributes" : "required|manual"
-#                     },
-#                     {    "name" : "Result",
-#                         "local_name": "Operation result",
-#                         "type" : "Number",
-#                         "attributes" : "output"
-#                     }
-#                 ]
-#             },
             "Program.FunctionOneVar": {
               "name" : "Function One Var",
               "image" : "ProgramFlow/Program/FunctionOneVar/icon.png"
@@ -307,17 +258,6 @@ class UserSession(object):
                 "name" : "Logical Comparison",
                 "image" : "ProgramFlow/Program/LogicalComparison/icon.png"
             },
-#             "Program.NumberVariable": {
-#                 "name" : "Numeric Variable",
-#                 "description" : "Creates and/or keeps a numeric variable",
-#                 "image" : "ProgramFlow/Program/NumberVariable/icon.png",
-#                 "properties" : [{
-#                     "name" : "Value",
-#                     "local_name": "Value",
-#                     "type" : "Number",
-#                     "attributes" : "required|manual|input|output"
-#                 }]
-#             },
             "Program.PolishCalculation": {
                 "name" : "Polish Calculation",
                 "image" : "ProgramFlow/Program/PolishCalculation/icon.png"
@@ -330,7 +270,6 @@ class UserSession(object):
             'properties': e.properties,
         } for e in Element.objects.all() }
         testingElements.update(elements)
-        print(testingElements)
         return testingElements
     
     @with_key(key='project')
