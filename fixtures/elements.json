@@ -6,23 +6,7 @@
         "name" : "HTML variable output", 
         "description" : "Creates or adds to an HTML div a text message and a value",
         "image" : "ProgramFlow/Visualization/TextAndValue/icon.png",
-        "properties" : [
-            {    "name" : "Text",
-                "local_name": "Text to display",
-                "type" : "String",
-                "attributes" : "input|output|manual"
-            },
-            {    "name" : "Value",
-                "local_name": "Second operand",
-                "type" : "Number",
-                "attributes" : "input|output|manual"
-            },
-            {    "name" : "Div",
-                "local_name": "HTML result (as a div)",
-                "type" : "String",
-                "attributes" : "input|output|manual"
-            }
-        ],
+        "properties" : [{"name": "Text", "local_name": "Text to display", "type": "String", "attributes": "input|output|manual"}, {"name": "Value", "local_name": "Second operand", "type": "Number", "attributes": "input|output|manual"}, {"name": "Div", "local_name": "HTML result as a div", "type": "String", "attributes": "input|output|manual"}, {"name": "Result", "local_name": "HTML result", "type": "String", "attributes": "input|output"}],
         "help": "www.google.com"
     }
   },
@@ -34,28 +18,7 @@
       "name" : "Binary operation",
       "description" : "Does one of several possible binary operations",
       "image" : "ProgramFlow/Program/BinaryOperation/icon.png",
-      "properties" : [
-          {    "name" : "Operand1",
-              "local_name": "First operand",
-              "type" : "Number",
-              "attributes" : "required|input|manual"
-          },
-          {    "name" : "Operand2",
-              "local_name": "Second operand",
-              "type" : "Number",
-              "attributes" : "required|input|manual"
-          },
-          {    "name" : "Operation",
-              "local_name": "Operation to apply",
-              "type" : "OPTION['plus','minus', 'times', 'divided by']",
-              "attributes" : "required|manual"
-          },
-          {    "name" : "Result",
-              "local_name": "Operation result",
-              "type" : "Number",
-              "attributes" : "output"
-          }
-      ],
+      "properties" : [{"name": "Operand1", "local_name": "First operand", "type": "Number", "attributes": "required|input|manual"}, {"name": "Operand2", "local_name": "Second operand", "type": "Number", "attributes": "required|input|manual"}, {"name": "Operation", "local_name": "Operation to apply", "type": "OPTION['plus','minus', 'times', 'divided by']", "attributes": "required|manual"}, {"name": "Result", "local_name": "Operation result", "type": "Number", "attributes": "output"}],
       "help": "www.google.com"
     }
   },
@@ -67,14 +30,32 @@
       "name" : "Program.NumberVariable",
       "description" : "Creates and/or keeps a numeric variable",
       "image" : "ProgramFlow/Program/NumberVariable/icon.png",
-      "properties" : [{
-          "name" : "Value",
-          "local_name": "Value",
-          "type" : "Number",
-          "attributes" : "required|manual|input|output"
-      }],
+      "properties" : [{"name": "Value", "local_name": "Value", "type": "Number", "attributes": "required|manual|input|output"}],
+      "help": "www.google.com"
+    }
+  },
+
+  {
+    "model": "eda.Element",
+    "pk": "Program.LogicalComparison",
+    "fields": {
+      "name" : "Logical check",
+      "description" : "Does one of several possible logical comparisons",
+      "image" : "ProgramFlow/Program/LogicalComparison/icon.png",
+      "properties" : [{"name": "Comparison", "local_name": "Comparison to apply", "type": "OPTION['>','>=', '<', '<=', '==', '!=']", "attributes": "required|input|manual"}, {"name": "Operand1", "local_name": "First operand", "type": "ANY", "attributes": "required|input|manual|output"}, {"name": "Operand2", "local_name": "Second operand", "type": "ANY", "attributes": "required|input|manual|output"}, {"name": "Result", "local_name": "Comparison result", "type": "Boolean", "attributes": "output"}],
+      "help": "www.google.com"
+    }
+  },
+
+  {
+    "model": "eda.Element",
+    "pk": "Program.PolishCalculation",
+    "fields": {
+      "name" : "Polish Calculator",
+      "description" : "An implementation of a polish calculator",
+      "image" : "ProgramFlow/Program/PolishCalculation/icon.png",
+      "properties" : [{"name": "Operator1", "local_name": "First operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand1", "local_name": "First operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operand2", "local_name": "Second operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator2", "local_name": "First operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand3", "local_name": "Third operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator3", "local_name": "Second operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand4", "local_name": "Fourth operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator4", "local_name": "Fourth operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand5", "local_name": "Fifth operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator5", "local_name": " Fifth operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand6", "local_name": "Sixth operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator6", "local_name": " Sixth operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand7", "local_name": "Seventh operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator7", "local_name": " Seventh operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand8", "local_name": "Eighth operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator8", "local_name": " Eighth operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand9", "local_name": "Nineth operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Result", "local_name": "Operation result", "type": "Number", "attributes": "output"}],
       "help": "www.google.com"
     }
   }
-
 ]
