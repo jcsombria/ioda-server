@@ -22,8 +22,10 @@ class Graph:
         self.run_information = []
         [self.addNode(n) for n in graph['node_list']]
         [self.addConnection(c) for c in graph['connection_list']]
+
  
     def run(self) -> dict:
+        #Solving a little error:
         print('Running graph ' + self.originalGraph['name'])
         startTime = time.time()
         runnableNodes = self.findRunnableNodes()
@@ -135,7 +137,7 @@ class Node:
         except Exception as e:
             print("Error : ", traceback.format_exc())
 
-    def reorderParams(self,params):
+    def reorderParams(self,params:list[str])-> list[str]:
         order = self.getExpectedInputs()
         finalParams = []
         for ordParam in order: 
@@ -145,7 +147,7 @@ class Node:
                 pass
         return finalParams
 
-    def gatherParameters(self):
+    def gatherParameters(self)-> dict:
         param  = { p['name']:p['value'] for p in self.getProperties() }
         inputs = {}
         hasUpdates = self.updated()
@@ -217,7 +219,7 @@ class Node:
         targetParams = self.reorderParams(params)
         return targetParams
 
-    def getProperty(self, name):
+    def getProperty(self, name: str):
         properties = self.info['properties']
         for prop in properties:
             if(prop['name'] == name):
@@ -267,7 +269,7 @@ class Node:
     def formatInputs(self, parameters: dict) -> dict:
         return {'format':'inline', 'name':'', 'data':parameters}
 
-    def getGraphDefinedInputs(self):
+    def getGraphDefinedInputs(self)-> list[str]:
         propertiesJSON = self.getProperties()
         properties = [prop['name'] for prop in propertiesJSON]
         ins = self.getInputConnections()
@@ -297,27 +299,27 @@ class Node:
     def getOutputConnections(self) -> list[Connection]:
         return [c for c in self.connections if c.getSource().getID() == self.getID()]
 
-    def updated(self):
+    def updated(self)-> bool:
         updated = False
         inputConns = self.getInputConnections()
         for incon in inputConns:
             updated = updated or incon.getUpdated()
         return updated
     
-    def allConnsVisited(self):
+    def allConnsVisited(self)-> bool:
         visited = True
         inputConns = self.getInputConnections()
         for incon in inputConns:
             visited = visited and incon.getVisited()
         return visited
     
-    def hasTriggerConnections(self):
+    def hasTriggerConnections(self)-> bool:
         inconns = self.getInputConnections()
         hasTriggers = False
         hasTriggers = [hasTriggers or self.isTriggerConnection(conn) for conn in inconns]
         return hasTriggers
         
-    def isTriggerConnection(self,conn):
+    def isTriggerConnection(self,conn)-> bool:
         sourceNodeIsLogic = conn.getSourceTrigger()
         notConnectedProperties = (conn.getSourceProperty() is None) and (conn.getTargetProperty() is None)
         return sourceNodeIsLogic and notConnectedProperties
@@ -339,14 +341,14 @@ class Node:
         outs = json.loads(parameters)
         return JSONFormatter.format(outs['Value'])
 
-    def returnStr(self, parameters):
+    def returnStr(self, parameters)-> str:
         paramsJson = json.loads(parameters)
         text = paramsJson['Text']
         result = text
         if('Value' in paramsJson):
             result = result + str(paramsJson['Value'])
         if('Div' in paramsJson):
-            result = result + str(paramsJson['Div']) + "\n" + result
+            result = str(paramsJson['Div']) + "\n" + result
         out = str(result)
         return JSONFormatter.format(out)
 
