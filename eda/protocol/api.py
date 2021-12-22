@@ -7,6 +7,7 @@ from eda.models import ProjectTemplate, Project, Element
 from eda.protocol.graph import Graph
 
 from celery import Celery
+import traceback
 
 class UserSession(object):
      
@@ -35,10 +36,9 @@ class UserSession(object):
             'save_workfile': self.saveWorkfile,
             'run_graph': self.runGraph,
 #             'set_element': self.setElement,
-#             'edit_element': self.editElement,
+            'edit_element': self.editElement,
         }
-    
-         
+        
     def process(self, message):
         ''' Process an incoming message.
 
@@ -53,13 +53,14 @@ class UserSession(object):
         if command is not None:
             params = message.get('data')
             try:
-                # print(params)
+                print(params)
                 if params:
                     result = method(params)
                 else:
                     result = method()
-            except:
+            except Exception as e:
                 result = { 'result': 'incorrect arguments'}
+                print(traceback.format_exc())
         self.socket.send(text_data=json.dumps(result))
 
 
@@ -129,6 +130,77 @@ class UserSession(object):
             names = []
         return names
 
+    @with_key(key='set_element')
+    def editElement(self, params):
+        ''' Edit an user element  
+        Used to select an existing user element or create a new one.
+        
+        Parameters
+        ----------
+        params
+            A dict-like object that contains element's 'name', 'type', 'description', 'image', 'help', 'code', and 'properties'.
+        '''
+        #=======================================================================
+        # params = {"name" : "Test Element",
+        #       "type" : "Program.TestElement",
+        #       "description" : "Just an element to be tested",
+        #       "image" : "ProgramFlow/Program/Template/icon.png",
+        #       "help": "google.com",
+        #       "delete": False,
+        #       "code": "import numpy as np\n\tprint('Hello World!')\n\toutputs = 'Hello World! these are my params: ' + str(inputOne) + ', ' + str(extraInput)",
+        #       "properties": [
+        #           {"name": "inputOne", 
+        #            "local_name": "input", 
+        #            "type" : "String",  
+        #            "attributes" : "required|input|manual"
+        #           },
+        #           {"name": "extraInput", 
+        #            "local_name": "input", 
+        #            "type" : "Number",  
+        #            "attributes" : "input|manual"
+        #           },
+        #           {"name": "Result", 
+        #            "local_name": "Result", 
+        #            "type" : "Number",  
+        #            "attributes" : "required|output"
+        #           }]
+        #           }
+        #=======================================================================
+        
+        name = params.get('name')
+        typeN = params.get('type')
+        description = params.get('description')
+        image = params.get('image')
+        helpN = params.get('help')
+        properties = params.get('properties')
+        code = params.get('code')
+        delete = params.get('delete')
+        
+        element = Element.objects.filter(name=name).first()
+
+        if element:
+            if delete:
+                element.delete()
+            else:
+                print('This element will be updated qith the new info')
+                element.name = name
+                element.description = description
+                element.id = typeN
+                element.image = image
+                element.help = helpN
+                element.properties = properties
+                element.code = code
+            element.save()
+        else:
+            element = Element.objects.create(id = typeN, name=name, description=description, image=image, help=helpN, properties=properties, code = code)
+        
+        BROKER_URL = 'amqp://guest:guest@rabbitmq'
+        BACKEND    = 'rpc://'
+        app = Celery('tasks', backend=BACKEND, broker=BROKER_URL)
+        result = app.send_task('tasks.worker_Python.createTask', args=(typeN.split('.')[1], properties, code))
+        isOK = result.get()
+        print("------> Adding new Element, result : ", str(isOK))
+        return element
     
     @with_key(key='project')
     def setProject(self, params):
@@ -192,7 +264,8 @@ class UserSession(object):
                 "Program.FunctionOneVar",
                 "Program.LogicalComparison",
                 "Program.NumberVariable",
-                "Program.PolishCalculation"
+                "Program.PolishCalculation",
+                "Program.Template"
             ],
             "Data.DataCleaner" : {
                 "name" : "Data Cleaner",
@@ -269,6 +342,13 @@ class UserSession(object):
             'image': e.image.name,
             'properties': e.properties,
         } for e in Element.objects.all() }
+        
+        for e in elements:
+            groupid = e
+            group = groupid.split('.')[0]
+            nonAddedGroup = testingElements.get(group) 
+            if(groupid not in nonAddedGroup):
+                testingElements[group].append(groupid)
         testingElements.update(elements)
         return testingElements
     
@@ -319,6 +399,13 @@ class UserSession(object):
         ''' run_graph
         Used by the client to request the execution of a graph.
         '''
+        #JUST FOR TESTING ---------------
+        #=======================================================================
+        # if(params['name'] == "Testing IFs"):
+        #     self.editElement({'nothing':''})
+        #=======================================================================
+        #---------------------------------
+        
         return Graph(params).run()
 
 # set_element: Used by the client to create a user-defined data analysis element.

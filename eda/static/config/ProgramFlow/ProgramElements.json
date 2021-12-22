@@ -1,18 +1,33 @@
 {
 	"path" : "ProgramFlow",
-	"groups" : [ { "name" : "Program" } , { "name" : "Visualization" } ],
-
-	"Program" : [
-		"Program.BinaryOperation",
-		"Program.FunctionOneVar",
-		"Program.LogicalComparison",
-		"Program.NumberVariable",
-		"Program.PolishCalculation"
+	"groups" : [ 
+		{ "name" : "Program" ,
+			"image" : "",
+			"elements" : [
+				"Program.BinaryOperation",
+				"Program.FunctionOneVar",
+				"Program.LogicalComparison",
+				"Program.NumberVariable",
+				"Program.PolishCalculation",
+				"Program.Template",
+			]
+		}, 
+		{ "name" : "Visualization",
+			"image" : "",
+			"elements" : [
+				"Visualization.TextAndValue"
+			]
+		}
 	],
-	
-	"Visualization" : [
-		"Visualization.TextAndValue"
-	]
-	
 
+	"elements" : {
+		"Program.BinaryOperation" : {},
+		"Program.FunctionOneVar"  : {},
+		"Program.LogicalComparison" : {},
+		"Program.NumberVariable" : {},
+		"Program.PolishCalculation" : {},
+		"Visualization.TextAndValue" : {},
+		"Program.Template" : {}
+	}
+	
 }

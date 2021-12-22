@@ -34,6 +34,18 @@
       "help": "www.google.com"
     }
   },
+  
+  {
+    "model": "eda.Element",
+    "pk": "Program.Template",
+    "fields": {
+      "name" : "Template",
+      "description" : "A template to create new elements",
+      "image" : "ProgramFlow/Program/Template/icon.png",
+      "properties" : [{"name": "parameter", "local_name": "parameter1", "type": "String", "attributes": "input|output|manual|required"}, {"name": "Result", "local_name": "Local result", "type": "String", "attributes": "output"}],
+      "help": "www.google.com"
+    }
+  },
 
   {
     "model": "eda.Element",

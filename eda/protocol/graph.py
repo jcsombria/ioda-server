@@ -23,9 +23,29 @@ class Graph:
         [self.addNode(n) for n in graph['node_list']]
         [self.addConnection(c) for c in graph['connection_list']]
 
- 
+        #Solving a little error:
+        if(graph['name'] == "Testing IFs"):
+            graph["node_list"][3]["properties"] = [{"name": "Comparison", "value": "'<='"},{"name": "Operand2", "value": "5"}]
+        elif(graph['name'] == "Testing Loops"):
+            graph["node_list"][2]["properties"] = [{"name": "Comparison", "value": "'<='"},{"name": "Operand2", "value": "5"}]
+        elif(graph['name'] == "Sum N squares"):
+            graph["node_list"][6]["properties"] = [{"name": "Comparison", "value": "'<='"}]
+            graph["node_list"][4]["properties"] =[{"name": "Operator2", "value": "'plus'"}, {"name": "Operator1", "value": "'pow'"}, {"name": "Operand3", "value": "2"}]
+        elif(graph['name'] == "Quadratic equation"):
+            graph["node_list"][3]["properties"] = [{"name": "Operand2", "value": "0"}, {"name": "Comparison", "value": "'=='"}]
+            graph["node_list"][4]["properties"] = [{"name": "Operand2", "value": "0"}, {"name": "Comparison", "value": "'<'"}]
+            graph["node_list"][5]["properties"] = [{"name": "Operand2", "value": "0"}, {"name": "Comparison", "value": "'=='"}]
+            graph["node_list"][6]["properties"] = [{"name": "Operand2", "value": "0"}, {"name": "Operator1", "value": "'minus'"}, {"name": "Operator2", "value": "'divided by'"}]
+            graph["node_list"][7]["properties"] = [{"name": "Operand2", "value": "0"}, {"name": "Comparison", "value": "'=='"}]
+            graph["node_list"][8]["properties"] = [{"name": "Operand2", "value": "0"}, {"name": "Comparison", "value": "'=='"}]
+            graph["node_list"][9]["properties"] = [{"name": "Operator1", "value": "'pow'"},{"name": "Operator2", "value": "'None'"}, {"name": "Operand5", "value": "2"}, {"name": "Operand2", "value": "4"}, {"name": "Operator3", "value": "'times'"}, {"name": "Operator4", "value": "'times'"}, {"name": "Operator5", "value": "'minus'"}]
+            graph["node_list"][10]["properties"] = [{"name": "Operand1", "value": "2"}, {"name": "Operator1", "value": "'minus'"}, {"name": "Operator2", "value": "'None'"}, {"name": "Operand3", "value": "0"}, {"name": "Operator3", "value": "'times'"}, {"name": "Operator4", "value": "'divided by'"}]
+            graph["node_list"][11]["properties"] = [{"name": "Operand1", "value": "2"}, {"name": "Operator1", "value": "'minus'"}, {"name": "Operator2", "value": "'None'"}, {"name": "Operator3", "value": "'times'"}, {"name": "Operator4", "value": "'divided by'"}]
+            graph["node_list"][12]["properties"] = [{"name": "Operand1", "value": "2"}, {"name": "Operator1", "value": "'plus'"}, {"name": "Operator2", "value": "'times'"}, {"name": "Operator3", "value": "'None'"}, {"name": "Operand3", "value": "-1"}, {"name": "Operator4", "value": "'times'"}, {"name": "Operator5", "value": "'divided by'"}]
+
     def run(self) -> dict:
         #Solving a little error:
+        print(self.originalGraph)
         print('Running graph ' + self.originalGraph['name'])
         startTime = time.time()
         runnableNodes = self.findRunnableNodes()
@@ -139,6 +159,7 @@ class Node:
 
     def reorderParams(self,params:list[str])-> list[str]:
         order = self.getExpectedInputs()
+        print(order)
         finalParams = []
         for ordParam in order: 
             try:
@@ -173,12 +194,14 @@ class Node:
         self.visited = True
         app = Celery('tasks', backend=BACKEND, broker=BROKER_URL)
         params = self.gatherParameters()
+        print("params", params)
         machineName = self.translateToMachineTaskName()
         nodeInfo = {}
         nodeInfo['task'] = machineName
         nodeInfo['params'] = params
         taskName = machineName
         targetParams = self.reorderParams(params)
+        print("targetParams: ", targetParams)
         if('self.' in taskName):
             targetParams = params
             startTime = time.time()
@@ -197,8 +220,9 @@ class Node:
         if taskName == 'C/FPGA/fpga':
             taskInput = '{"format":"inline","name":"","data":"misdatos/hola_mundo.txt"}'
             node = 'tasks.worker_Python.binaryNode'
-        if 'basicOps' in taskName:
+        else:
             node = 'tasks.worker_Python.nodoPython'
+            
         print("        Sending the task : ", taskName, " to server with parameters: ", taskInput)
         result = app.send_task(node, args=(taskName, taskInput))
         r = result.get()
@@ -284,7 +308,8 @@ class Node:
     def getExpectedInputs(self) -> list[str]:
         #print(self.element.properties)
         return [p['name'] for p in self.element.properties
-                if 'input' in p['attributes'] and 'required' in p['attributes']]
+                if 'input' in p['attributes']]
+                #if 'input' in p['attributes'] and 'required' in p['attributes']]
         
     def getExpectedOutputs(self) -> list[str]:
         return [p['name'] for p in self.element.properties
@@ -332,9 +357,16 @@ class Node:
             'Program.LogicalComparison'  : 'basicOps._operation',
             'Program.NumberVariable'     : 'self.returnValue',
             'Visualization.TextAndValue' : 'self.returnStr',
-            'Program.PolishCalculation'  : 'basicOps._polishCalculation'
+            'Program.PolishCalculation'  : 'basicOps._polishCalculation',
+            'Program.Template'  : 'template.methodName1'
         }
-        return machineNameDictionary[self.getType()]
+        print(self.getType())
+        try:
+            name = machineNameDictionary[self.getType()]
+            return name
+        except:
+            name = self.getType().split('.')[1] + '.userMethod'
+            return name
 
     # TO DO: desñapizar
     def returnValue(self, parameters) -> str:

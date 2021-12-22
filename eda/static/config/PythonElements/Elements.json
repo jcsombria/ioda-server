@@ -41,7 +41,8 @@
 		"Program.FunctionOneVar",
 		"Program.LogicalComparison",
 		"Program.NumberVariable",
-		"Program.PolishCalculation"
+		"Program.PolishCalculation",
+		"Program.Template"
 	],
 	"Evaluation": []
 }
