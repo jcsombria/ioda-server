@@ -387,7 +387,7 @@ IODA_GUI.graphEditPage = function(mID, mTitle, mParent, mIsRunReplay) {
 			case 'stop'  : mRunControl.stop(self,true); break;
 				
 			case 'run_at_server':
-				if (true) { mRunControl.showLastSimulationRun(); return; }
+				// if (true) { mRunControl.showLastSimulationRun(); return; }
 				if (mRunControl.isGraphIncomplete()) {
 					sMainConfirmationForm.show(
 						function() { sMainCommConnection.runGraph(mRunControl.getGraphRunData()); },

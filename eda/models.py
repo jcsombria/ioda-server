@@ -12,21 +12,6 @@ def new_element_id():
     print(id)
     return id
 
-# Create your models here.
-class Element(models.Model):
-    id = models.CharField(max_length=250, default=new_element_id, primary_key=True)
-    name = models.CharField(max_length=250, default='New Element')
-    image = models.ImageField(blank=True)
-    code = models.description_file = models.FileField(upload_to=get_code_upload_path, default=None, blank=True)
-    properties = models.JSONField(default=dict)
-    help = models.URLField(blank=True)
-    description = models.CharField(max_length=500, default='A new Element')
-
-    def __str__(self):
-        return '%s' % (
-            self.name,
-        )
-
 
 class ProjectTemplate(models.Model):
     name = models.CharField(max_length=250, default='New_Template', primary_key=True)
@@ -35,9 +20,7 @@ class ProjectTemplate(models.Model):
 #     elements = models.ManyToManyField(Element)
 
     def __str__(self):
-        return '%s' % (
-            self.id,
-        )
+        return '%s' % (self.id,)
 
 
 class Project(models.Model):
@@ -48,6 +31,27 @@ class Project(models.Model):
     workfile = models.JSONField()
 
     def __str__(self):
-        return '%s' % (
-            self.name,
-        )
+        return '%s' % (self.name,)
+
+class Element(models.Model):
+    id = models.CharField(max_length=250, default=new_element_id, primary_key=True)
+    name = models.CharField(max_length=250, default='New Element')
+    image = models.ImageField(blank=True)
+    code = models.description_file = models.FileField(upload_to=get_code_upload_path, default=None, blank=True)
+    properties = models.JSONField(default=dict)
+    help = models.URLField(blank=True)
+    description = models.CharField(max_length=500, default='A new Element')
+
+    def __str__(self):
+        return '%s' % (self.name,)
+
+class ElementGroup(models.Model):
+    name = models.CharField(max_length=250, default='New Group of Elements', primary_key=True)
+    project = models.ForeignKey(Project, on_delete=models.RESTRICT)
+    icon = models.ImageField(blank=True)
+    before = models.ForeignKey('self', on_delete=models.RESTRICT, blank=True, null=True, related_name='relative_before')
+    after = models.ForeignKey('self', on_delete=models.RESTRICT, blank=True, null=True, related_name='relative_after')
+    position_in_group = models.IntegerField(default=0)
+
+    def __str__(self):
+        return '%s->%s' % (self.position_in_group, self.name)

@@ -3,12 +3,12 @@ import json
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
  
-from eda.models import ProjectTemplate, Project, Element
+from eda.models import ProjectTemplate, Project, Element, ElementGroup
 from eda.protocol.graph import Graph
 
 from celery import Celery
 from dataclasses import dataclass, field
-
+from typing import Protocol
 
 class UserSession(object):
      
@@ -36,9 +36,7 @@ class UserSession(object):
             'get_workfile': self.getWorkfile,
             'save_workfile': self.saveWorkfile,
             'run_graph': self.runGraph,
-            # 'set_element': self.setElement,
             'user_elements': self.setElement,
-#             'edit_element': self.editElement,
         }
         
     def process(self, message):
@@ -175,7 +173,7 @@ class UserSession(object):
         properties = params.get('properties')
         code = params.get('code')
         delete = params.get('delete')
-        
+
         element = Element.objects.filter(name=name).first()
         if element:
             if delete:
@@ -231,8 +229,14 @@ class UserSession(object):
         
         return {
             'name': name,
-            'elements': { 'groups': self._getGroups(), 'elements': self._getElements() },
-            'user_elements': { 'groups': [], 'elements': []},
+            'elements': {
+                'groups': self._getGroups(),
+                'elements': self._getElements()
+            },
+            'user_elements': {
+                'groups': self._getUserGroups(),
+                'elements': []
+            },
             'workfile': project.workfile,
         }
 
@@ -373,6 +377,15 @@ class UserSession(object):
         # return testingElements
         return elementList
     
+    def _getUserGroups(self):
+        return [{ 
+            'name': g.name,
+            'image': 'ProgramFlow/Program/icon.png',
+            'elements': [],
+        } for g in ElementGroup.objects.filter(project=self.project).order_by('position_in_group')]
+
+
+
     @with_key(key='project')
     def editProject(self, params):
         '''  Modify an existing user project.
@@ -428,24 +441,15 @@ class UserSession(object):
         #---------------------------------
         return Graph(params).run()
 
-    @with_key(key='run_result')
+    @with_key(key='user_elements')
     def setElement(self, params):
         # set_element: Used by the client to create a user-defined data analysis element.
-        print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
-        print(params)
-        # command = Command(*params)
-        # {
-        #   'command': 'CreateGroup', 
-        #   'target': 'ddd',
-        #   'options': {
-        #      'name': 'ddd', 
-        #      'relative_position': 'as_is', 
-        #      'relative_object': '', 
-        #      'base64Icon': ''
-        #   }
-        # }
-
-        return {}
+        command = createCommand(params, self)
+        command.action()
+        return {
+            'groups': self._getUserGroups(),
+            'elements': []
+        }
 
 # edit_element: Used by the client to edit a user-defined data analysis element.
 # delete_element: Used by the client to delete a user-defined data analysis element. NOTA: Hacer como con los proyectos, edit_element incluye el delete_element.
@@ -465,9 +469,180 @@ def worker(input):
 
 
 # @dataclass
-# class Command
-#     command: str
-#     target: str
-#     options: dict = field(default_factory=dict)
+class Command(Protocol):
+    
+    def action():
+        '''Execute the command'''
 
+class CreateElement:
+
+    def __init__(self, params):
+        self.params = params
+
+    def action(self):
+        name = self.params.get('name')
+        typeN = self.params.get('type')
+        description = self.params.get('description')
+        image = self.params.get('image')
+        helpN = self.params.get('help')
+        properties = self.params.get('properties')
+        code = self.params.get('code')
+        delete = self.params.get('delete')
+
+        element = Element.objects.filter(name=name).first()
+        if element:
+            if delete:
+                element.delete()
+            else:
+                print('This element will be updated qith the new info')
+                element.name = name
+                element.description = description
+                element.id = typeN
+                element.image = image
+                element.help = helpN
+                element.properties = properties
+                element.code = code
+            element.save()
+        else:
+            element = Element.objects.create(
+                id=typeN,
+                name=name,
+                image=image,
+                code=code,
+                properties=properties,
+                help=helpN,
+                description=description,
+            )
+        
+        BROKER_URL = 'amqp://guest:guest@rabbitmq'
+        BACKEND    = 'rpc://'
+        app = Celery('tasks', backend=BACKEND, broker=BROKER_URL)
+        result = app.send_task('tasks.worker_Python.createTask', args=(typeN.split('.')[1], properties, code))
+        isOK = result.get()
+        print("------> Adding new Element, result : ", str(isOK))
+        return element
+
+
+#   'target': 'ddd',
+#   'options': {
+#      'name': 'ddd', 
+#      'relative_position': 'as_is', 
+#      'relative_object': '', 
+#      'base64Icon': ''
+#   }
+# }
+class CreateGroup:
+
+    def __init__(self, session, command):
+        self.command = command
+        self.session = session
+
+    def action(self):
+        groups = ElementGroup.objects.filter(
+            project=self.session.project,
+        )
+        new = ElementGroup.objects.create(
+            name=self.command['target'],
+            project=self.session.project
+        )
+        if self.command['options']['relative_position'] == 'as_is':
+            new.position_in_group = groups.count() - 1
+            new.save()
+        else:
+            inserted = False
+            for g in groups.order_by('position_in_group'):
+                if g.name == self.command['options']['relative_object']:
+                    if self.command['options']['relative_position'] == 'before':
+                        new.position_in_group = g.position_in_group
+                        g.position_in_group = g.position_in_group + 1 
+                    if self.command['options']['relative_position'] == 'after':
+                        new.position_in_group = g.position_in_group + 1
+                    g.save()
+                    inserted = True
+                    continue
+                if inserted:
+                    g.position_in_group = g.position_in_group + 1
+                    g.save()
+            new.save()
+
+class DeleteGroup:
+    def __init__(self, session, command):
+        self.command = command
+        self.session = session
+
+    def action(self):
+        group = ElementGroup.objects.filter(
+            project=self.session.project,
+            name=self.command['target']
+        ).first()
+        if group:
+            group.delete()
+
+class EditGroup:
+    def __init__(self, session, command):
+        self.command = command
+        self.session = session
+
+    def action(self):
+        if not 'relative_position' in self.command['options'] or not 'relative_object' in self.command['options']:
+            raise ValueError('Invalid command.')
+
+        target = ElementGroup.objects.filter(
+            project=self.session.project,
+            name=self.command['target']
+        ).first()
+        if not target:
+            raise ValueError('Group not found.')
+
+        relative = ElementGroup.objects.filter(
+            project=self.session.project,
+            name=self.command['options']['relative_object']
+        ).first()
+        if not relative:
+            raise ValueError('Relative group not found.')
+
+        if 'name' in self.command['options']:
+            target.delete()
+            target.name = self.command['options']['name']           
+            target.save()
+
+
+        # if 'base64icon' in self.command['options']:
+        #     target.name = self.self.command['options']['base64icon']
+
+        if self.command['options']['relative_position'] == 'as_is':
+            return
+
+        groups = [g for g in ElementGroup.objects.filter(
+            project=self.session.project,
+        ).order_by('position_in_group')]
+        if self.command['options']['relative_position'] == 'before':
+            index = relative.position_in_group
+        elif self.command['options']['relative_position'] == 'after':
+            index = relative.position_in_group + 1
+
+        if target.position_in_group < index:
+            index = index - 1
+        groups.remove(target)
+        groups.insert(index, target)
+        for i, g in enumerate(groups):
+            g.position_in_group = i
+            g.save()
+
+
+
+def createCommand(params, session):
+    commands = {
+        'CreateGroup': CreateGroup,
+        'EditGroup': EditGroup,
+        'DeleteGroup': DeleteGroup,
+        'CreateElement': CreateElement,
+        # 'DuplicateProjectElement': DuplicateProjectElement,
+        # 'DuplicateElement': DuplicateElement,
+        # 'DeleteElement': DeleteElement,
+        # 'EditElement': EditElement,
+    }
+    if not params['command'] in commands:
+        raise ValueError('Unknown command.')
+    return commands[params['command']](session, params)
 
