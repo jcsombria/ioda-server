@@ -39,7 +39,6 @@ IODA_GUI.graphEditPage = function(mID, mTitle, mParent, mIsRunReplay) {
 	//self.getRunControl = function() { return mRunControl; }
 
 	self.setResultsData = function(resultsData) {
-      console.log(resultsData)
 		self.setResourcesID(resultsData['resources']);
 		mRunControl.setRunInformation(resultsData['graph'],resultsData['nodes']);
 		self.displayRunInfo(null);
@@ -287,37 +286,29 @@ IODA_GUI.graphEditPage = function(mID, mTitle, mParent, mIsRunReplay) {
 	self.displayRunInfo = function(nodeInfo) {
 		var runDiv = $('#'+ mID+'-graph_run_div')
 		runDiv.empty();
-		//console.log("nodeInfo : ")
-		//console.log(nodeInfo)
 		if (nodeInfo!=null) {
 			var node = mGraph.findNode(nodeInfo.node);
-			/*console.log(node.getName().toString())
-			console.log(nodeInfo.iteration_string.toString())
-			console.log(nodeInfo.code.toString())
-			console.log(nodeInfo.start.toString())
-			console.log(nodeInfo.output.toString())
-			*/
 			runDiv.append(mINFO_LINE.replace( /#\{label\}/g, (mID+'-run_name') )
 				.replace( /#\{name\}/g, sMainRes.getString('Node') )
-				.replace( /#\{value\}/g, node.getName().toString() ));			
+				.replace( /#\{value\}/g, node.getName() ));			
 			runDiv.append(mINFO_LINE.replace( /#\{label\}/g, (mID+'-run_iteration') )
 				.replace( /#\{name\}/g, sMainRes.getString('Iteration') )
-				.replace( /#\{value\}/g, nodeInfo.iteration_string.toString() ));			
+				.replace( /#\{value\}/g, nodeInfo.iteration_string ));			
 			runDiv.append(mINFO_LINE.replace( /#\{label\}/g, (mID+'-run_code') )
 				.replace( /#\{name\}/g, sMainRes.getString('Result') )
-				.replace( /#\{value\}/g, nodeInfo.code.toString() ));			
+				.replace( /#\{value\}/g, nodeInfo.code ));			
 			runDiv.append(mINFO_LINE.replace( /#\{label\}/g, (mID+'-run_start') )
 				.replace( /#\{name\}/g, sMainRes.getString('Started') )
-				.replace( /#\{value\}/g, nodeInfo.start.toString() ));			
+				.replace( /#\{value\}/g, nodeInfo.start ));			
 			runDiv.append(mINFO_LINE.replace( /#\{label\}/g, (mID+'-run_end') )
 				.replace( /#\{name\}/g, sMainRes.getString('Ended') )
-				.replace( /#\{value\}/g, nodeInfo.end.toString() ));			
+				.replace( /#\{value\}/g, nodeInfo.end ));			
 			runDiv.append(mINFO_LINE.replace( /#\{label\}/g, (mID+'-run_lapsed') )
 				.replace( /#\{name\}/g, sMainRes.getString('Lapsed') )
-				.replace( /#\{value\}/g, nodeInfo.lapsed.toString() ));			
+				.replace( /#\{value\}/g, nodeInfo.lapsed ));			
 			runDiv.append(mLINK_BUTTON.replace( /#\{label\}/g, (mID+'-run_url') )
 				.replace( /#\{name\}/g, sMainRes.getString('Output') )
-				.replace( /#\{link\}/g, nodeInfo.output.data.output.toString() ));				
+				.replace( /#\{link\}/g, nodeInfo.output ));				
 		}
 		else {
 			runDiv.append(mCOMMENT_LINE
@@ -356,7 +347,7 @@ IODA_GUI.graphEditPage = function(mID, mTitle, mParent, mIsRunReplay) {
 			case 'delete' : 
 				sMainConfirmationForm.show(function(){
 					if (mCurrentConnection!=null) mGraph.removeConnection(mCurrentConnection); },
-						mCurrentConnection.toString(), "Do you really want to delete this connection?", "Delete");
+						mCurrentConnection.toString(), "Do you really want to delete this connection?", sMainRes.getString("Delete"));
 				break;
 			case 'node_labels' :
 				var show = document.getElementById(label+'node_labels').checked
@@ -396,15 +387,15 @@ IODA_GUI.graphEditPage = function(mID, mTitle, mParent, mIsRunReplay) {
 			case 'stop'  : mRunControl.stop(self,true); break;
 				
 			case 'run_at_server':
-//				if (true) { mRunControl.showLastSimulationRun(); return; }
+				if (true) { mRunControl.showLastSimulationRun(); return; }
 				if (mRunControl.isGraphIncomplete()) {
 					sMainConfirmationForm.show(
 						function() { sMainCommConnection.runGraph(mRunControl.getGraphRunData()); },
-						mGraph.getName(), "The graph seems incomplete. Do you still want the server to run this graph?", "Run");
+						mGraph.getName(), "The graph seems incomplete. Do you still want the server to run this graph?", sMainRes.getString("Run"));
 				}
 				else sMainConfirmationForm.show(
 						function() { sMainCommConnection.runGraph(mRunControl.getGraphRunData()); },
-						mGraph.getName(), "The graph seems complete. Do you want the server to run this graph?", "Run");
+						mGraph.getName(), "The graph seems complete. Do you want the server to run this graph?", sMainRes.getString("Run"));
 				break;
 				
 			default :
@@ -661,7 +652,7 @@ IODA_GUI.graphEditPage = function(mID, mTitle, mParent, mIsRunReplay) {
 			case 'delete' : 
 				sMainConfirmationForm.show(function(){
 					if (mCurrentNode!=null) mGraph.removeNode(mCurrentNode); },
-					mCurrentNode.getName(), "Do you really want to delete this node?", "Delete");
+					mCurrentNode.getName(), "Do you really want to delete this node?", sMainRes.getString("Delete"));
 				break;
 		}
 	}
@@ -921,7 +912,7 @@ IODA_GUI.graphEditPage = function(mID, mTitle, mParent, mIsRunReplay) {
 			case 'delete' : 
 				sMainConfirmationForm.show(function(){
 					if (mCurrentConnection!=null) mGraph.removeConnection(mCurrentConnection); },
-						mCurrentConnection.toString(), "Do you really want to delete this connection?", "Delete");
+						mCurrentConnection.toString(), "Do you really want to delete this connection?", sMainRes.getString("Delete"));
 				break;
 			case 'source_property' :
 				var prop = extractPropertyFromLink($('#'+label+'source').val());

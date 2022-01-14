@@ -1,0 +1,805 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<!------------------------>
+		<!-- Required meta tags -->
+		<!------------------------>
+
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		
+		<!-- Adapted from example by 
+		<meta name="author" content="Mark Otto, Jacob Thornton, and Bootstrap contributors">
+		<meta name="generator" content="Hugo 0.79.0">
+		<link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/cheatsheet/">
+		<link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/sign-in/">
+		-->
+		<title>Fusion IODA</title>
+
+		<!------------------------>
+		<!-- LIBRARY CSS        -->
+		<!------------------------>
+
+		<link rel="stylesheet" href="css/bootstrap.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+				
+		<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+		
+		<!------------------------>
+		<!-- IODA CSS           -->
+		<!------------------------>
+
+		<link rel="stylesheet" href="css/ioda.css">
+
+		<!------------------------>
+		<!-- LIBRARY JS         -->
+		<!------------------------>
+
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+		<script src="https://code.jquery.com/jquery-1.12.4.js" ></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+		
+		<!-- Code Editor textarea -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace.js" type="text/javascript" charset="utf-8"></script>
+
+		<!------------------------>
+		<!-- IODA JS            -->
+		<!------------------------>
+
+		<script src="js/ejsS/ejsS.v1.max.js"></script>
+		<!--script src="js/displayed_objects/do_connection.js"></script>
+		<script src="js/displayed_objects/do_graph.js"></script>
+		<script src="js/displayed_objects/do_node.js"></script>
+		<script src="js/displayed_objects/do_panel.js"></script-->
+		
+		<script src="js/graph/graph.js"></script>
+		<script src="js/graph/graph_node.js"></script>
+		<script src="js/graph/graph_connection.js"></script>
+		<script src="js/graph/graph_run_control.js"></script>
+		<script src="js/graph/graph_run_replay.js"></script>
+		<script src="js/graph/graphics/graphics_constants.js"></script>
+		<script src="js/graph/graphics/graphics_panel.js"></script>
+		<script src="js/graph/graphics/graphics_node.js"></script>
+		<script src="js/graph/graphics/graphics_connection.js"></script>
+
+		<script src="js/resources/resources_main.js"></script>
+
+		<script src="js/gui/gui_commands.js"></script>
+		<script src="js/gui/gui_elements.js"></script>
+		<script src="js/gui/gui_forms.js"></script>
+		<script src="js/gui/gui_graph_edit.js"></script>
+		<script src="js/gui/gui_project_list.js"></script>
+		<script src="js/gui/gui_tabs.js"></script>
+
+		<script src="js/comm/comm_listener.js"></script>
+		<script src="js/comm/comm_socket.js"></script>	
+
+	</head>
+	
+	<body onresize="sBrowserResized()">
+		<!-------------------------------->
+		<!-- Main BODY                  -->
+		<!-- Defines:                   -->
+		<!--  mMain[XXX] local use only -->
+		<!--  sMain[XXX] global use     -->
+		<!-------------------------------->
+		
+		<!------------------------>
+		<!-- TOAST AND MODALS   -->
+		<!------------------------>
+		
+		<div class="position-fixed top-0 start-50 translate-middle-x" style="z-index: -1">
+			<div id="mMainToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+				<div class="toast-header">
+					<img class="rounded me-2" src="assets/icons/atom.svg" alt="" width="24" height="24">
+					<strong class="me-auto">Fusion IODA</strong>
+					<small id="mMainToastHeader" class="text-muted">Message</small>
+					<button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+				</div>
+				<div "class="toast-body">
+					<h5 id="mMainToastBody" style="padding-left:5px; color:blue">
+						Hello, world! This is a toast message.
+					</h5>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			var sToast = new bootstrap.Toast(document.getElementById('mMainToast'));
+	
+			var sShowMessage = function(header, message) {
+				$('#mMainToastHeader').text(header);
+				$('#mMainToastBody').text(message);
+				$('#mMainToast').parent().css('z-index', 5); // Starts with -1 becasue it hided the tabs!!!
+				sToast.show();
+			}
+			var sShowHelp = function(url) {
+				$('#mMainToastHeader').text('Click for help');
+				$('#mMainToastBody').text(url);
+			}
+		</script>
+		
+		<!-- MULTIUSE MODAL PAGE -->	
+		<div class="modal fade" id="sMainMultiuseModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true"></div>		
+		<div class="modal fade" id="sMainNameModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-hidden="true"></div>		
+		<!-- END OF MULTIUSE MODAL PAGE -->	
+
+		<!------------------------>
+		<!-- LOGIN PAGE         -->
+		<!------------------------>
+		
+		<div id="mMainLoginPage" class="d-flex flex-column h-100 text-center">
+			<main class="form-signin">
+				<form  method="get" onsubmit="return mMainLogin();">
+					<img class="mb-4" src="assets/icons/atom.svg" alt="" width="72" height="57">
+					<h1 class="h3 mb-3 fw-normal">Fusion IODA</h1>
+					<label for="mMainUsername" class="visually-hidden">Username</label>
+					<input id ="mMainUsername" class="form-control" placeholder="Username" type="text" required autofocus>
+					<label for="mMainPassword" class="visually-hidden">Password</label>
+					<input id ="mMainPassword" class="form-control" placeholder="Password" type="password" >		
+					<button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+				</form>
+			</main>
+			<footer class="bg-dark text-white-50">
+				<div class="col-12 container text-center">
+					<small>Copyright &copy; Fusion IODA</small>
+					<small class="position-absolute pe-2 end-0">
+						<a href="credits.html" target="_blank" >Credits</a>
+					</small>			
+				</div>
+			</footer>
+		</div>
+
+		<script>
+
+			const sMainCleanLogin = function () {
+				$('#mMainUsername').val("");
+				$('#mMainPassword').val("");
+			}
+
+			const sMainToLoginPage = function () {
+				$('#mMainLoginPage').addClass('d-flex').show(); //removeClass('collapse').addClass('collapse.show');
+				$('#mMainWorkingPage').hide(); //removeClass('collapse').addClass('collapse.show');
+			}
+			
+			const mMainToWorkingPage = function() {
+				$('#mMainLoginPage').removeClass('d-flex').hide();
+				$('#mMainWorkingPage').show();
+			}
+			
+			function mMainLogin() {
+				var name     = $('#mMainUsername').val();
+				var password = $('#mMainPassword').val();
+				sMainCommConnection.login(mMainServerWS, name, password);
+				return false;
+			}
+			
+			function mMainLogout() {
+				sMainConfirmationForm.show(function(){
+					sMainCommConnection.logout(); },
+					"Disconnect", "Do you really want to disconnect?");
+			}				
+		</script>
+		
+		<!------------------------>
+		<!-- WORKING PAGE       -->
+		<!------------------------>
+
+		<div id="mMainWorkingPage" class="d-flex flex-column col-12 h-100 mx-auto" style="display:none">
+			<!------------------------->
+			<!-- WORKING PAGE MAIN   -->
+			<!------------------------->
+			<main class="d-flex flex-column col-12 mx-auto" style="flex-grow:1;">
+			
+				<!------------------------->
+				<!-- WORKING PAGE NAV    -->
+				<!------------------------->
+				<nav class="navbar navbar-fixed-top d-flex flex-row navbar-expand p-0" style="flex-grow:0; flex-basis:0">
+					<div class="d-flex flex-row justify-content-start">
+						<a class="navbar-brand sIODAlogo" href="#">
+							<img src="assets/icons/atom.svg" alt="IODA logo" class="d-inline-block align-top">
+							Fusion IODA
+						</a>
+						<!-----   COMMENTED OUT -----
+						<button id="sMainAddTabButton" class="btn btn-link text-decoration-none p-0" type="button">
+							<i class="bi bi-file-plus p-0" style="color: rgb(255, 38, 0);"></i>
+						</button>
+						<button id="sRenameTabButton" class="btn btn-link text-decoration-none p-0" type="button">
+							<i class="bi bi-file-font p-0" style="color: rgb(255, 38, 0);"></i>
+						</button>
+						<button id="mMainToggleElementsButton" class="btn btn-link text-decoration-none p-0" type="button">
+							<i class="bi bi-diagram-2 p-0" style="color: rgb(4, 50, 255);"></i>
+						</button>
+						<button id="mMainTogglePropertiesButton" class="btn btn-link text-decoration-none p-0" type="button">
+							<i class="bi bi-ui-checks p-1" style="color: rgb(4, 50, 255);"></i>
+						</button>
+						<-----   END OF COMMENTED OUT ----->
+					</div>
+					<input id="mMainTitle" type="text" class="flex-grow-1 text-primary" value="Project name">
+					<div class="d-flex flex-row justify-content-end">
+						<div class="dropdown">
+							<button id="mMainTabsMenuButton" type="button" class="p-0 btn btn-link btn-lg text-decoration-none dropdown-toggle" 
+								data-bs-toggle="dropdown" aria-expanded="false">
+									<i class="bi bi-files"></i>
+							</button>
+							<ul class="dropdown-menu dropdown-menu-end" aria-labelledby="mMainTabsMenuButton" >
+								<li class="dropdown-item mMainTabsMenuButton" data-action="PageNew"   >Create a new page</li>
+								<li class="dropdown-item mMainTabsMenuButton" data-action="PageCopy"  >Duplicate current page</li>
+								<li class="dropdown-item mMainTabsMenuButton" data-action="PageLeft"  >Move current page to the left</li>
+								<li class="dropdown-item mMainTabsMenuButton" data-action="PageRight" >Move current page to the right</li>
+								<li class="dropdown-item mMainTabsMenuButton" data-action="PageRename">Rename current page</li>
+								<li><hr class="dropdown-divider"></li>
+								<li class="dropdown-item mMainTabsMenuButton" data-action="PageDelete">Remove current page</li>
+							</ul>
+						</div>					
+						<button id="mMainSaveWorkfileButton" class="btn btn-link text-decoration-none p-0 align-middle" type="button">
+							<i class="bi bi-save p-1"></i>
+						</button>
+						<button class="btn btn-link text-decoration-none p-0" type="button" onclick="mMainLogout();">
+							<i class="bi bi-arrow-up-right-square-fill"></i>
+						</button>
+						<span class="border-start border-danger border-4"></span>
+						<button id="mMainDeleteProjectButton" class="btn btn-link text-decoration-none p-0" type="button">
+							<i class="bi bi-x-square text-danger"></i>
+						</button>
+					</div>
+				</nav>
+				
+				<script>
+					$("#mMainSaveWorkfileButton").on ("click",(data)=>{
+							var workfileData = sTabbedPannel.saveObject ();
+							var resourcesIDList = sTabbedPannel.getResourcesIDList ();
+							sMainCommConnection.saveWorkfile(workfileData,resourcesIDList);
+					});
+					$(".mMainTabsMenuButton").on ("click",(data)=>{
+							sTabbedPannel.command (data.target.dataset.action);
+					});
+					$("#mMainTogglePropertiesButton").click(function(){
+						sTabbedPannel.toggle();
+					}); 
+					$("#mMainToggleElementsButton").click(function(){
+						if ($('#mMainElementsPanel').hasClass('d-none'))
+							$('#mMainElementsPanel').removeClass('d-none');
+						else $('#mMainElementsPanel').addClass('d-none');
+						sBrowserResized();
+					}); 
+					$("#mMainTitle").on ("change",(data)=>{
+						sMainCommConnection.renameProject(data.target.value);
+					});
+					$("#mMainDeleteProjectButton").click(function(){
+						sMainCommConnection.deleteProject();
+					});
+				</script>
+				
+				<!------------------------->
+				<!-- WORKING PAGE CENTER -->
+				<!------------------------->				 
+				
+				<div class="d-flex flex-row col-12 mx-auto" style="flex-grow:1;">
+					
+					<!------------------------->
+					<!-- ELEMENTS SIDEBAR    -->
+					<!------------------------->				 
+				
+					<div id="mMainElementsPanel" class="sTabLeft d-flex flex-column" style="flex-grow: 0; flex-basis:0;">
+						<div class="bg-light ps-2 d-flex flex-row" style="flex-grow:0; flex-basis:0">
+							<div class="sTabRight_header_title py-1" style="flex-grow:1">
+									<h4 id="sMainElementsPanelTitle" class="h-100 m-0"></h4>
+								</div>	
+							<div class="container-fluid p-0 m-0 justify-content-end" style="flex-grow:0; flex-basis:0">
+								<button id="clientElements" class="btn btn-link p-0 pe-2 m-0" type="button">
+									<i class="bi bi-file-plus m-0 p-0" style="font-size: 1.5rem;"></i>
+								</button>
+							</div>
+						</div>
+							
+						<!-- div class="inline fields">
+							<div class="field">
+								<label><h3 id="sMainElementsPanelTitle">Elements</h3></label>	
+								<button type="button" id="clientElements" class="btn btn-link text-decoration-none" 
+								data-toggle="modal" data-target="#newModal" style="padding:8;padding-bottom:20px;"><i class="bi bi-file-plus"></i></button>
+							</div>
+						</div-->
+			
+		 				<div id="mMainElementsSideNav" class="h-100 d-flex flex-column" style="flex-grow: 1" >
+		 				</div>				
+							
+					</div>
+	
+					<!------------------------->
+					<!-- TABS CONTAINER      -->
+					<!------------------------->				 
+					<div id="mMainTabContainer" class="d-flex flex-column" style="flex-grow: 1">					 
+					</div>
+					
+				</div>						
+
+			</main>
+				
+			<!------------------------->
+			<!-- WORKING PAGE FOOTER -->
+			<!------------------------->
+			<footer class="bg-dark text-white-50">
+				<div class="col-12 h-100 container text-center">
+					<small>Copyright &copy; Fusion IODA</small>
+					<small class="position-absolute pe-2 end-0">
+						<a href="credits.html" target="_blank" >Credits</a>
+					</small>			
+				</div>
+			</footer>
+			
+		</div>
+			
+		<!-- END OF WORKING PAGE -->
+
+		<!------------------------->
+		<!-- PROJECT LIST ANCHOR -->
+		<!------------------------->
+
+		<!-- PROJECT LIST MODAL PAGE -->	
+		<div class="modal fade" id="sProjectModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="projectListLabel" aria-hidden="true"></div>		
+		<!-- END OF PROJECT LIST MODAL PAGE -->	
+
+		<!------------------------->
+		<!-- ELEMENTS STUFF (to be cleaned) -->
+		<!------------------------->
+	
+		<!-- Modal New Element -->
+		<div class="modal fade" id="newModal" role="dialog">
+			<div class="modal-dialog">			
+			  <!-- Modal content-->
+			  	<div class="modal-content" id="modal">
+					<div class="modal-header">
+						<h4 class="modal-title">User Element</h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>				
+					</div>
+					<div class="modal-body">
+						<!--/////////NEW////////// -->
+						<ul class="nav nav-tabs" id="myTab" role="tablist">
+							<li class="nav-item" role="presentation">
+							  <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Element</button>
+							</li>
+							<li class="nav-item" role="presentation">
+							  <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Properties</button>
+							</li>
+							<li class="nav-item" role="presentation">
+							  <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Source Code</button>
+							</li>
+						  </ul>
+						  <div class="tab-content" id="myTabContent">
+							<div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+								<form name="formName" id="formName" style="background-color: white; color: black;">
+									<div class="mb-2">
+										<label for="recipient-name" class="col-form-label">Name:</label>
+										<input type="text" class="form-control" id="eName" placeholder="Enter element name" name="eName">
+									</div>
+									<div>
+										<label for="recipient-name" class="col-form-label">Description:</label>
+										<input type="text" class="form-control" id="eDescription" placeholder="Enter element description">
+									</div>
+		
+									<div class="position-relative">
+										<br>
+										<label for="recipient-name" class="col-form-label">Image:</label>
+										<p> </p>
+										<p><img id="img" width="50" src="assets/icons/blank.png"/></p>
+										<p></div><input type="file" class="form-control-file" accept="image/*" name="image" id="file" onchange="loadFileNew(event)"></p>
+										<br>
+									</div>									
+								</form>
+							
+							<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab" style="background-color: white; color:black;">
+								<div class="mb-3">
+									<p>
+										<label for="recipient-name" class="col-form-label">Inputs:</label>
+										<input type="text" class="form-control" id="eInput" placeholder="Enter element inputs" name="eInput">
+									</p>
+									<p>
+										<label for="recipient-name" class="col-form-label">Outputs:</label>
+										<input type="text" class="form-control" id="eOutput" placeholder="Enter element outputs">
+									</p>
+								</div>
+								<div>									
+								</div>
+							</div>
+							<div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">		
+								<div>												
+									<form name="formCode" id="formCode" style="background-color: white; color: black;">																											
+										<label for="recipient-name" class="col-form-label">Source Code:</label>
+											<div class="btn-group"> 
+												<i class="dropdown-arrow dropdown-arrow-inverse"></i>
+												<button class="btn btn-outline-primary btn-sm status">Language</button>
+												<button class="btn btn-outline-primary btn-sm dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+												<ul class="dropdown-menu dropdown-inverse">
+													<li><a class="dropdown-item" href="#">Python</a></li>
+													<li><a class="dropdown-item" href="#">LabVIEW</a></li>
+													<li><a class="dropdown-item" href="#">MATLAB</a></li>
+													<li><a class="dropdown-item" href="#">C++</a></li>
+												</ul>
+											</div>
+											<hr style="margin-bottom: 0px;">											
+											<div id="editor">/**Enter your Element code here...**/
+											</div>
+											<!--textarea class="form-control" style="resize: vertical;" id="sourceCode" name="sourceCode" placeholder="Enter Element's source code..."></textarea-->
+									</form>																					
+									<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace.js" type="text/javascript" charset="utf-8"></script>
+									<script>
+										  var editor = ace.edit("editor");
+										  editor.setTheme("ace/theme/cobalt");	//cobalt eclipse dreamweaver more themes at: https://github.com/ajaxorg/ace/tree/master/lib/ace/theme
+										  document.getElementById("editor").style.height = "200px";
+									</script>
+								</div>		
+							</div>
+						  </div>
+						</div>
+						<!--///////end NEW//////////// -->							
+						
+						<div class="modal-footer">
+							<button id="save" type="button" class="btn btn-primary" data-dismiss="modal" onclick="return validateForm('formName','eName','eDescription','image','new');">Save & Close</button>
+							<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="resetFunction();">Close</button>	
+						</div>
+				</div>
+			</div>
+		</div>      
+		<!-- End Modal New Element -->	
+
+		<!-- Modal Edit Element -->
+		<div class="modal fade" id="editModal" role="dialog">
+			<div class="modal-dialog">			
+			  <!-- Modal content-->
+			  	<div class="modal-content" id="modal">
+					<div class="modal-header">
+						<h4 class="modal-title">Edit User Element</h4>
+						<button type="button" class="close" data-dismiss="modal">&times;</button>				
+					</div>
+					<div class="modal-body">
+						<!--////////EDIT/////////// -->
+						<ul class="nav nav-tabs" id="myTab" role="tablist">
+							<li class="nav-item" role="presentation">
+							  	<button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#ehome" type="button" role="tab" aria-controls="home" aria-selected="true">Element</button>
+							</li>
+							<li class="nav-item" role="presentation">
+							  	<button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#eprofile" type="button" role="tab" aria-controls="profile" aria-selected="false">Properties</button>
+							</li>
+							<li class="nav-item" role="presentation">
+							  	<button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#econtact" type="button" role="tab" aria-controls="contact" aria-selected="false">Source Code</button>
+							</li>
+						</ul>
+						<div class="tab-content" id="myTabContent">
+							<div class="tab-pane fade show active" id="ehome" role="tabpanel" aria-labelledby="ehome-tab">
+								<form name="editForm" id="editForm" style="background-color: white; color: black;">
+									<div class="mb-2">
+										<label for="recipient-name" class="col-form-label">Name:</label>
+										<input type="text" class="form-control" id="editName" name="editName">
+									</div>
+									<div>
+										<label for="recipient-name" class="col-form-label">Description:</label>
+										<input type="text" class="form-control" id="editDescription" placeholder="Enter element description">
+									</div>		
+									<div class="position-relative">
+										<br>
+										<label for="recipient-name" class="col-form-label">Image:</label>
+										<p> </p>
+										<p><img id="editImg" width="50" src="assets/icons/blank.png"/></p>
+										<p></div><input type="file" class="form-control-file" accept="image/*" name="editImage" id="file" onchange="loadFileEdit(event)"></p>
+										<br>
+									</div>									
+								</form>	
+								
+								
+							<div class="tab-pane fade" id="eprofile" role="tabpanel" aria-labelledby="eprofile-tab" style="background-color: white; color:black;">
+								<div class="mb-3">
+									<p>
+										<label for="recipient-name" class="col-form-label">Inputs:</label>
+										<input type="text" class="form-control" id="eInput" placeholder="Enter element inputs" name="eInput">
+									</p>
+									<p>
+										<label for="recipient-name" class="col-form-label">Outputs:</label>
+										<input type="text" class="form-control" id="eOutput" placeholder="Enter element outputs">
+									</p>
+								</div>
+							</div>
+
+
+							<div class="tab-pane fade" id="econtact" role="tabpanel" aria-labelledby="econtact-tab">		
+								<div>												
+									<form name="editformCode" id="editformCode" style="background-color: white; color: black;">																	
+										<label for="recipient-name" class="col-form-label">Source Code:</label>										
+											<div class="btn-group"> 
+												<i class="dropdown-arrow dropdown-arrow-inverse"></i>
+												<button class="btn btn-outline-primary btn-sm estatus">Language</button>
+												<button class="btn btn-outline-primary btn-sm dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+												<ul class="dropdown-menu dropdown-inverse">
+													<li><a class="dropdown-item" href="#">Python</a></li>
+													<li><a class="dropdown-item" href="#">LabVIEW</a></li>
+													<li><a class="dropdown-item" href="#">MATLAB</a></li>
+													<li><a class="dropdown-item" href="#">C++</a></li>
+												</ul>
+											</div>
+											<hr style="margin-bottom: 0px;">
+											<div id="eeditor">/**Enter your Element code here...**/
+											</div>
+ 										<!--textarea class="form-control" style="resize: vertical;" id="sourceCode" name="sourceCode" placeholder="Enter Element's source code..."></textarea-->
+									</form>																						
+									<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace.js" type="text/javascript" charset="utf-8"></script>
+									<script>
+										  var eeditor = ace.edit("eeditor");
+										  eeditor.setTheme("ace/theme/cobalt");	//eclipse dreamweaver more themes at: https://github.com/ajaxorg/ace/tree/master/lib/ace/theme
+										  document.getElementById("eeditor").style.height = "200px";
+									</script>
+
+								</div>		
+							</div>
+						  </div>
+						</div>
+						<!--///////end EDIT//////////// -->
+						<div class="modal-footer">
+							<button id="save" type="button" class="btn btn-primary" data-dismiss="modal" onclick="return validateForm('editForm','editName','editDescription','editImage','edit');">Save & Close</button>
+							<button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="resetFunction();">Close</button>	
+						</div>
+				</div>
+			</div>
+		</div>      
+		<!-- End Modal Edit Element -->	
+
+		<!-- Modal Delete Element -->
+		<div class="modal fade" id="deleteModal" role="dialog">
+					<div class="modal-dialog">			
+					  <!-- Modal content-->
+						  <div class="modal-content" id="modal">
+							<div class="modal-header">
+								<h4 class="modal-title">Delete Element</h4>
+								<button type="button" class="close" data-dismiss="modal">&times;</button>				
+							</div>
+							<!-- /////////////////// -->
+							<div class="modal-body">											
+								<form name="formDName" id="formDName" style="background-color: white; color: black;">
+									<div class="mb-2">
+										<input type="hidden" class="form-control" id="dName" placeholder="Enter element name" readonly="readonly">
+										<label id="modalText" name="dName"></label>	
+									</div>
+								</form>						
+							</div>
+							<!-- /////////////////// -->															
+							<div class="modal-footer">
+								<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>	
+								<button type="button" class="btn btn-danger" data-dismiss="modal" onclick="deleteFunction('formDName','dName');">Delete & Close</button>	
+						</div>
+						</div>
+					</div>
+		</div>      
+		<!-- End Modal Delete Element -->		
+
+		<script>
+					$('#clientElements').click(function(){	
+			    	//sMainElementList.setClientElements(self.elements);
+					}); 
+			
+					$('.dropdown-inverse li > a').click(function(e){
+						$(".status").text(this.innerHTML);
+						let leng = $(".status").text().trim().toLowerCase();
+                        let lang = "ace/mode/"+leng;						
+						editor.getSession().setMode(lang);
+					});
+
+					$('.dropdown-inverse li > a').click(function(e){
+						$(".estatus").text(this.innerHTML);
+						let leng = $(".estatus").text().trim().toLowerCase();
+                        let lang = "ace/mode/"+leng;						
+						eeditor.getSession().setMode(lang);
+					});
+					   
+					var loadFileNew = function(event) {                          //Función para cargar la imagen del Elemento de usuario
+						var image = document.getElementById('img');
+						image.src = URL.createObjectURL(event.target.files[0]);
+					};	
+
+					var loadFileEdit = function(event) {                          //Función para cargar la imagen del Elemento de usuario
+						var image = document.getElementById('editImg');
+						image.src = URL.createObjectURL(event.target.files[0]);
+					};	
+					
+					function resetFunction() {                                //Función para limpiar los campos del Modal de Elementos
+						//sMainElementList.setElements()
+						document.getElementById("formName").reset();       
+						var image1 = document.getElementById('img');
+						image1.src = "assets/icons/blank.png";
+						$('#sourceCode').val('');
+						$(".status").text("Language");
+						//document.getElementById("elementDescription").reset();
+					}
+
+					function deleteFunction(forma, nombre) {                                //Función para limpiar los campos del Modal de Elementos
+						//sMainElementList.setElements()						     
+						var name = document.forms[forma][nombre].value; 
+						sMainCommConnection.deleteElement(name);
+						//document.getElementById("elementDescription").reset();					
+					}
+ 
+					function validateForm(forma,nombre,descript,imagen,action) {     //Función para validar los datos del Modal,
+						var name = document.forms[forma][nombre].value;     //No permite ni nombre ni imagen del Elemento el blanco
+						var icon = document.forms[forma][imagen].value;
+						var desc = document.forms[forma][descript].value;
+
+						var codeType;
+						var code;
+						
+						if (action=="edit"){
+							codeType = $(".estatus").text().trim();
+							code = eeditor.getSession().getValue();
+						}else{
+							codeType = $(".status").text().trim();
+							code = editor.getSession().getValue();
+						}
+						
+						var tagName = "#"+nombre;
+						var tagDesc = "#"+descript;
+                        //var tagCode = 'textarea#'+sourceCode;
+						//let code = $(tagCode).val();						
+						
+						if ( name == "" || name == null) {
+							alert("Name must be filled out!");							
+							return false;
+						}
+
+						if (action=="new"){
+							if (icon == "" || icon == null) {
+								alert("Image must be filled out!");
+								return false;
+							}		
+						}
+						
+						if (codeType == "Language") {
+							alert("Language must be selected!");							
+							return false;
+						}
+						
+						//getValue(tagName);
+						//getValue(tagDesc);
+						var Element = getJsonDetails(name, desc, icon, code, codeType, action);		
+						if(action=="new"){
+							sMainCommConnection.setUserElements(Element);
+						}else{
+							sMainCommConnection.editUserElements(Element);
+						}									
+						resetFunction();
+					}
+					
+					function getValue(tag) {
+						var quota = $(tag).val();
+						//alert(quota);
+						return quota;
+       				}
+
+					function getJsonDetails(name, desc, icon, code, codeType, action) {
+						var image;
+
+						if (action=="new"){
+							image = document.getElementById('img');
+						}else{
+							image = document.getElementById('editImg');
+						}
+
+						var canvas = document.createElement('canvas'),
+						ctx = canvas.getContext('2d');
+						canvas.height = image.naturalHeight;
+						canvas.width = image.naturalWidth;
+						ctx.drawImage(image, 0, 0);
+
+						// Unfortunately, we cannot keep the original image type, so all images will be converted to PNG
+						// For this reason, we cannot get the original Base64 string
+						var uri = canvas.toDataURL('image/png'),
+						b64 = uri.replace(/^data:image\/(png|jpg|jpeg);base64,/, '');				
+					
+						item = {}
+						item ["name"] = name;
+						item ["description"] = desc;
+						item ["image"] = "../config/PythonElements/User/"+name+"/icon.png"
+						item ["inputs"] = "1";  
+						item ["outputs"] = "2";	
+						item ["imageData"] = b64; //"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";//globalThis.b64;//JSON.stringify(globalThis.b64);						
+						item ["code"] = code;	
+						item ["codeType"] = codeType;		
+						//console.log(JSON.stringify(item));
+						return item;
+					}		
+		
+		</script>  		
+	  	
+		<!---------------------------->
+		<!-- END OF ELEMENTS ANCHOR -->
+		<!---------------------------->
+
+		<!---------------------------->
+		<!-- FINAL SCRIPT           -->
+		<!---------------------------->
+
+		<script>
+			// On resize event
+			function sBrowserResized() {
+				sTabbedPannel.resized();
+				//setTimeout(sTabbedPannel.resized, 100);
+			}
+
+			// --- Global resources object
+			
+			const sMainRes = IODA_RESOURCES.main();
+			//sMainRes.setLocale("es");
+			
+			//$('#mMainTabsMenuButton').text(sMainRes.getString("Pages"));	 
+
+			const sMainConfirmationForm = IODA_GUI.confirmationForm();
+			const sMainNameForm = IODA_GUI.nameForm();
+			
+			/*
+			var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+			var toastList = toastElList.map(function (toastEl) {
+				return new bootstrap.Toast(toastEl);
+			});
+			*/
+			// ------------ BEGIN COMMENTED OUT ------
+			/* --- Drag utility
+			const sMainDragElement = function(ev) {
+				ev.dataTransfer.setData("text", ev.target.dataset.drag_info);
+			}
+			// --- resized!
+
+			{ // Initialize Tooltips
+				var tooltipTriggerList = [].slice.call(document
+						.querySelectorAll('[data-bs-toggle="tooltip"]'))
+				var tooltipList = tooltipTriggerList
+						.map(function(tooltipTriggerEl) {
+							return new bootstrap.Tooltip(tooltipTriggerEl)
+						})
+			}
+			*/
+			// ------------ END COMMENTED OUT ------
+			
+			// ------------ GLOBAL UTILITIES AND KEY OBJECTS ------
+
+			// --- This is only valid for the local test server
+
+			var mMainServerWS = "ws://localhost:8000/ws";
+			var sMainGetServerURL = function(url) {
+				if (url.startsWith('http://') || url.startsWith('https://')) return url;
+				return "http://localhost:8000/static/config/" + url;
+			};
+
+			if (false) {
+				mMainServerWS = "ws://localhost:8000/ws/ioda/paco/";
+				sMainGetServerURL = function(url) {
+					return "http://localhost:8000/config/" + url;
+				};
+			}
+			console.log(mMainServerWS)
+			// --- Fill Main TabContainer
+			var sTabbedPannel = IODA_GUI.tabbedPanel('mMainTabContainer');
+			$('#mMainTabContainer').append(sTabbedPannel.getMainPanel());
+
+			const sMainReadWorkfile = function (workfileData) {
+				sTabbedPannel.readObject(workfileData);
+				mMainToWorkingPage();
+			};
+
+			const sMainSetTitle = function (title) {
+				$('#mMainTitle').val(title);
+			};
+			
+			// Create Communication Center			
+			const sMainCommConnection = IODA_COMMUNICATION.SocketIODAClient();
+			const sMainCommandCenter  = IODA_GUI.commandCenter();
+
+			// Create element list
+			$('#sMainElementsPanelTitle').text(sMainRes.getString("Elements"));	 
+			var sMainElementList = IODA_GUI.elements();  
+			$('#mMainElementsSideNav').append(sMainElementList.getMainPanel());
+			
+			// SAVES ME TIME!
+			sMainCommConnection.login(mMainServerWS, "paco", "");
+
+		</script>		
+
+	</body>
+</html>

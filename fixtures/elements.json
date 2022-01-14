@@ -69,5 +69,128 @@
       "properties" : [{"name": "Operator1", "local_name": "First operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand1", "local_name": "First operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operand2", "local_name": "Second operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator2", "local_name": "First operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand3", "local_name": "Third operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator3", "local_name": "Second operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand4", "local_name": "Fourth operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator4", "local_name": "Fourth operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand5", "local_name": "Fifth operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator5", "local_name": " Fifth operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand6", "local_name": "Sixth operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator6", "local_name": " Sixth operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand7", "local_name": "Seventh operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator7", "local_name": " Seventh operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand8", "local_name": "Eighth operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator8", "local_name": " Eighth operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand9", "local_name": "Nineth operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Result", "local_name": "Operation result", "type": "Number", "attributes": "output"}],
       "help": "www.google.com"
     }
+  },
+
+  {
+    "model": "eda.Element",
+    "pk": ,
+    "fields": {
+
+    }
+  },
+
+  {
+    "model": "eda.Element",
+    "pk": "Data.DataCleaner",
+    "fields": {
+      "name" : "Data Cleaner",
+      "description" : "Removes or fills empty data",
+      "image" : "PythonElements/Data/DataCleaner/icon.png"
+    }
+  },
+
+  {
+    "model": "eda.Element",
+    "pk": "Data.FileLoader",
+    "fields": {
+      "name" : "File Loader",
+      "description" : "Load data from a file",
+      "image" : "PythonElements/Data/FileLoader/icon.png"
+    }
+  },
+
+  {
+    "model": "eda.Element",
+    "pk": "Data.DataBaseLoader",
+    "fields": {
+      "name" : "DataBase Loader",
+      "description" : "Load data from a DB",
+      "image" : "PythonElements/Data/DataBaseLoader/icon.png"
+    }
+  },
+
+  {
+    "model": "eda.Element",
+    "pk": "Data.CloudLoader",
+    "fields": {
+      "name" : "Cloud Loader",
+      "description" : "Load data from the Cloud",
+      "image" : "PythonElements/Data/CloudLoader/icon.png"
+    }
+  },
+
+  {
+    "model": "eda.Element",
+    "pk": "Data.FeatureSelector",
+    "fields": {
+      "name" : "Feature Selector",
+      "description" : "Selects features from data",
+      "image" : "PythonElements/Data/FeatureSelector/icon.png"
+    }
+  },
+
+  {
+    "model": "eda.Element",
+
+  }
+  "pk": "Data.DataMerger": {
+"fields": {
+      "name" : "Data Merger",
+      "description" : "Merges sets of data",
+      "input" : "DataFrame,Series",
+      "image" : "PythonElements/Data/DataMerger/icon.png"
+  },
+  
+  "pk": "Data.DataSaver": {
+"fields": {
+      "name" : "Data Saver",
+      "description" : "Saves data to disk",
+      "image" : "PythonElements/Data/DataSaver/icon.png"
+  },
+
+  "pk": "Visualization.DataTable": {
+"fields": {
+      "name" : "Data Table",
+      "description" : "Shows data in table",
+      "image" : "PythonElements/Visualization/DataTable/icon.png"
+  },
+  "Visualization.PairPlot": {
+
+  "pk": "fields": {
+      "name" : "Pair Plot",
+      "description" : "Shows pair plot of data",
+      "image" : "PythonElements/Visualization/PairPlot/icon.png"
+  },
+
+  "pk": "Visualization.ScatterPlot": {
+"fields": {
+      "name" : "Scatter Plot",
+      "description" : "Shows scatter plot of data",
+      "image" : "PythonElements/Visualization/ScatterPlot/icon.png"
+  },
+
+  "pk": "Visualization.BoxPlot": {
+"fields": {
+      "name" : "Box Plot",
+      "description" : "Shows box plot of data",
+      "image" : "PythonElements/Visualization/BoxPlot/icon.png"
+  },
+
+  "pk": "Program.FunctionOneVar": {
+  "fields": {
+    "name" : "Function One Var",
+    "image" : "ProgramFlow/Program/FunctionOneVar/icon.png"
+  },
+
+  "pk": "Program.LogicalComparison": {
+  "fields": {
+    "name" : "Logical Comparison",
+    "image" : "ProgramFlow/Program/LogicalComparison/icon.png"
+  },
+  
+  "pk": "Program.PolishCalculation": {
+  "fields": {
+    "name" : "Polish Calculation",
+    "image" : "ProgramFlow/Program/PolishCalculation/icon.png"
   }
 ]

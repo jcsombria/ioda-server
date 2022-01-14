@@ -78,7 +78,7 @@ IODA_COMMUNICATION.SocketIODAClient = function() {
 				sendMessage("logout");
 			},
 			mListener.getProjectName(), "WARNING!!! This action CANNOT be undone!!!<br>Do you really want to delete this project?", 
-			"Delete");
+			sMainRes.getString("Delete"));
 	}
 
 	self.setProjectDescription = function(name, description) {
@@ -101,19 +101,9 @@ IODA_COMMUNICATION.SocketIODAClient = function() {
 		sendMessage("run_graph", graphData);
 	}
 
-	// --- Added to deal with user elements
-	self.setUserElements = function(data) {
-		sendMessage("set_Element", data);
+	self.userElementCommand = function(data) {
+		sendMessage("user_elements", data);
 	}
-
-	self.editUserElements = function(data) {
-		sendMessage("edit_Element", data);
-	}
-
-	self.deleteElement = function(data) {
-		sendMessage("delete_Element", data);
-	}
-	// --- End of added to deal with user elements
 
 	// -------------------------------
 	// Input messages
@@ -175,8 +165,8 @@ IODA_COMMUNICATION.SocketIODAClient = function() {
 			default :
 				console.log("Message unknown: "+obj.key+" : "+obj.data);
 				break;
-			// Added for user elements
-			case "set_element" : mListener.updateElements(obj.data); break;
+			case "user_elements" : mListener.updateUserElements(obj.data); break;
+			case "project_elements" : mListener.updateProjectElements(obj.data); break;
 		}
 	}
 

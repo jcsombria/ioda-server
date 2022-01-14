@@ -7,7 +7,8 @@ from eda.models import ProjectTemplate, Project, Element
 from eda.protocol.graph import Graph
 
 from celery import Celery
-import traceback
+from dataclasses import dataclass, field
+
 
 class UserSession(object):
      
@@ -16,7 +17,7 @@ class UserSession(object):
         def w(action):
             def f(self, *args, **kwargs):
                 data = action(self, *args, **kwargs)
-                #print('data: {0}'.format(data))
+                # print('data: {0}'.format(data))
                 return { 'key': key, 'data': data }
             return f
         return w
@@ -35,8 +36,9 @@ class UserSession(object):
             'get_workfile': self.getWorkfile,
             'save_workfile': self.saveWorkfile,
             'run_graph': self.runGraph,
-#             'set_element': self.setElement,
-            'edit_element': self.editElement,
+            # 'set_element': self.setElement,
+            'user_elements': self.setElement,
+#             'edit_element': self.editElement,
         }
         
     def process(self, message):
@@ -49,18 +51,16 @@ class UserSession(object):
         '''
         command = message.get('key')
         method = self.commands.get(command)
-        result = { 'result': 'true' }
-        if command is not None:
-            params = message.get('data')
-            try:
-                print(params)
-                if params:
-                    result = method(params)
-                else:
-                    result = method()
-            except Exception as e:
-                result = { 'result': 'incorrect arguments'}
-                print(traceback.format_exc())
+        if not method:
+            return self.socket.send(text_data=json.dumps({
+                { 'result': 'Unknown command' }
+            }))
+        params = message.get('data')
+        if params:
+            result = method(params)
+        else:
+            result = method()
+        # result = { 'result': 'incorrect arguments'}
         self.socket.send(text_data=json.dumps(result))
 
 
@@ -91,7 +91,7 @@ class UserSession(object):
 
         return { 'result': 'ok' }
  
- 
+
     @with_key(key='logout_result')
     def logout(self):
         ''' Log out of the system.
@@ -177,7 +177,6 @@ class UserSession(object):
         delete = params.get('delete')
         
         element = Element.objects.filter(name=name).first()
-
         if element:
             if delete:
                 element.delete()
@@ -192,7 +191,15 @@ class UserSession(object):
                 element.code = code
             element.save()
         else:
-            element = Element.objects.create(id = typeN, name=name, description=description, image=image, help=helpN, properties=properties, code = code)
+            element = Element.objects.create(
+                id=typeN,
+                name=name,
+                image=image,
+                code=code,
+                properties=properties,
+                help=helpN,
+                description=description,
+            )
         
         BROKER_URL = 'amqp://guest:guest@rabbitmq'
         BACKEND    = 'rpc://'
@@ -224,108 +231,118 @@ class UserSession(object):
         
         return {
             'name': name,
-            'elements': self._getElements(),
+            'elements': { 'groups': self._getGroups(), 'elements': self._getElements() },
+            'user_elements': { 'groups': [], 'elements': []},
             'workfile': project.workfile,
         }
 
     # ONLY FOR TESTING!! The elements should be read from the database.
+    def _getGroups(self):
+        return [{
+                "name": "Data",
+                "image": "PythonElements/Data/icon.png",
+                "elements": [
+                    "Data.FileLoader",
+                    "Data.DataBaseLoader",
+                    "Data.CloudLoader",
+                    "Data.DataCleaner",
+                    "Data.FeatureSelector",
+                    "Data.DataMerger",
+                    "Data.DataSaver"
+                ]
+            }, {
+                "name": "Visualization",
+                "image": "PythonElements/Visualization/icon.png",
+                "elements": [
+                    "Visualization.DataTable",
+                    "Visualization.PairPlot",
+                    "Visualization.ScatterPlot",
+                    "Visualization.BoxPlot",
+                    "Visualization.TextAndValue"
+                ],
+            }, {
+                "name": "Model",
+                "image": "PythonElements/Model/icon.png",
+                "elements": []
+            }, {
+                "name": "Evaluation",
+                "image": "PythonElements/Evaluation/icon.png",
+                "elements": []
+            }, {
+                "name" : "Program",
+                "image": "ProgramFlow/Program/icon.png",
+                "elements" : [
+                    "Program.BinaryOperation",
+                    "Program.FunctionOneVar",
+                    "Program.LogicalComparison",
+                    "Program.NumberVariable",
+                    "Program.PolishCalculation"
+                ],
+            },
+        ]
+
+    # ONLY FOR TESTING!! The elements should be read from the database.
     def _getElements(self):
-        testingElements = {
-            # NOTA: Esto hay que verlo, la implementación del editor no coincide con el documento
-            "groups" : [
-                { "name": "Data", "image": "PythonElements/Data/icon.png"},
-                { "name": "Visualization", "image": "PythonElements/Visualization/icon.png"},
-                { "name": "Model", "image": "PythonElements/Model/icon.png"},
-                { "name": "Evaluation", "image": "PythonElements/Evaluation/icon.png"},
-                { "name" : "Program", "image": "ProgramFlow/Program/icon.png" },
-            ],
-            "Data" : [
-                "Data.FileLoader",
-                "Data.DataBaseLoader",
-                "Data.CloudLoader",
-                "Data.DataCleaner",
-                "Data.FeatureSelector",
-                "Data.DataMerger",
-                "Data.DataSaver"
-            ],
-            "Visualization" :[
-                "Visualization.DataTable",
-                "Visualization.PairPlot",
-                "Visualization.ScatterPlot",
-                "Visualization.BoxPlot",
-                "Visualization.TextAndValue"
-            ],
-            "Model" : [           
-            ],
-            "Evaluation" : [
-            ],
-            "Program" : [
-                "Program.BinaryOperation",
-                "Program.FunctionOneVar",
-                "Program.LogicalComparison",
-                "Program.NumberVariable",
-                "Program.PolishCalculation",
-                "Program.Template"
-            ],
+        elementList = {
             "Data.DataCleaner" : {
                 "name" : "Data Cleaner",
                 "description" : "Removes or fills empty data",
                 "image" : "PythonElements/Data/DataCleaner/icon.png"
             },          
             "Data.FileLoader" : {
-              "name" : "File Loader",
-              "description" : "Load data from a file",
-            "image" : "PythonElements/Data/FileLoader/icon.png"
+                "name" : "File Loader",
+                "description" : "Load data from a file",
+                "image" : "PythonElements/Data/FileLoader/icon.png"
             },
             "Data.DataBaseLoader": {
-              "name" : "DataBase Loader",
-              "description" : "Load data from a DB",
-              "image" : "PythonElements/Data/DataBaseLoader/icon.png"
+                "name" : "DataBase Loader",
+                "description" : "Load data from a DB",
+                "image" : "PythonElements/Data/DataBaseLoader/icon.png"
             },
             "Data.CloudLoader": {
-              "name" : "Cloud Loader",
-              "description" : "Load data from the Cloud",
-              "image" : "PythonElements/Data/CloudLoader/icon.png"
+                "name" : "Cloud Loader",
+                "description" : "Load data from the Cloud",
+                "image" : "PythonElements/Data/CloudLoader/icon.png"
             },
             "Data.FeatureSelector": {
-              "name" : "Feature Selector",
-              "description" : "Selects features from data",
-              "image" : "PythonElements/Data/FeatureSelector/icon.png"
+                "name" : "Feature Selector",
+                "description" : "Selects features from data",
+                "image" : "PythonElements/Data/FeatureSelector/icon.png"
             },
             "Data.DataMerger": {
-              "name" : "Data Merger",
-              "description" : "Merges sets of data",
-              "input" : "DataFrame,Series",
-              "image" : "PythonElements/Data/DataMerger/icon.png"
+                "name" : "Data Merger",
+                "description" : "Merges sets of data",
+                "input" : "DataFrame,Series",
+                "image" : "PythonElements/Data/DataMerger/icon.png"
             },
             "Data.DataSaver": {
-              "name" : "Data Saver",
-              "description" : "Saves data to disk",
-              "image" : "PythonElements/Data/DataSaver/icon.png"
+                "name" : "Data Saver",
+                "description" : "Saves data to disk",
+                "image" : "PythonElements/Data/DataSaver/icon.png"
             },
             "Visualization.DataTable": {
-              "name" : "Data Table",
-              "description" : "Shows data in table",
-              "image" : "PythonElements/Visualization/DataTable/icon.png"
+                "name" : "Data Table",
+                "description" : "Shows data in table",
+                "image" : "PythonElements/Visualization/DataTable/icon.png"
             },
             "Visualization.PairPlot": {
-              "name" : "Pair Plot",
-              "description" : "Shows pair plot of data",
-              "image" : "PythonElements/Visualization/PairPlot/icon.png"
+                "name" : "Pair Plot",
+                "description" : "Shows pair plot of data",
+                "image" : "PythonElements/Visualization/PairPlot/icon.png"
             },
             "Visualization.ScatterPlot": {
-              "name" : "Scatter Plot",
-              "description" : "Shows scatter plot of data",
-              "image" : "PythonElements/Visualization/ScatterPlot/icon.png"
+                "name" : "Scatter Plot",
+                "description" : "Shows scatter plot of data",
+                "image" : "PythonElements/Visualization/ScatterPlot/icon.png"
             },
             "Visualization.BoxPlot": {
-              "name" : "Box Plot",
-              "description" : "Shows box plot of data",
-              "image" : "PythonElements/Visualization/BoxPlot/icon.png"
+                "name" : "Box Plot",
+                "description" : "Shows box plot of data",
+                "image" : "PythonElements/Visualization/BoxPlot/icon.png"
             },
             "Program.FunctionOneVar": {
-              "name" : "Function One Var",
-              "image" : "ProgramFlow/Program/FunctionOneVar/icon.png"
+                "name" : "Function One Var",
+                "image" : "ProgramFlow/Program/FunctionOneVar/icon.png"
             },
             "Program.LogicalComparison": {
                 "name" : "Logical Comparison",
@@ -336,21 +353,25 @@ class UserSession(object):
                 "image" : "ProgramFlow/Program/PolishCalculation/icon.png"
             }
         }
-        elements = { e.id : {
+        elementList.update(
+           { e.id : {
             'name': e.name,
             'description': e.description,
             'image': e.image.name,
+            # 'language': ,
+            # 'code': ,
+            # 'help': ,
             'properties': e.properties,
-        } for e in Element.objects.all() }
-        
-        for e in elements:
-            groupid = e
-            group = groupid.split('.')[0]
-            nonAddedGroup = testingElements.get(group) 
-            if(groupid not in nonAddedGroup):
-                testingElements[group].append(groupid)
-        testingElements.update(elements)
-        return testingElements
+        } for e in Element.objects.all() })
+        # for e in elements:
+        #     groupid = e
+        #     group = groupid.split('.')[0]
+        #     nonAddedGroup = testingElements.get(group) 
+        #     if(groupid not in nonAddedGroup):
+        #         testingElements[group].append(groupid)
+        # testingElements.update(elements)
+        # return testingElements
+        return elementList
     
     @with_key(key='project')
     def editProject(self, params):
@@ -405,10 +426,27 @@ class UserSession(object):
         #     self.editElement({'nothing':''})
         #=======================================================================
         #---------------------------------
-        
         return Graph(params).run()
 
-# set_element: Used by the client to create a user-defined data analysis element.
+    @with_key(key='run_result')
+    def setElement(self, params):
+        # set_element: Used by the client to create a user-defined data analysis element.
+        print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
+        print(params)
+        # command = Command(*params)
+        # {
+        #   'command': 'CreateGroup', 
+        #   'target': 'ddd',
+        #   'options': {
+        #      'name': 'ddd', 
+        #      'relative_position': 'as_is', 
+        #      'relative_object': '', 
+        #      'base64Icon': ''
+        #   }
+        # }
+
+        return {}
+
 # edit_element: Used by the client to edit a user-defined data analysis element.
 # delete_element: Used by the client to delete a user-defined data analysis element. NOTA: Hacer como con los proyectos, edit_element incluye el delete_element.
 
@@ -424,3 +462,12 @@ def worker(input):
         print(messageResponse[-200:])
     else:
         print(messageResponse)
+
+
+# @dataclass
+# class Command
+#     command: str
+#     target: str
+#     options: dict = field(default_factory=dict)
+
+

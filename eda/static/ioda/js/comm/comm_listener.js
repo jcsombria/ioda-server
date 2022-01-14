@@ -45,7 +45,10 @@ IODA_COMMUNICATION.Listener = function(iodaClientComm) {
 	}
 
 	self.loadProject = function(projectData) {
-		sMainElementList.setElements(projectData.elements);
+		console.log('-------------------------------------------')
+		console.log(projectData.user_elements)
+		console.log('-------------------------------------------')
+		sMainElementList.setElements(projectData.elements,projectData.user_elements);
 		sMainReadWorkfile(projectData.workfile);
 		self.setProjectName(projectData.name);
 	}
@@ -55,7 +58,7 @@ IODA_COMMUNICATION.Listener = function(iodaClientComm) {
 	}
 
 	self.processRunResult = function(runInformationData) {
-    sTabbedPannel.readRunResult(runInformationData.graph, runInformationData.results);
+		sTabbedPannel.readRunResult(runInformationData.graph, runInformationData.results);
 	}
 
 	// -------------------------------
@@ -77,10 +80,12 @@ IODA_COMMUNICATION.Listener = function(iodaClientComm) {
 	// Elements 
 	// -------------------------------
 
-	self.updateElements = function(projectElements){
-		console.log("Reading projectElements:" + projectElements.elements);
-		sMainElementList.setElements(projectElements.elements);
-		alert("List of Elements updated!!!");
+	self.updateUserElements = function(userElements){
+		sMainElementList.setUserElements(userElements);
+	}
+
+	self.updateProjectElements = function(projectElements){
+		sMainElementList.setProjectElements(projectElements);
 	}
 
 	self.clearData = function() {

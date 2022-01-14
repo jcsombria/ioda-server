@@ -31,8 +31,8 @@ IODA_GUI.tabbedPanel = function(mId) {
 	var mTabContent = jQuery("<div/>" , { class:"tab-content", style:"flex-grow:1"}).appendTo(mMainPanel);
 
 	// This is required for flex working fine with tabs!!!
-	mTabNav.on("click","button",(info)=>{
-		var activeHash = info.target.parentElement.dataset.hash;
+	mTabNav.on("click","button",(event)=>{
+		var activeHash = event.currentTarget.parentElement.dataset.hash;
 		$('.mTabContentDiv').each(function () {
 			if ($(this).data('hash')==activeHash) $(this).removeClass('d-none');
 			else $(this).addClass('d-none');
@@ -40,6 +40,41 @@ IODA_GUI.tabbedPanel = function(mId) {
 		mPages[activeHash].resized();
 	});
 
+	mTabNav.on("click","i",(event)=>{
+		var hash = event.currentTarget.parentElement.parentElement.dataset.hash;
+		editPage(mPages[hash]);
+	});
+
+	function editPage(pageToEdit) {
+		var itemList = [];
+		var pageHash=null;
+		$('.mTabContentDiv').each(function () {
+			const hash = $(this).data('hash')
+			var page = mPages[hash];
+			if (page==pageToEdit) pageHash = hash;
+			itemList.push( { 'hash' : hash, 'name' : page.getTitle() }); 
+		});
+		var itemToEdit = (pageToEdit==null) ? null : { 'hash' : pageHash, 'name' : pageToEdit.getTitle()};
+
+		var listener = function(action, arguments) { // newName, relativePosition, relativeToTabHash) {
+			switch(action) {
+				case 'Duplicate' : 
+					sMainNameForm.show(duplicateCurrentPage,getActiveTitle()+" (copy)",null,
+						"Duplicate page", sMainRes.getString("Duplicate"));
+					break;
+				case 'Delete' : 
+					sMainConfirmationForm.show(removeCurrentPage,getActiveTitle(),
+						"Do you really want to delete this page?",sMainRes.getString("Delete"));
+					break;
+				case 'Apply' : 
+					if (arguments['name'].trim().length>0 && arguments['name']!=pageToEdit.getTitle()) renameCurrentPage(arguments['name']);
+					if (arguments['relative_object']!=null) moveTab (arguments['relative_position'], arguments['relative_object'])
+					break;
+			}
+		};
+		IODA_GUI.editionForm('Page', itemToEdit, itemList, listener, { 'can_duplicate' : true })
+	}
+	
 	// -----------------------------
 	// Serialization
 	// -----------------------------
@@ -100,18 +135,18 @@ IODA_GUI.tabbedPanel = function(mId) {
 		mHashNumber = 0;
 	}
 	
-	function highlighTabForPage(hash, classToAdd, icon) {
-		var button = $('#'+mId+'-tab-'+hash);
-		button.addClass(classToAdd);
-		jQuery("<i/>", {
-		class: "m-0 me-2 bi "+icon,
-		style: "font-size: 1rem;"}).prependTo(button);
-		
+	function fullTabTitle(type,title) {
+		switch (type) {
+			case 'Graph_run' : return '<i class="m-0 me-2 bi bi-collection-play" style="font-size: 1rem;"></i>'+ title;
+			case 'Graph'     :
+			default          : return '<i class="m-0 me-2 bi bi-diagram-2"       style="font-size: 1rem;"></i>'+ title;
+		}
 	}
 
-	function appendTab(hash, title) {
+				
+	function appendTab(hash, title, type) {
 		var li = $( sTabTemplate.replace( /#\{hash\}/g, hash )
-								.replace( /#\{label\}/g, title ) );
+								.replace( /#\{label\}/g, fullTabTitle(type,title) ) );
 		var div = $( sContentTemplate.replace( /#\{hash\}/g, hash ) );
 		mTabNav.append(li);
 		mTabContent.append(div);
@@ -121,6 +156,15 @@ IODA_GUI.tabbedPanel = function(mId) {
 	/**
 	 * returns the active button of the tab UL
 	 */
+	function getTabByHash(hash) {
+		var found = null;
+		mTabNav.find('button').each(function (index) {
+			var buttonHash = $(this).parent().data('hash');
+			if (buttonHash==hash) found = $(this).parent();
+		});
+		return found;
+	}
+
 	function getActiveTab() {
 		var buttons = $("ul#"+mId+"-ul button.active")
 		if (buttons.length==0) return null;
@@ -165,10 +209,12 @@ IODA_GUI.tabbedPanel = function(mId) {
 	function setActiveTitle(title) {
 		var tab = getActiveTab();
 		if (!tab) return -1;
-		$("ul#"+mId+"-ul button.active").html(title);
-		return tab.data('hash');
+		const hash = tab.data('hash');
+		var button = $("ul#"+mId+"-ul button.active");
+		button.html(fullTabTitle(mPages[hash].getType(),title));
+		return hash;
 	}
-
+	
 	function removeCurrentTab() {
 		var tab = getActiveTab();
 		if (!tab) return -1;
@@ -208,6 +254,21 @@ IODA_GUI.tabbedPanel = function(mId) {
 		}
 	}
 
+	function moveTab (relativePosition, relativeToTabHash) {
+		var tab = getActiveTab();
+		var relativeToTab = getTabByHash(relativeToTabHash);
+		if (relativeToTab==null) return;
+		var index = relativeToTab.index();
+		if (relativePosition=="before") {
+			tab.detach().insertBefore(relativeToTab);
+			setActiveTab(index);
+		}
+		else {
+			tab.detach().insertAfter(relativeToTab);
+			setActiveTab(index+1);
+		}
+	}
+
 	// --------------------------
 	// Commands
 	// --------------------------
@@ -239,28 +300,29 @@ IODA_GUI.tabbedPanel = function(mId) {
 		selectLastTabAndMoveItAfterCurrentTab();
 	}
 	
-	function copyCurrentPage(name) {
+	function duplicateCurrentPage(name) {
 		var origHash = getActiveHash();
 		if (origHash<0) return;
 		var origPage = mPages[origHash];
 		var page = appendPage(name, origPage.getType());
 		page.readObject(origPage.saveObject());
+		page.setTitle(name); // the reading of the old page removed that
 		selectLastTabAndMoveItAfterCurrentTab();
 	}
 	
 	function appendPage(name, type) {
 		var id = mId+"-" + mHashNumber;
-		var parentStruct = appendTab(mHashNumber,name);
+		var parentStruct = appendTab(mHashNumber,name,type);
 		var page;
 		switch (type) {
 			case 'Graph_run' : 
 				page = IODA_GUI.graphEditPage(id, name, parentStruct.div, true); // true = isRunReplay  
-				highlighTabForPage(mHashNumber,'text-success','bi-collection-play');
+				$('#'+mId+'-tab-'+mHashNumber).addClass('text-success');
 				break;		
 			case 'Graph' :
 			default : 
 				page = IODA_GUI.graphEditPage(id, name, parentStruct.div,false); 
-				highlighTabForPage(mHashNumber,'text-primary','bi-diagram-2');
+				$('#'+mId+'-tab-'+mHashNumber).addClass('text-primary');
 				break;
 		}
 		mPages[mHashNumber] = page;
@@ -281,18 +343,9 @@ IODA_GUI.tabbedPanel = function(mId) {
 	}
 	
 	self.command = function(command) {
-		if (command=='PageNew') {
+		if (command=='PageCreate') {
 			sMainNameForm.show(newPage,getUniqueName(),"Graph","Create a new page","Create");
 			return;
-		}
-		if (!getActiveTab()) return;
-		switch (command) {
-			case 'PageCopy'   : sMainNameForm.show(copyCurrentPage,getActiveTitle()+" copy",null,"Copy page", "Copy"); break;
-			case 'PageRename' : sMainNameForm.show(renameCurrentPage,getActiveTitle(),null,"Rename page", "Rename"); break;
-			case 'PageDelete' : sMainConfirmationForm.show(removeCurrentPage,"Delete page",
-				"Do you really want to delete this page?","Delete"); break;
-			case 'PageLeft'  : moveCurrentTabLeft(); break;
-			case 'PageRight' : moveCurrentTabRight(); break;
 		}
 	}
 

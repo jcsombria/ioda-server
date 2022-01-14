@@ -73,7 +73,6 @@ IODA_GRAPH.runReplay = function(mGraph) {
 	
 	function completeNodeInfo() {
 		var nodeCounter = {};
-        console.log(mRunNodesInformation)
 		mRunNodesInformation.forEach(function(nodeInfo) {
 			const nodeID = nodeInfo.node;
 			if (nodeID in nodeCounter) nodeCounter[nodeID] = nodeCounter[nodeID]+1;
