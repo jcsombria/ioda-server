@@ -1,196 +1,226 @@
 [  
   {
-    "model": "eda.Element",
-    "pk": "Visualization.TextAndValue",
+    "model": "eda.ElementGroup",
+    "pk": "Data",
     "fields": {
-        "name" : "HTML variable output", 
-        "description" : "Creates or adds to an HTML div a text message and a value",
-        "image" : "ProgramFlow/Visualization/TextAndValue/icon.png",
-        "properties" : [{"name": "Text", "local_name": "Text to display", "type": "String", "attributes": "input|output|manual"}, {"name": "Value", "local_name": "Second operand", "type": "Number", "attributes": "input|output|manual"}, {"name": "Div", "local_name": "HTML result as a div", "type": "String", "attributes": "input|output|manual"}, {"name": "Result", "local_name": "HTML result", "type": "String", "attributes": "input|output"}],
-        "help": "www.google.com"
+      "icon": "PythonElements/Data/icon.png",
+      "position_in_groups": 0
+    }
+  },
+
+  {
+    "model": "eda.DefaultElementGroup",
+    "pk": "Data",
+    "fields": {
+      "projectTemplate": ["Programming", "Fusion", "Discharges", "python-da", "python-series"]
+    }
+  },
+
+  {
+    "model": "eda.ElementGroup",
+    "pk": "Visualization",
+    "fields": {
+      "icon": "PythonElements/Visualization/icon.png",
+      "position_in_groups": 1
+    }
+  },
+
+  {
+    "model": "eda.DefaultElementGroup",
+    "pk": "Visualization",
+    "fields": {
+      "projectTemplate": ["Programming", "Fusion", "Discharges", "python-da", "python-series"]
+    }
+  },
+
+  {
+    "model": "eda.ElementGroup",
+    "pk": "Model",
+    "fields": {
+      "icon": "PythonElements/Model/icon.png",
+      "position_in_groups": 2
+    }
+  },
+
+  {
+    "model": "eda.DefaultElementGroup",
+    "pk": "Model",
+    "fields": {
+      "projectTemplate": ["Programming", "Fusion", "Discharges", "python-da", "python-series"]
+    }
+  },
+
+  {
+    "model": "eda.ElementGroup",
+    "pk": "Evaluation",
+    "fields": {
+      "icon": "PythonElements/Evaluation/icon.png",
+      "position_in_groups": 3
+    }
+  },
+
+  {
+    "model": "eda.DefaultElementGroup",
+    "pk": "Evaluation",
+    "fields": {
+      "projectTemplate": ["Programming", "Fusion", "Discharges", "python-da", "python-series"]
+    }
+  },
+
+  {
+    "model": "eda.ElementGroup",
+    "pk": "Program",
+    "fields": {
+      "icon": "ProgramFlow/Program/icon.png",
+      "position_in_groups": 4
+    }
+  },
+
+  {
+    "model": "eda.DefaultElementGroup",
+    "pk": "Program",
+    "fields": {
+      "projectTemplate": ["Programming", "Fusion", "Discharges", "python-da", "python-series"]
+    }
+  },
+
+  {
+    "model": "eda.Element",
+    "pk": "1",
+    "fields": {
+      "nick": "TextAndValue",
+      "name" : "HTML variable output", 
+      "description" : "Creates or adds to an HTML div a text message and a value",
+      "image" : "ProgramFlow/Visualization/TextAndValue/icon.png",
+      "properties" : [{"name": "Text", "local_name": "Text to display", "type": "String", "attributes": "input|output|manual"}, {"name": "Value", "local_name": "Second operand", "type": "Number", "attributes": "input|output|manual"}, {"name": "Div", "local_name": "HTML result as a div", "type": "String", "attributes": "input|output|manual"}, {"name": "Result", "local_name": "HTML result", "type": "String", "attributes": "input|output"}],
+      "help": "www.google.com",
+      "group": ["Visualization"]
     }
   },
   
   {
+    "model": "eda.DefaultElement",
+    "pk": "1",
+    "fields": {}
+  },
+
+  {
     "model": "eda.Element",
-    "pk": "Program.BinaryOperation",
+    "pk": "2",
     "fields": {
+      "nick": "BinaryOperation",
       "name" : "Binary operation",
       "description" : "Does one of several possible binary operations",
       "image" : "ProgramFlow/Program/BinaryOperation/icon.png",
       "properties" : [{"name": "Operand1", "local_name": "First operand", "type": "Number", "attributes": "required|input|manual"}, {"name": "Operand2", "local_name": "Second operand", "type": "Number", "attributes": "required|input|manual"}, {"name": "Operation", "local_name": "Operation to apply", "type": "OPTION['plus','minus', 'times', 'divided by']", "attributes": "required|manual"}, {"name": "Result", "local_name": "Operation result", "type": "Number", "attributes": "output"}],
-      "help": "www.google.com"
+      "help": "www.google.com",
+      "group": ["Program"]
     }
   },
 
   {
+    "model": "eda.DefaultElement",
+    "pk": "2",
+    "fields": {}
+  },
+
+  {
     "model": "eda.Element",
-    "pk": "Program.NumberVariable",
+    "pk": "3",
     "fields": {
+      "nick": "NumberVariable",
       "name" : "Program.NumberVariable",
       "description" : "Creates and/or keeps a numeric variable",
       "image" : "ProgramFlow/Program/NumberVariable/icon.png",
       "properties" : [{"name": "Value", "local_name": "Value", "type": "Number", "attributes": "required|manual|input|output"}],
-      "help": "www.google.com"
+      "help": "www.google.com",
+      "group": ["Program"]
     }
   },
   
   {
-    "model": "eda.Element",
-    "pk": "Program.Template",
-    "fields": {
-      "name" : "Template",
-      "description" : "A template to create new elements",
-      "image" : "ProgramFlow/Program/Template/icon.png",
-      "properties" : [{"name": "parameter", "local_name": "parameter1", "type": "String", "attributes": "input|output|manual|required"}, {"name": "Result", "local_name": "Local result", "type": "String", "attributes": "output"}],
-      "help": "www.google.com"
-    }
+    "model": "eda.DefaultElement",
+    "pk": "3",
+    "fields": {}
   },
 
   {
     "model": "eda.Element",
-    "pk": "Program.LogicalComparison",
+    "pk": "4",
     "fields": {
+      "nick": "FunctionOneVar",
+      "name" : "Function One Var",
+      "description" : "A function of one variable",
+      "image" : "ProgramFlow/Program/FunctionOneVar/icon.png",
+      "properties" : [{}],
+      "help": "www.google.com",
+      "group": ["Program"]
+    }
+  },
+
+  {
+    "model": "eda.DefaultElement",
+    "pk": "4",
+    "fields": {}
+  },
+
+  {
+    "model": "eda.Element",
+    "pk": "5",
+    "fields": {
+      "nick": "LogicalComparison",
       "name" : "Logical check",
       "description" : "Does one of several possible logical comparisons",
       "image" : "ProgramFlow/Program/LogicalComparison/icon.png",
       "properties" : [{"name": "Comparison", "local_name": "Comparison to apply", "type": "OPTION['>','>=', '<', '<=', '==', '!=']", "attributes": "required|input|manual"}, {"name": "Operand1", "local_name": "First operand", "type": "ANY", "attributes": "required|input|manual|output"}, {"name": "Operand2", "local_name": "Second operand", "type": "ANY", "attributes": "required|input|manual|output"}, {"name": "Result", "local_name": "Comparison result", "type": "Boolean", "attributes": "output"}],
-      "help": "www.google.com"
+      "help": "www.google.com",
+      "group": ["Program"]
     }
+  },
+  
+  {
+    "model": "eda.DefaultElement",
+    "pk": "5",
+    "fields": {}
   },
 
   {
     "model": "eda.Element",
-    "pk": "Program.PolishCalculation",
+    "pk": "6",
     "fields": {
+      "nick": "PolishCalculation",
       "name" : "Polish Calculator",
       "description" : "An implementation of a polish calculator",
       "image" : "ProgramFlow/Program/PolishCalculation/icon.png",
       "properties" : [{"name": "Operator1", "local_name": "First operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand1", "local_name": "First operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operand2", "local_name": "Second operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator2", "local_name": "First operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand3", "local_name": "Third operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator3", "local_name": "Second operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand4", "local_name": "Fourth operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator4", "local_name": "Fourth operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand5", "local_name": "Fifth operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator5", "local_name": " Fifth operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand6", "local_name": "Sixth operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator6", "local_name": " Sixth operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand7", "local_name": "Seventh operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator7", "local_name": " Seventh operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand8", "local_name": "Eighth operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Operator8", "local_name": " Eighth operator", "type": "OPTION['plus','minus', 'times', 'divided by', 'pow', 'sqrt', 'exp','log','sin','cos','tan','asin','acos','atan','atan2']", "attributes": "required|input|output|manual"}, {"name": "Operand9", "local_name": "Nineth operand", "type": "Number", "attributes": "required|input|output|manual"}, {"name": "Result", "local_name": "Operation result", "type": "Number", "attributes": "output"}],
-      "help": "www.google.com"
+      "help": "www.google.com",
+      "group": ["Program"]
     }
   },
 
   {
+    "model": "eda.DefaultElement",
+    "pk": "6",
+    "fields": {}
+  },
+
+  {
     "model": "eda.Element",
-    "pk": ,
+    "pk": "7",
     "fields": {
-
+      "nick": "Template",
+      "name" : "Template",
+      "description" : "A template to create new elements",
+      "image" : "ProgramFlow/Program/Template/icon.png",
+      "properties" : [{"name": "parameter", "local_name": "parameter1", "type": "String", "attributes": "input|output|manual|required"}, {"name": "Result", "local_name": "Local result", "type": "String", "attributes": "output"}],
+      "help": "www.google.com",
+      "group": []
     }
   },
 
   {
-    "model": "eda.Element",
-    "pk": "Data.DataCleaner",
-    "fields": {
-      "name" : "Data Cleaner",
-      "description" : "Removes or fills empty data",
-      "image" : "PythonElements/Data/DataCleaner/icon.png"
-    }
-  },
-
-  {
-    "model": "eda.Element",
-    "pk": "Data.FileLoader",
-    "fields": {
-      "name" : "File Loader",
-      "description" : "Load data from a file",
-      "image" : "PythonElements/Data/FileLoader/icon.png"
-    }
-  },
-
-  {
-    "model": "eda.Element",
-    "pk": "Data.DataBaseLoader",
-    "fields": {
-      "name" : "DataBase Loader",
-      "description" : "Load data from a DB",
-      "image" : "PythonElements/Data/DataBaseLoader/icon.png"
-    }
-  },
-
-  {
-    "model": "eda.Element",
-    "pk": "Data.CloudLoader",
-    "fields": {
-      "name" : "Cloud Loader",
-      "description" : "Load data from the Cloud",
-      "image" : "PythonElements/Data/CloudLoader/icon.png"
-    }
-  },
-
-  {
-    "model": "eda.Element",
-    "pk": "Data.FeatureSelector",
-    "fields": {
-      "name" : "Feature Selector",
-      "description" : "Selects features from data",
-      "image" : "PythonElements/Data/FeatureSelector/icon.png"
-    }
-  },
-
-  {
-    "model": "eda.Element",
-
-  }
-  "pk": "Data.DataMerger": {
-"fields": {
-      "name" : "Data Merger",
-      "description" : "Merges sets of data",
-      "input" : "DataFrame,Series",
-      "image" : "PythonElements/Data/DataMerger/icon.png"
-  },
-  
-  "pk": "Data.DataSaver": {
-"fields": {
-      "name" : "Data Saver",
-      "description" : "Saves data to disk",
-      "image" : "PythonElements/Data/DataSaver/icon.png"
-  },
-
-  "pk": "Visualization.DataTable": {
-"fields": {
-      "name" : "Data Table",
-      "description" : "Shows data in table",
-      "image" : "PythonElements/Visualization/DataTable/icon.png"
-  },
-  "Visualization.PairPlot": {
-
-  "pk": "fields": {
-      "name" : "Pair Plot",
-      "description" : "Shows pair plot of data",
-      "image" : "PythonElements/Visualization/PairPlot/icon.png"
-  },
-
-  "pk": "Visualization.ScatterPlot": {
-"fields": {
-      "name" : "Scatter Plot",
-      "description" : "Shows scatter plot of data",
-      "image" : "PythonElements/Visualization/ScatterPlot/icon.png"
-  },
-
-  "pk": "Visualization.BoxPlot": {
-"fields": {
-      "name" : "Box Plot",
-      "description" : "Shows box plot of data",
-      "image" : "PythonElements/Visualization/BoxPlot/icon.png"
-  },
-
-  "pk": "Program.FunctionOneVar": {
-  "fields": {
-    "name" : "Function One Var",
-    "image" : "ProgramFlow/Program/FunctionOneVar/icon.png"
-  },
-
-  "pk": "Program.LogicalComparison": {
-  "fields": {
-    "name" : "Logical Comparison",
-    "image" : "ProgramFlow/Program/LogicalComparison/icon.png"
-  },
-  
-  "pk": "Program.PolishCalculation": {
-  "fields": {
-    "name" : "Polish Calculation",
-    "image" : "ProgramFlow/Program/PolishCalculation/icon.png"
+    "model": "eda.DefaultElement",
+    "pk": "7",
+    "fields": {}
   }
 ]

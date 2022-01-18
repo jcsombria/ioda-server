@@ -1,9 +1,10 @@
 import json
+from tokenize import group
 
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
  
-from eda.models import ProjectTemplate, Project, Element, ElementGroup
+from eda.models import ProjectTemplate, Project, DefaultElement, UserElement, DefaultElementGroup, UserElementGroup
 from eda.protocol.graph import Graph
 
 from celery import Celery
@@ -86,7 +87,7 @@ class UserSession(object):
             return { 'result': 'unknown_username' }
         elif self.user == user:
             return { 'result': 'already_connected'}
-
+        self.user = user
         return { 'result': 'ok' }
  
 
@@ -127,85 +128,6 @@ class UserSession(object):
         except Project.DoesNotExist:
             names = []
         return names
-
-    @with_key(key='set_element')
-    def editElement(self, params):
-        ''' Edit an user element  
-        Used to select an existing user element or create a new one.
-        
-        Parameters
-        ----------
-        params
-            A dict-like object that contains element's 'name', 'type', 'description', 'image', 'help', 'code', and 'properties'.
-        '''
-        #=======================================================================
-        # params = {"name" : "Test Element",
-        #       "type" : "Program.TestElement",
-        #       "description" : "Just an element to be tested",
-        #       "image" : "ProgramFlow/Program/Template/icon.png",
-        #       "help": "google.com",
-        #       "delete": False,
-        #       "code": "import numpy as np\n\tprint('Hello World!')\n\toutputs = 'Hello World! these are my params: ' + str(inputOne) + ', ' + str(extraInput)",
-        #       "properties": [
-        #           {"name": "inputOne", 
-        #            "local_name": "input", 
-        #            "type" : "String",  
-        #            "attributes" : "required|input|manual"
-        #           },
-        #           {"name": "extraInput", 
-        #            "local_name": "input", 
-        #            "type" : "Number",  
-        #            "attributes" : "input|manual"
-        #           },
-        #           {"name": "Result", 
-        #            "local_name": "Result", 
-        #            "type" : "Number",  
-        #            "attributes" : "required|output"
-        #           }]
-        #           }
-        #=======================================================================
-        
-        name = params.get('name')
-        typeN = params.get('type')
-        description = params.get('description')
-        image = params.get('image')
-        helpN = params.get('help')
-        properties = params.get('properties')
-        code = params.get('code')
-        delete = params.get('delete')
-
-        element = Element.objects.filter(name=name).first()
-        if element:
-            if delete:
-                element.delete()
-            else:
-                print('This element will be updated qith the new info')
-                element.name = name
-                element.description = description
-                element.id = typeN
-                element.image = image
-                element.help = helpN
-                element.properties = properties
-                element.code = code
-            element.save()
-        else:
-            element = Element.objects.create(
-                id=typeN,
-                name=name,
-                image=image,
-                code=code,
-                properties=properties,
-                help=helpN,
-                description=description,
-            )
-        
-        BROKER_URL = 'amqp://guest:guest@rabbitmq'
-        BACKEND    = 'rpc://'
-        app = Celery('tasks', backend=BACKEND, broker=BROKER_URL)
-        result = app.send_task('tasks.worker_Python.createTask', args=(typeN.split('.')[1], properties, code))
-        isOK = result.get()
-        print("------> Adding new Element, result : ", str(isOK))
-        return element
     
     @with_key(key='project')
     def setProject(self, params):
@@ -226,7 +148,6 @@ class UserSession(object):
         if not project:
             project = Project.objects.create(name=name, type=type_, description=description)
         self.project = project
-        
         return {
             'name': name,
             'elements': {
@@ -235,156 +156,144 @@ class UserSession(object):
             },
             'user_elements': {
                 'groups': self._getUserGroups(),
-                'elements': []
+                'elements': self._getUserElements()
             },
             'workfile': project.workfile,
         }
 
-    # ONLY FOR TESTING!! The elements should be read from the database.
     def _getGroups(self):
-        return [{
-                "name": "Data",
-                "image": "PythonElements/Data/icon.png",
-                "elements": [
-                    "Data.FileLoader",
-                    "Data.DataBaseLoader",
-                    "Data.CloudLoader",
-                    "Data.DataCleaner",
-                    "Data.FeatureSelector",
-                    "Data.DataMerger",
-                    "Data.DataSaver"
-                ]
-            }, {
-                "name": "Visualization",
-                "image": "PythonElements/Visualization/icon.png",
-                "elements": [
-                    "Visualization.DataTable",
-                    "Visualization.PairPlot",
-                    "Visualization.ScatterPlot",
-                    "Visualization.BoxPlot",
-                    "Visualization.TextAndValue"
-                ],
-            }, {
-                "name": "Model",
-                "image": "PythonElements/Model/icon.png",
-                "elements": []
-            }, {
-                "name": "Evaluation",
-                "image": "PythonElements/Evaluation/icon.png",
-                "elements": []
-            }, {
-                "name" : "Program",
-                "image": "ProgramFlow/Program/icon.png",
-                "elements" : [
-                    "Program.BinaryOperation",
-                    "Program.FunctionOneVar",
-                    "Program.LogicalComparison",
-                    "Program.NumberVariable",
-                    "Program.PolishCalculation"
-                ],
-            },
-        ]
+        # groups = [{
+        #         "name": "Data",
+        #         "image": "PythonElements/Data/icon.png",
+        #         "elements": [
+        #             "Data.FileLoader",
+        #             "Data.DataBaseLoader",
+        #             "Data.CloudLoader",
+        #             "Data.DataCleaner",
+        #             "Data.FeatureSelector",
+        #             "Data.DataMerger",
+        #             "Data.DataSaver"
+        #         ]
+        #     }, {
+        #         "name": "Visualization",
+        #         "image": "PythonElements/Visualization/icon.png",
+        #         "elements": [
+        #             "Visualization.DataTable",
+        #             "Visualization.PairPlot",
+        #             "Visualization.ScatterPlot",
+        #             "Visualization.BoxPlot",
+        #         ],
+        groups = [{ 
+            'name': g.name,
+            'image': g.icon.name,
+            'elements': [f'{g.name}.{e.nick}' for e in DefaultElement.objects.filter(group=g)],
+        } for g in DefaultElementGroup.objects.all().order_by('position_in_groups')]
+        return groups
 
-    # ONLY FOR TESTING!! The elements should be read from the database.
+
     def _getElements(self):
-        elementList = {
-            "Data.DataCleaner" : {
-                "name" : "Data Cleaner",
-                "description" : "Removes or fills empty data",
-                "image" : "PythonElements/Data/DataCleaner/icon.png"
-            },          
-            "Data.FileLoader" : {
-                "name" : "File Loader",
-                "description" : "Load data from a file",
-                "image" : "PythonElements/Data/FileLoader/icon.png"
-            },
-            "Data.DataBaseLoader": {
-                "name" : "DataBase Loader",
-                "description" : "Load data from a DB",
-                "image" : "PythonElements/Data/DataBaseLoader/icon.png"
-            },
-            "Data.CloudLoader": {
-                "name" : "Cloud Loader",
-                "description" : "Load data from the Cloud",
-                "image" : "PythonElements/Data/CloudLoader/icon.png"
-            },
-            "Data.FeatureSelector": {
-                "name" : "Feature Selector",
-                "description" : "Selects features from data",
-                "image" : "PythonElements/Data/FeatureSelector/icon.png"
-            },
-            "Data.DataMerger": {
-                "name" : "Data Merger",
-                "description" : "Merges sets of data",
-                "input" : "DataFrame,Series",
-                "image" : "PythonElements/Data/DataMerger/icon.png"
-            },
-            "Data.DataSaver": {
-                "name" : "Data Saver",
-                "description" : "Saves data to disk",
-                "image" : "PythonElements/Data/DataSaver/icon.png"
-            },
-            "Visualization.DataTable": {
-                "name" : "Data Table",
-                "description" : "Shows data in table",
-                "image" : "PythonElements/Visualization/DataTable/icon.png"
-            },
-            "Visualization.PairPlot": {
-                "name" : "Pair Plot",
-                "description" : "Shows pair plot of data",
-                "image" : "PythonElements/Visualization/PairPlot/icon.png"
-            },
-            "Visualization.ScatterPlot": {
-                "name" : "Scatter Plot",
-                "description" : "Shows scatter plot of data",
-                "image" : "PythonElements/Visualization/ScatterPlot/icon.png"
-            },
-            "Visualization.BoxPlot": {
-                "name" : "Box Plot",
-                "description" : "Shows box plot of data",
-                "image" : "PythonElements/Visualization/BoxPlot/icon.png"
-            },
-            "Program.FunctionOneVar": {
-                "name" : "Function One Var",
-                "image" : "ProgramFlow/Program/FunctionOneVar/icon.png"
-            },
-            "Program.LogicalComparison": {
-                "name" : "Logical Comparison",
-                "image" : "ProgramFlow/Program/LogicalComparison/icon.png"
-            },
-            "Program.PolishCalculation": {
-                "name" : "Polish Calculation",
-                "image" : "ProgramFlow/Program/PolishCalculation/icon.png"
-            }
-        }
-        elementList.update(
-           { e.id : {
+        # elementList = {
+        #     "Data.DataCleaner" : {
+        #         "name" : "Data Cleaner",
+        #         "description" : "Removes or fills empty data",
+        #         "image" : "PythonElements/Data/DataCleaner/icon.png"
+        #     },          
+        #     "Data.FileLoader" : {
+        #         "name" : "File Loader",
+        #         "description" : "Load data from a file",
+        #         "image" : "PythonElements/Data/FileLoader/icon.png"
+        #     },
+        #     "Data.DataBaseLoader": {
+        #         "name" : "DataBase Loader",
+        #         "description" : "Load data from a DB",
+        #         "image" : "PythonElements/Data/DataBaseLoader/icon.png"
+        #     },
+        #     "Data.CloudLoader": {
+        #         "name" : "Cloud Loader",
+        #         "description" : "Load data from the Cloud",
+        #         "image" : "PythonElements/Data/CloudLoader/icon.png"
+        #     },
+        #     "Data.FeatureSelector": {
+        #         "name" : "Feature Selector",
+        #         "description" : "Selects features from data",
+        #         "image" : "PythonElements/Data/FeatureSelector/icon.png"
+        #     },
+        #     "Data.DataMerger": {
+        #         "name" : "Data Merger",
+        #         "description" : "Merges sets of data",
+        #         "input" : "DataFrame,Series",
+        #         "image" : "PythonElements/Data/DataMerger/icon.png"
+        #     },
+        #     "Data.DataSaver": {
+        #         "name" : "Data Saver",
+        #         "description" : "Saves data to disk",
+        #         "image" : "PythonElements/Data/DataSaver/icon.png"
+        #     },
+        #     "Visualization.DataTable": {
+        #         "name" : "Data Table",
+        #         "description" : "Shows data in table",
+        #         "image" : "PythonElements/Visualization/DataTable/icon.png"
+        #     },
+        #     "Visualization.PairPlot": {
+        #         "name" : "Pair Plot",
+        #         "description" : "Shows pair plot of data",
+        #         "image" : "PythonElements/Visualization/PairPlot/icon.png"
+        #     },
+        #     "Visualization.ScatterPlot": {
+        #         "name" : "Scatter Plot",
+        #         "description" : "Shows scatter plot of data",
+        #         "image" : "PythonElements/Visualization/ScatterPlot/icon.png"
+        #     },
+        #     "Visualization.BoxPlot": {
+        #         "name" : "Box Plot",
+        #         "description" : "Shows box plot of data",
+        #         "image" : "PythonElements/Visualization/BoxPlot/icon.png"
+        #     },
+        #     "Program.FunctionOneVar": {
+        #         "name" : "Function One Var",
+        #         "image" : "ProgramFlow/Program/FunctionOneVar/icon.png"
+        #     },
+        #     "Program.LogicalComparison": {
+        #         "name" : "Logical Comparison",
+        #         "image" : "ProgramFlow/Program/LogicalComparison/icon.png"
+        #     },
+        #     "Program.PolishCalculation": {
+        #         "name" : "Polish Calculation",
+        #         "image" : "ProgramFlow/Program/PolishCalculation/icon.png"
+        #     }
+        # }
+        elementList = { f'{g.name}.{e.nick}' : {
             'name': e.name,
             'description': e.description,
             'image': e.image.name,
-            # 'language': ,
-            # 'code': ,
-            # 'help': ,
+            'language': e.language,
+            'code': e.code,
+            'help': e.help,
             'properties': e.properties,
-        } for e in Element.objects.all() })
-        # for e in elements:
-        #     groupid = e
-        #     group = groupid.split('.')[0]
-        #     nonAddedGroup = testingElements.get(group) 
-        #     if(groupid not in nonAddedGroup):
-        #         testingElements[group].append(groupid)
-        # testingElements.update(elements)
-        # return testingElements
+        } for g in DefaultElementGroup.objects.all().order_by('position_in_groups')
+            for e in DefaultElement.objects.filter(group=g)
+        }
         return elementList
     
     def _getUserGroups(self):
         return [{ 
             'name': g.name,
             'image': 'ProgramFlow/Program/icon.png',
-            'elements': [],
-        } for g in ElementGroup.objects.filter(project=self.project).order_by('position_in_group')]
+            'elements': [f'{g.name}.{e.name}' for e in UserElement.objects.filter(group=g)],
+        } for g in UserElementGroup.objects.filter(project=self.project).order_by('position_in_groups')]
 
-
+    def _getUserElements(self):
+        return {f'{g.name}.{e.nick}': { 
+                'name': e.name,
+                'description': e.description,
+                'image': 'ProgramFlow/Program/icon.png',
+                'language': e.language,
+                'code': e.code,
+                'help': e.help,
+                'properties': e.properties,
+            } for g in UserElementGroup.objects.filter(project=self.project).order_by('position_in_groups')
+                for e in UserElement.objects.filter(group=g)
+        }
 
     @with_key(key='project')
     def editProject(self, params):
@@ -448,7 +357,7 @@ class UserSession(object):
         command.action()
         return {
             'groups': self._getUserGroups(),
-            'elements': []
+            'elements': self._getUserElements()
         }
 
 # edit_element: Used by the client to edit a user-defined data analysis element.
@@ -468,7 +377,6 @@ def worker(input):
         print(messageResponse)
 
 
-# @dataclass
 class Command(Protocol):
     
     def action():
@@ -476,94 +384,177 @@ class Command(Protocol):
 
 class CreateElement:
 
-    def __init__(self, params):
-        self.params = params
+    def __init__(self, session, command):
+        self.session = session
+        self.command = command
 
     def action(self):
-        name = self.params.get('name')
-        typeN = self.params.get('type')
-        description = self.params.get('description')
-        image = self.params.get('image')
-        helpN = self.params.get('help')
-        properties = self.params.get('properties')
-        code = self.params.get('code')
-        delete = self.params.get('delete')
-
-        element = Element.objects.filter(name=name).first()
-        if element:
-            if delete:
-                element.delete()
-            else:
-                print('This element will be updated qith the new info')
-                element.name = name
-                element.description = description
-                element.id = typeN
-                element.image = image
-                element.help = helpN
-                element.properties = properties
-                element.code = code
-            element.save()
-        else:
-            element = Element.objects.create(
-                id=typeN,
-                name=name,
-                image=image,
-                code=code,
-                properties=properties,
-                help=helpN,
-                description=description,
-            )
-        
-        BROKER_URL = 'amqp://guest:guest@rabbitmq'
-        BACKEND    = 'rpc://'
-        app = Celery('tasks', backend=BACKEND, broker=BROKER_URL)
-        result = app.send_task('tasks.worker_Python.createTask', args=(typeN.split('.')[1], properties, code))
-        isOK = result.get()
-        print("------> Adding new Element, result : ", str(isOK))
+        group = UserElementGroup.objects.filter(
+            name=self.command['options'].get('in_group')
+        ).first()
+        element, _ = UserElement.objects.get_or_create(
+            nick=self.command['options']['name'],
+            user=self.session.user
+        )
+        element.name = self.command['options']['name'] 
+        # element.image = self.command['options']['image'] 
+        element.code = self.command['options']['code'] 
+        element.properties = self.command['options']['properties'] 
+        element.help = self.command['options']['help'] 
+        element.description = self.command['options']['description'] 
+        element.save() # Cannot add group until saved
+        element.group.add(group)
+        element.save()
+        # BROKER_URL = 'amqp://guest:guest@rabbitmq'
+        # BACKEND    = 'rpc://'
+        # app = Celery('tasks', backend=BACKEND, broker=BROKER_URL)
+        # result = app.send_task('tasks.worker_Python.createTask', args=(typeN.split('.')[1], properties, code))
+        # isOK = result.get()
+        # print("------> Adding new Element, result : ", str(isOK))
         return element
 
 
-#   'target': 'ddd',
-#   'options': {
-#      'name': 'ddd', 
-#      'relative_position': 'as_is', 
-#      'relative_object': '', 
-#      'base64Icon': ''
-#   }
-# }
 class CreateGroup:
+
+    def __init__(self, session, command):
+        self.session = session
+        self.command = command
+
+    def action(self):
+        groups = UserElementGroup.objects.filter(
+            project=self.session.project,
+        )
+        new = UserElementGroup.objects.create(
+            name=self.command['target'],
+            project=self.session.project
+        )
+        if self.command['options']['relative_position'] == 'as_is':
+            new.position_in_groups = groups.count() - 1
+            new.save()
+        else:
+            inserted = False
+            for g in groups.order_by('position_in_groups'):
+                if g.name == self.command['options']['relative_object']:
+                    if self.command['options']['relative_position'] == 'before':
+                        new.position_in_groups = g.position_in_groups
+                        g.position_in_groups = g.position_in_groups + 1 
+                    if self.command['options']['relative_position'] == 'after':
+                        new.position_in_groups = g.position_in_groups + 1
+                    g.save()
+                    inserted = True
+                    continue
+                if inserted:
+                    g.position_in_group = g.position_in_groups + 1
+                    g.save()
+            new.save()
+
+
+class EditElement:
+    def __init__(self, session, command):
+        self.command = command
+        self.session = session
+
+    def action(self):
+        if not 'relative_position' in self.command['options'] or not 'relative_object' in self.command['options']:
+            raise ValueError('Invalid command.')
+
+        # relative = UserElementGroup.objects.filter(
+        #     project=self.session.project,
+        #     name=self.command['options']['relative_object']
+        # ).first()
+        # if not relative:
+        #     raise ValueError('Relative group not found.')
+
+        target = self.getTarget()
+        if not target:
+            raise ValueError('Element not found.')
+
+        self.updateFields(target)
+
+        if self.command['options']['relative_position'] == 'as_is':
+            return
+        # groups = [g for g in UserElementGroup.objects.filter(
+        #     project=self.session.project,
+        # ).order_by('position_in_groups')]
+        # if self.command['options']['relative_position'] == 'before':
+        #     index = relative.position_in_groups
+        # elif self.command['options']['relative_position'] == 'after':
+        #     index = relative.position_in_groups + 1
+
+        # if target.position_in_groups < index:
+        #     index = index - 1
+        # groups.remove(target)
+        # groups.insert(index, target)
+        # for i, g in enumerate(groups):
+        #     g.position_in_groups = i
+        #     g.save()
+
+
+    def getTarget(self):
+        return UserElement.objects.filter(
+            user=self.session.user,
+            nick=self.command['target'].split('.')[1]
+        ).first()
+
+    def updateFields(self, target):
+        if 'name' in self.command['options']:
+            target.nick = self.command['options']['name']
+            target.name = self.command['options']['name']
+
+        if 'description' in self.command['options']:
+            target.description = self.command['options']['description']
+
+        if 'properties' in self.command['options']:
+            target.properties = self.command['options']['properties']
+
+        if 'language' in self.command['options']:
+            target.language = self.command['options']['language']
+
+        if 'code' in self.command['options']:
+            target.code = self.command['options']['code']
+
+        if 'help' in self.command['options']:
+            target.help = self.command['options']['help']
+
+        # if 'base64icon' in self.command['options']:
+        #     target.name = self.self.command['options']['base64icon']
+        if 'in_group' in self.command['options']:
+            target.group.add(self.command['options']['in_group'])
+        target.save()
+
+class DuplicateElement(EditElement):
+
+    def getTarget(self):
+        target = UserElement.objects.filter(
+            user=self.session.user,
+            nick=self.command['target'].split('.')[1]
+        ).first()
+        if 'name' in self.command['options']:
+            groups = target.group.first()
+            target.element_ptr_id = None
+            target.id = None
+            target.nick = self.command['options']['name']
+            target.name = self.command['options']['name']
+            target.save()
+            target.group.add(groups)
+            target.save()
+        return target
+
+
+class DeleteElement:
 
     def __init__(self, session, command):
         self.command = command
         self.session = session
 
     def action(self):
-        groups = ElementGroup.objects.filter(
-            project=self.session.project,
-        )
-        new = ElementGroup.objects.create(
-            name=self.command['target'],
-            project=self.session.project
-        )
-        if self.command['options']['relative_position'] == 'as_is':
-            new.position_in_group = groups.count() - 1
-            new.save()
-        else:
-            inserted = False
-            for g in groups.order_by('position_in_group'):
-                if g.name == self.command['options']['relative_object']:
-                    if self.command['options']['relative_position'] == 'before':
-                        new.position_in_group = g.position_in_group
-                        g.position_in_group = g.position_in_group + 1 
-                    if self.command['options']['relative_position'] == 'after':
-                        new.position_in_group = g.position_in_group + 1
-                    g.save()
-                    inserted = True
-                    continue
-                if inserted:
-                    g.position_in_group = g.position_in_group + 1
-                    g.save()
-            new.save()
+        e = UserElement.objects.filter(
+            name=self.command['target'].split('.')[1]
+        ).first()
+        if not e:
+            raise ValueError('Element not found')
+        e.delete()
+
 
 class DeleteGroup:
     def __init__(self, session, command):
@@ -571,7 +562,7 @@ class DeleteGroup:
         self.session = session
 
     def action(self):
-        group = ElementGroup.objects.filter(
+        group = UserElementGroup.objects.filter(
             project=self.session.project,
             name=self.command['target']
         ).first()
@@ -587,14 +578,14 @@ class EditGroup:
         if not 'relative_position' in self.command['options'] or not 'relative_object' in self.command['options']:
             raise ValueError('Invalid command.')
 
-        target = ElementGroup.objects.filter(
+        target = UserElementGroup.objects.filter(
             project=self.session.project,
             name=self.command['target']
         ).first()
         if not target:
             raise ValueError('Group not found.')
 
-        relative = ElementGroup.objects.filter(
+        relative = UserElementGroup.objects.filter(
             project=self.session.project,
             name=self.command['options']['relative_object']
         ).first()
@@ -613,36 +604,35 @@ class EditGroup:
         if self.command['options']['relative_position'] == 'as_is':
             return
 
-        groups = [g for g in ElementGroup.objects.filter(
+        groups = [g for g in UserElementGroup.objects.filter(
             project=self.session.project,
-        ).order_by('position_in_group')]
+        ).order_by('position_in_groups')]
         if self.command['options']['relative_position'] == 'before':
-            index = relative.position_in_group
+            index = relative.position_in_groups
         elif self.command['options']['relative_position'] == 'after':
-            index = relative.position_in_group + 1
+            index = relative.position_in_groups + 1
 
-        if target.position_in_group < index:
+        if target.position_in_groups < index:
             index = index - 1
         groups.remove(target)
         groups.insert(index, target)
         for i, g in enumerate(groups):
-            g.position_in_group = i
+            g.position_in_groups = i
             g.save()
 
 
-
 def createCommand(params, session):
+    print(params)
     commands = {
         'CreateGroup': CreateGroup,
         'EditGroup': EditGroup,
         'DeleteGroup': DeleteGroup,
         'CreateElement': CreateElement,
         # 'DuplicateProjectElement': DuplicateProjectElement,
-        # 'DuplicateElement': DuplicateElement,
-        # 'DeleteElement': DeleteElement,
-        # 'EditElement': EditElement,
+        'DuplicateElement': DuplicateElement,
+        'DeleteElement': DeleteElement,
+        'EditElement': EditElement,
     }
     if not params['command'] in commands:
         raise ValueError('Unknown command.')
     return commands[params['command']](session, params)
-
