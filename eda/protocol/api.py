@@ -492,14 +492,16 @@ class EditElement:
 
     def getTarget(self):
         return UserElement.objects.filter(
-            user=self.session.user,
-            nick=self.command['target'].split('.')[1]
+            nick=self.command['target'].split('.')[1],
+            user=self.session.user
         ).first()
 
     def updateFields(self, target):
         if 'name' in self.command['options']:
+            target.delete()
             target.nick = self.command['options']['name']
             target.name = self.command['options']['name']
+            target.save()
 
         if 'description' in self.command['options']:
             target.description = self.command['options']['description']
@@ -622,7 +624,6 @@ class EditGroup:
 
 
 def createCommand(params, session):
-    print(params)
     commands = {
         'CreateGroup': CreateGroup,
         'EditGroup': EditGroup,

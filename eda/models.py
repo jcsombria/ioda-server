@@ -61,7 +61,7 @@ class Element(models.Model):
         (C, 'C'),
         (MATLAB, 'Matlab'),
     )
-    nick = models.CharField(max_length=250, default='new_element')
+    nick = models.CharField(max_length=250, default=new_element_id, primary_key=True)
     name = models.CharField(max_length=250, default='New Element')
     image = models.ImageField(blank=True)
     language = models.CharField(max_length=2, choices=LANGUAGES, default=PYTHON)
@@ -70,6 +70,9 @@ class Element(models.Model):
     help = models.CharField(max_length=250, blank=True)
     description = models.CharField(max_length=500, default='A new Element', blank=True)
     group = models.ManyToManyField(ElementGroup)
+
+    class Meta:
+        abstract = True
 
     def __str__(self):
         return '%s' % (self.nick,)
@@ -80,3 +83,6 @@ class DefaultElement(Element):
 class UserElement(Element):
     '''An user-defined Element'''
     user = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = [['nick', 'user']]

@@ -49,7 +49,7 @@ IODA_GUI.element_editor = function() {
 			$('#mElementEditorLocationAfter').prop("checked", true);
 			$('#mElementEditorLocationAsIs').prop("disabled", true);
 		}	
-		if (lastType!=null) $('#mElementEditorLocationList option[value='+lastType+']').attr("selected", true);
+		if (lastType!=null) $('#mElementEditorLocationList option[value="'+lastType+'"]').attr("selected", true);
 	};
 
 	/*

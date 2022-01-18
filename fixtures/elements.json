@@ -85,10 +85,9 @@
   },
 
   {
-    "model": "eda.Element",
-    "pk": "1",
+    "model": "eda.DefaultElement",
+    "pk": "TextAndValue",
     "fields": {
-      "nick": "TextAndValue",
       "name" : "HTML variable output", 
       "description" : "Creates or adds to an HTML div a text message and a value",
       "image" : "ProgramFlow/Visualization/TextAndValue/icon.png",
@@ -97,18 +96,11 @@
       "group": ["Visualization"]
     }
   },
-  
-  {
-    "model": "eda.DefaultElement",
-    "pk": "1",
-    "fields": {}
-  },
 
   {
-    "model": "eda.Element",
-    "pk": "2",
+    "model": "eda.DefaultElement",
+    "pk": "BinaryOperation",
     "fields": {
-      "nick": "BinaryOperation",
       "name" : "Binary operation",
       "description" : "Does one of several possible binary operations",
       "image" : "ProgramFlow/Program/BinaryOperation/icon.png",
@@ -120,15 +112,8 @@
 
   {
     "model": "eda.DefaultElement",
-    "pk": "2",
-    "fields": {}
-  },
-
-  {
-    "model": "eda.Element",
-    "pk": "3",
+    "pk": "NumberVariable",
     "fields": {
-      "nick": "NumberVariable",
       "name" : "Program.NumberVariable",
       "description" : "Creates and/or keeps a numeric variable",
       "image" : "ProgramFlow/Program/NumberVariable/icon.png",
@@ -140,15 +125,8 @@
   
   {
     "model": "eda.DefaultElement",
-    "pk": "3",
-    "fields": {}
-  },
-
-  {
-    "model": "eda.Element",
-    "pk": "4",
+    "pk": "FunctionOneVar",
     "fields": {
-      "nick": "FunctionOneVar",
       "name" : "Function One Var",
       "description" : "A function of one variable",
       "image" : "ProgramFlow/Program/FunctionOneVar/icon.png",
@@ -160,15 +138,8 @@
 
   {
     "model": "eda.DefaultElement",
-    "pk": "4",
-    "fields": {}
-  },
-
-  {
-    "model": "eda.Element",
-    "pk": "5",
+    "pk": "LogicalComparison",
     "fields": {
-      "nick": "LogicalComparison",
       "name" : "Logical check",
       "description" : "Does one of several possible logical comparisons",
       "image" : "ProgramFlow/Program/LogicalComparison/icon.png",
@@ -177,18 +148,11 @@
       "group": ["Program"]
     }
   },
-  
-  {
-    "model": "eda.DefaultElement",
-    "pk": "5",
-    "fields": {}
-  },
 
   {
-    "model": "eda.Element",
-    "pk": "6",
+    "model": "eda.DefaultElement",
+    "pk": "PolishCalculation",
     "fields": {
-      "nick": "PolishCalculation",
       "name" : "Polish Calculator",
       "description" : "An implementation of a polish calculator",
       "image" : "ProgramFlow/Program/PolishCalculation/icon.png",
@@ -200,15 +164,8 @@
 
   {
     "model": "eda.DefaultElement",
-    "pk": "6",
-    "fields": {}
-  },
-
-  {
-    "model": "eda.Element",
-    "pk": "7",
+    "pk": "Template",
     "fields": {
-      "nick": "Template",
       "name" : "Template",
       "description" : "A template to create new elements",
       "image" : "ProgramFlow/Program/Template/icon.png",
@@ -216,11 +173,6 @@
       "help": "www.google.com",
       "group": []
     }
-  },
-
-  {
-    "model": "eda.DefaultElement",
-    "pk": "7",
-    "fields": {}
   }
+
 ]
