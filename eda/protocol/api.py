@@ -1,6 +1,8 @@
+import base64
 import json
-from tokenize import group
-
+import os
+from django.core.files import File
+from django.core.files.temp import NamedTemporaryFile
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
  
@@ -276,9 +278,10 @@ class UserSession(object):
         return elementList
     
     def _getUserGroups(self):
+        print([g.icon.name for g in UserElementGroup.objects.filter(project=self.project).order_by('position_in_groups')])
         return [{ 
             'name': g.name,
-            'image': 'ProgramFlow/Program/icon.png',
+            'image': g.icon.name,
             'elements': [f'{g.name}.{e.name}' for e in UserElement.objects.filter(group=g)],
         } for g in UserElementGroup.objects.filter(project=self.project).order_by('position_in_groups')]
 
@@ -286,7 +289,7 @@ class UserSession(object):
         return {f'{g.name}.{e.nick}': { 
                 'name': e.name,
                 'description': e.description,
-                'image': 'ProgramFlow/Program/icon.png',
+                'image': e.image.name,
                 'language': e.language,
                 'code': e.code,
                 'help': e.help,
@@ -395,7 +398,10 @@ class CreateElement:
             user=self.session.user
         )
         element.name = self.command['options']['name'] 
-        # element.image = self.command['options']['image'] 
+        element.image = save_image(
+            f'element_icons/{element.nick}.png',
+            self.command['options']['base64Icon']
+        )
         element.code = self.command['options']['code'] 
         element.properties = self.command['options']['properties'] 
         element.help = self.command['options']['help'] 
@@ -442,6 +448,10 @@ class CreateGroup:
             name=self.command['target'],
             project=self.session.project
         )
+        new.icon = save_image(
+            f'icons/{new.name}.png',
+            self.command['options']['base64Icon']
+        )
         if self.command['options']['relative_position'] == 'as_is':
             new.position_in_groups = groups.count() - 1
             new.save()
@@ -461,6 +471,18 @@ class CreateGroup:
                     g.position_in_group = g.position_in_groups + 1
                     g.save()
             new.save()
+
+
+def save_image(filename, base64_content):
+    icon = base64.b64decode(base64_content)
+    os.makedirs(os.path.dirname(f'eda/static/config/{filename}'), exist_ok=True)
+    with open(filename, 'xb') as f:
+        f.write(icon)
+    with open(f'eda/static/config/{filename}', 'xb') as f:
+        f.write(icon)
+    result = File(open(filename, 'rb'))
+    result.name = filename
+    return result
 
 
 class EditElement:
@@ -532,8 +554,14 @@ class EditElement:
         if 'help' in self.command['options']:
             target.help = self.command['options']['help']
 
-        # if 'base64icon' in self.command['options']:
-        #     target.name = self.self.command['options']['base64icon']
+        if 'base64Icon' in self.command['options']:
+            icon = base64.b64decode(self.command['options']['base64Icon'])
+            img_temp = NamedTemporaryFile(delete=True)
+            img_temp.write(icon)
+            img_temp.flush()
+            print(f'static/config/icons/{target.nick}.png')
+            target.image.save(f'static/config/icons/{target.nick}.png', File(img_temp))
+
         if 'in_group' in self.command['options']:
             target.group.add(self.command['options']['in_group'])
         target.save()
@@ -613,9 +641,12 @@ class EditGroup:
             target.name = self.command['options']['name']           
             target.save()
 
-
-        # if 'base64icon' in self.command['options']:
-        #     target.name = self.self.command['options']['base64icon']
+        if 'base64Icon' in self.command['options']:
+            icon = base64.b64decode(self.command['options']['base64Icon'])
+            img_temp = NamedTemporaryFile(delete=True)
+            img_temp.write(icon)
+            img_temp.flush()
+            target.icon.save(f'user_icons/project/{target.name}.png', File(img_temp))
 
         if self.command['options']['relative_position'] == 'as_is':
             return

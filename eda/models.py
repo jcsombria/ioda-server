@@ -10,7 +10,6 @@ def get_code_upload_path(instance, filename):
 
 def new_element_id():
     id = '%s' % uuid.uuid4()
-    print(id)
     return id
 
 
