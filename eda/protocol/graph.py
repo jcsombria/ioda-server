@@ -3,7 +3,8 @@ import json
 import random as rnd
 import time
 
-from eda.models import Element
+from eda.models import DefaultElement, UserElement, Element, DefaultElementGroup, UserElementGroup
+
 from celery import Celery
 import traceback
 
@@ -23,29 +24,31 @@ class Graph:
         [self.addNode(n) for n in graph['node_list']]
         [self.addConnection(c) for c in graph['connection_list']]
 
-        #Solving a little error:
-        if(graph['name'] == "Testing IFs"):
-            graph["node_list"][3]["properties"] = [{"name": "Comparison", "value": "'<='"},{"name": "Operand2", "value": "5"}]
-        elif(graph['name'] == "Testing Loops"):
-            graph["node_list"][2]["properties"] = [{"name": "Comparison", "value": "'<='"},{"name": "Operand2", "value": "5"}]
-        elif(graph['name'] == "Sum N squares"):
-            graph["node_list"][6]["properties"] = [{"name": "Comparison", "value": "'<='"}]
-            graph["node_list"][4]["properties"] =[{"name": "Operator2", "value": "'plus'"}, {"name": "Operator1", "value": "'pow'"}, {"name": "Operand3", "value": "2"}]
-        elif(graph['name'] == "Quadratic equation"):
-            graph["node_list"][3]["properties"] = [{"name": "Operand2", "value": "0"}, {"name": "Comparison", "value": "'=='"}]
-            graph["node_list"][4]["properties"] = [{"name": "Operand2", "value": "0"}, {"name": "Comparison", "value": "'<'"}]
-            graph["node_list"][5]["properties"] = [{"name": "Operand2", "value": "0"}, {"name": "Comparison", "value": "'=='"}]
-            graph["node_list"][6]["properties"] = [{"name": "Operand2", "value": "0"}, {"name": "Operator1", "value": "'minus'"}, {"name": "Operator2", "value": "'divided by'"}]
-            graph["node_list"][7]["properties"] = [{"name": "Operand2", "value": "0"}, {"name": "Comparison", "value": "'=='"}]
-            graph["node_list"][8]["properties"] = [{"name": "Operand2", "value": "0"}, {"name": "Comparison", "value": "'=='"}]
-            graph["node_list"][9]["properties"] = [{"name": "Operator1", "value": "'pow'"},{"name": "Operator2", "value": "'None'"}, {"name": "Operand5", "value": "2"}, {"name": "Operand2", "value": "4"}, {"name": "Operator3", "value": "'times'"}, {"name": "Operator4", "value": "'times'"}, {"name": "Operator5", "value": "'minus'"}]
-            graph["node_list"][10]["properties"] = [{"name": "Operand1", "value": "2"}, {"name": "Operator1", "value": "'minus'"}, {"name": "Operator2", "value": "'None'"}, {"name": "Operand3", "value": "0"}, {"name": "Operator3", "value": "'times'"}, {"name": "Operator4", "value": "'divided by'"}]
-            graph["node_list"][11]["properties"] = [{"name": "Operand1", "value": "2"}, {"name": "Operator1", "value": "'minus'"}, {"name": "Operator2", "value": "'None'"}, {"name": "Operator3", "value": "'times'"}, {"name": "Operator4", "value": "'divided by'"}]
-            graph["node_list"][12]["properties"] = [{"name": "Operand1", "value": "2"}, {"name": "Operator1", "value": "'plus'"}, {"name": "Operator2", "value": "'times'"}, {"name": "Operator3", "value": "'None'"}, {"name": "Operand3", "value": "-1"}, {"name": "Operator4", "value": "'times'"}, {"name": "Operator5", "value": "'divided by'"}]
+        #=======================================================================
+        # #Solving a little error:
+        # if(graph['name'] == "Testing IFs"):
+        #     graph["node_list"][3]["properties"] = [{"name": "Comparison", "value": "'<='"},{"name": "Operand2", "value": "5"}]
+        # elif(graph['name'] == "Testing Loops"):
+        #     graph["node_list"][2]["properties"] = [{"name": "Comparison", "value": "'<='"},{"name": "Operand2", "value": "5"}]
+        # elif(graph['name'] == "Sum N squares"):
+        #     graph["node_list"][6]["properties"] = [{"name": "Comparison", "value": "'<='"}]
+        #     graph["node_list"][4]["properties"] =[{"name": "Operator2", "value": "'plus'"}, {"name": "Operator1", "value": "'pow'"}, {"name": "Operand3", "value": "2"}]
+        # elif(graph['name'] == "Quadratic equation"):
+        #     graph["node_list"][3]["properties"] = [{"name": "Operand2", "value": "0"}, {"name": "Comparison", "value": "'=='"}]
+        #     graph["node_list"][4]["properties"] = [{"name": "Operand2", "value": "0"}, {"name": "Comparison", "value": "'<'"}]
+        #     graph["node_list"][5]["properties"] = [{"name": "Operand2", "value": "0"}, {"name": "Comparison", "value": "'=='"}]
+        #     graph["node_list"][6]["properties"] = [{"name": "Operand2", "value": "0"}, {"name": "Operator1", "value": "'minus'"}, {"name": "Operator2", "value": "'divided by'"}]
+        #     graph["node_list"][7]["properties"] = [{"name": "Operand2", "value": "0"}, {"name": "Comparison", "value": "'=='"}]
+        #     graph["node_list"][8]["properties"] = [{"name": "Operand2", "value": "0"}, {"name": "Comparison", "value": "'=='"}]
+        #     graph["node_list"][9]["properties"] = [{"name": "Operator1", "value": "'pow'"},{"name": "Operator2", "value": "'None'"}, {"name": "Operand5", "value": "2"}, {"name": "Operand2", "value": "4"}, {"name": "Operator3", "value": "'times'"}, {"name": "Operator4", "value": "'times'"}, {"name": "Operator5", "value": "'minus'"}]
+        #     graph["node_list"][10]["properties"] = [{"name": "Operand1", "value": "2"}, {"name": "Operator1", "value": "'minus'"}, {"name": "Operator2", "value": "'None'"}, {"name": "Operand3", "value": "0"}, {"name": "Operator3", "value": "'times'"}, {"name": "Operator4", "value": "'divided by'"}]
+        #     graph["node_list"][11]["properties"] = [{"name": "Operand1", "value": "2"}, {"name": "Operator1", "value": "'minus'"}, {"name": "Operator2", "value": "'None'"}, {"name": "Operator3", "value": "'times'"}, {"name": "Operator4", "value": "'divided by'"}]
+        #     graph["node_list"][12]["properties"] = [{"name": "Operand1", "value": "2"}, {"name": "Operator1", "value": "'plus'"}, {"name": "Operator2", "value": "'times'"}, {"name": "Operator3", "value": "'None'"}, {"name": "Operand3", "value": "-1"}, {"name": "Operator4", "value": "'times'"}, {"name": "Operator5", "value": "'divided by'"}]
+        #=======================================================================
 
     def run(self) -> dict:
-        #Solving a little error:
         print(self.originalGraph)
+        self.graphInformation['code'] = ''
         print('Running graph ' + self.originalGraph['name'])
         startTime = time.time()
         runnableNodes = self.findRunnableNodes()
@@ -117,11 +120,34 @@ class Node:
     connections: list[Connection] = []
     element: Element = None
     verbose: bool = False
+    isUserEl:bool = False 
 
     def __init__(self, info: dict) -> None:
         self.info = info
         self.visited = False
-        self.element = Element.objects.filter(id=self.getType()).first()
+        group, id = self.getType().split('.')
+
+        # print("self.getType()", self.getType().split('.'))
+        #self.element = Element.objects.filter(id=self.getType()).first()
+        # print("self.info", self.info)
+        if DefaultElementGroup.objects.filter(name=group).exists():
+            model = DefaultElement
+            print('Element is not here!')
+            self.isUserEl = False
+        elif UserElementGroup.objects.filter(name=group).exists():
+            model = UserElement
+            print('Element is not there!')
+            self.isUserEl = True
+
+        self.element = model.objects.filter(nick=id, group=group).first()
+        # try:
+        #     self.element = UserElement.objects.filter(nick=self.getType().split('.')[1]).first()
+        #     self.isUserEl = True
+        # except:
+        #     self.element = DefaultElement.objects.filter(nick=self.getType().split('.')[1]).first()
+        #     self.isUserEl = False
+        #print('=================================================')
+        #print("self.element", self.element)
         self.connections = []
         self.verbose = False
 
@@ -228,6 +254,7 @@ class Node:
         r = result.get()
         error = r['data']['error']
         code = 'Node run OK' if not error else error
+        #print(r)
         return {
             'node'   : self.getID(),
             'start'  : r['info']['startTime'],

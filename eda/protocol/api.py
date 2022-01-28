@@ -4,7 +4,7 @@ from tokenize import group
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
  
-from eda.models import ProjectTemplate, Project, DefaultElement, UserElement, DefaultElementGroup, UserElementGroup
+from eda.models import ProjectTemplate, Project, DefaultElement, UserElement, DefaultElementGroup, UserElementGroup, Element
 from eda.protocol.graph import Graph
 
 from celery import Celery
@@ -342,19 +342,17 @@ class UserSession(object):
         ''' run_graph
         Used by the client to request the execution of a graph.
         '''
-        #JUST FOR TESTING ---------------
-        #=======================================================================
-        # if(params['name'] == "Testing IFs"):
-        #     self.editElement({'nothing':''})
-        #=======================================================================
-        #---------------------------------
         return Graph(params).run()
 
     @with_key(key='user_elements')
     def setElement(self, params):
         # set_element: Used by the client to create a user-defined data analysis element.
         command = createCommand(params, self)
-        command.action()
+        try:
+            command.action()
+        except Exception as e:
+            print(e)
+
         return {
             'groups': self._getUserGroups(),
             'elements': self._getUserElements()
@@ -402,16 +400,32 @@ class CreateElement:
         element.properties = self.command['options']['properties'] 
         element.help = self.command['options']['help'] 
         element.description = self.command['options']['description'] 
+        element.language = self.command['options']['language'] 
         element.save() # Cannot add group until saved
         element.group.add(group)
         element.save()
-        # BROKER_URL = 'amqp://guest:guest@rabbitmq'
-        # BACKEND    = 'rpc://'
-        # app = Celery('tasks', backend=BACKEND, broker=BROKER_URL)
-        # result = app.send_task('tasks.worker_Python.createTask', args=(typeN.split('.')[1], properties, code))
-        # isOK = result.get()
-        # print("------> Adding new Element, result : ", str(isOK))
+        
+        
+        print("self.command['options']", self.command['options'])
+        self._createRemoteTask(element.name, element.properties, element.code, element.language)
+        
         return element
+
+    def _createRemoteTask(self,typeN, properties,code, lang):
+        langCommand = {
+            'python' : 'tasks.worker_Python.createTask',
+            'matlab' : 'tasks.worker_Matlab.createTask',
+            #'fortran': 'None',
+            #'C': 'None',
+            }
+        BROKER_URL = 'amqp://guest:guest@rabbitmq'
+        BACKEND    = 'rpc://'
+        app = Celery('tasks', backend=BACKEND, broker=BROKER_URL)
+        print("lang", lang)
+        print("(typeN, properties, code)", [typeN, properties, code])
+        result = app.send_task(langCommand.get(lang), args=(typeN, properties, code))
+        isOK = result.get()
+        print("------> Adding new Element, result : ", str(isOK))
 
 
 class CreateGroup:

@@ -104,7 +104,7 @@
       "name" : "Binary operation",
       "description" : "Does one of several possible binary operations",
       "image" : "ProgramFlow/Program/BinaryOperation/icon.png",
-      "properties" : [{"name": "Operand1", "local_name": "First operand", "type": "Number", "attributes": "required|input|manual"}, {"name": "Operand2", "local_name": "Second operand", "type": "Number", "attributes": "required|input|manual"}, {"name": "Operation", "local_name": "Operation to apply", "type": "OPTION['plus','minus', 'times', 'divided by']", "attributes": "required|manual"}, {"name": "Result", "local_name": "Operation result", "type": "Number", "attributes": "output"}],
+      "properties" : [{"name": "Operand1", "local_name": "First operand", "type": "Number", "attributes": "required|input|manual"}, {"name": "Operand2", "local_name": "Second operand", "type": "Number", "attributes": "required|input|manual"}, {"name": "Operation", "local_name": "Operation to apply", "type": "OPTION['plus','minus', 'times', 'divided by']", "attributes": "required|output|manual"}, {"name": "Result", "local_name": "Operation result", "type": "Number", "attributes": "output"}],
       "help": "www.google.com",
       "group": ["Program"]
     }
