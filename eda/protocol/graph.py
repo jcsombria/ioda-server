@@ -59,6 +59,7 @@ class Graph:
                 try:
                     print('    Next Node to run: ', n.getID())
                     targetInfo = n.run()
+                    print("targetInfo : " ,targetInfo)
                     temporalResults.append(targetInfo['output']['data']['output'])
                     self.run_information.append(targetInfo)
                     self.resources.append(int(10000*rnd.random()))
@@ -183,13 +184,14 @@ class Node:
         except Exception as e:
             print("Error : ", traceback.format_exc())
 
-    def reorderParams(self,params:list[str])-> list[str]:
+    def reorderParams(self,params:dict)-> list[dict]:
         order = self.getExpectedInputs()
-        print(order)
         finalParams = []
         for ordParam in order: 
             try:
-                finalParams.append(str(params[ordParam]))
+                #finalParams[ordParam] = params[ordParam['name']]
+                nextP = {'name': ordParam['name'], 'data': params[ordParam['name']],'type':ordParam['type']}
+                finalParams.append(nextP)
             except:
                 pass
         return finalParams
@@ -220,14 +222,11 @@ class Node:
         self.visited = True
         app = Celery('tasks', backend=BACKEND, broker=BROKER_URL)
         params = self.gatherParameters()
-        print("params", params)
         machineName = self.translateToMachineTaskName()
         nodeInfo = {}
         nodeInfo['task'] = machineName
         nodeInfo['params'] = params
         taskName = machineName
-        targetParams = self.reorderParams(params)
-        print("targetParams: ", targetParams)
         if('self.' in taskName):
             targetParams = params
             startTime = time.time()
@@ -241,8 +240,9 @@ class Node:
                 'code'   : 'Node run OK',
                 'output' : result
             }
-        inlineParams = ','.join(self.getTargetParams()).replace("'", '')
-        taskInput = self.formatInputs(inlineParams)
+        #TO recover inline params in matlab calls
+        #inlineParams = ','.join(self.getTargetParams()).replace("'", '')
+        taskInput = self.formatInputs(self.getTargetParams(),self.getExpectedOutputs())
         if taskName == 'C/FPGA/fpga':
             taskInput = '{"format":"inline","name":"","data":"misdatos/hola_mundo.txt"}'
             node = 'tasks.worker_Python.binaryNode'
@@ -264,8 +264,9 @@ class Node:
             'output' : r,
         }
 
-    def getTargetParams(self) -> list[str]:
+    def getTargetParams(self) -> list[dict]:
         params = { p['name']:p['value'] for p in self.getProperties() }
+        #params = [ {p['name']:p['value']} for p in self.getProperties() ]
         params.update(self.getInputs())
         targetParams = self.reorderParams(params)
         return targetParams
@@ -281,7 +282,7 @@ class Node:
         for oconn in self.getOutputConnections():
             if(oconn.getSourceTrigger()):
                 triggerValue = oconn.getSourceTrigger().split('=')[1].strip() == 'true'
-                if(triggerValue == result):
+                if(triggerValue == result['Result']):
                     oconn.setVisited(True)
                     oconn.setUpdated(True)
                     if(not self.isTriggerConnection(oconn)):
@@ -291,10 +292,13 @@ class Node:
                                 if(oconn.getSourceProperty() == iconn.getTargetProperty()):
                                     oconn.setValue(iconn.getValue())
                     else:
-                        oconn.setValue(result)
+                        #oconn.setValue(result)
+                        oconn.setValue(result[oconn.getSourceProperty()])
+                        
             else:
                 oconn.setVisited(True)
-                oconn.setValue(result)
+                #oconn.setValue(result)
+                oconn.setValue(result[oconn.getSourceProperty()])
                 oconn.setUpdated(True)
             if(oconn.getValue() is not None):
                 print(" -> Connection from : ", oconn.getSource().getID(), " to : ", oconn.getTarget().getID(), " updated with : " , oconn.getValue())
@@ -317,8 +321,8 @@ class Node:
     def getProperties(self) -> dict:
         return self.info['properties']
 
-    def formatInputs(self, parameters: dict) -> dict:
-        return {'format':'inline', 'name':'', 'data':parameters}
+    def formatInputs(self, parameters: list, expectedOutputs) -> dict:
+        return {'variables':parameters, 'expectedOutputs':expectedOutputs}
 
     def getGraphDefinedInputs(self)-> list[str]:
         propertiesJSON = self.getProperties()
@@ -334,7 +338,9 @@ class Node:
 
     def getExpectedInputs(self) -> list[str]:
         #print(self.element.properties)
-        return [p['name'] for p in self.element.properties
+        #return [p['name'] for p in self.element.properties
+                #if 'input' in p['attributes']]
+        return [p for p in self.element.properties
                 if 'input' in p['attributes']]
                 #if 'input' in p['attributes'] and 'required' in p['attributes']]
         
@@ -387,7 +393,6 @@ class Node:
             'Program.PolishCalculation'  : 'basicOps._polishCalculation',
             'Program.Template'  : 'template.methodName1'
         }
-        print(self.getType())
         try:
             name = machineNameDictionary[self.getType()]
             return name
@@ -398,7 +403,7 @@ class Node:
     # TO DO: desñapizar
     def returnValue(self, parameters) -> str:
         outs = json.loads(parameters)
-        return JSONFormatter.format(outs['Value'])
+        return JSONFormatter.format(outs)
 
     def returnStr(self, parameters)-> str:
         paramsJson = json.loads(parameters)

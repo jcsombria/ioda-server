@@ -143,7 +143,7 @@
       "name" : "Logical check",
       "description" : "Does one of several possible logical comparisons",
       "image" : "ProgramFlow/Program/LogicalComparison/icon.png",
-      "properties" : [{"name": "Comparison", "local_name": "Comparison to apply", "type": "OPTION['>','>=', '<', '<=', '==', '!=']", "attributes": "required|input|manual"}, {"name": "Operand1", "local_name": "First operand", "type": "ANY", "attributes": "required|input|manual|output"}, {"name": "Operand2", "local_name": "Second operand", "type": "ANY", "attributes": "required|input|manual|output"}, {"name": "Result", "local_name": "Comparison result", "type": "Boolean", "attributes": "output"}],
+      "properties" : [{"name": "Operation", "local_name": "Comparison to apply", "type": "OPTION['>','>=', '<', '<=', '==', '!=']", "attributes": "required|input|manual"}, {"name": "Operand1", "local_name": "First operand", "type": "ANY", "attributes": "required|input|manual"}, {"name": "Operand2", "local_name": "Second operand", "type": "ANY", "attributes": "required|input|manual"}, {"name": "Result", "local_name": "Comparison result", "type": "Boolean", "attributes": "output"}],
       "help": "www.google.com",
       "group": ["Program"]
     }
