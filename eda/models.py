@@ -59,6 +59,8 @@ class Element(models.Model):
         (PYTHON, 'Python'),
         (C, 'C'),
         (MATLAB, 'Matlab'),
+        (PYTHON, 'python'),
+        (MATLAB, 'matlab'),
     )
     nick = models.CharField(max_length=250, default=new_element_id, primary_key=True)
     name = models.CharField(max_length=250, default='New Element')

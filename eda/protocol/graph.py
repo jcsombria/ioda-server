@@ -8,8 +8,8 @@ from eda.models import DefaultElement, UserElement, Element, DefaultElementGroup
 from celery import Celery
 import traceback
 
-BROKER_URL = 'amqp://guest:guest@rabbitmq'
-# BROKER_URL = 'amqp://fusion:fusion@62.204.199.200/fusion_server'
+#BROKER_URL = 'amqp://guest:guest@rabbitmq'
+BROKER_URL = 'amqp://fusion:fusion@127.0.0.1/fusion_server'
 BACKEND    = 'rpc://'
 
 class Graph:
@@ -122,6 +122,7 @@ class Node:
     element: Element = None
     verbose: bool = False
     isUserEl:bool = False 
+    language: str = 'python'
 
     def __init__(self, info: dict) -> None:
         self.info = info
@@ -139,8 +140,9 @@ class Node:
             model = UserElement
             print('Element is not there!')
             self.isUserEl = True
-
+ 
         self.element = model.objects.filter(nick=id, group=group).first()
+        self.language = self.element.language
         # try:
         #     self.element = UserElement.objects.filter(nick=self.getType().split('.')[1]).first()
         #     self.isUserEl = True
@@ -219,8 +221,22 @@ class Node:
 
     #Now the execution is blocked while waiting the results, just for testing
     def run(self) -> dict:
+        REMOTE_WORKERS = {
+            'PY' : 'tasks.worker_Python.nodoPython',
+            'python': 'tasks.worker_Python.nodoPython',
+            'MA': 'tasks.worker_Matlab.nodoMatlab',
+            'matlab': 'tasks.worker_Matlab.nodoMatlab'
+            }
+        LANGS = {
+            'PY' :'python',
+            'MA': 'matlab',
+            'python' :'python',
+            'matlab': 'matlab'
+            }
         self.visited = True
-        app = Celery('tasks', backend=BACKEND, broker=BROKER_URL)
+        #app = Celery('tasks', backend=BACKEND, broker=BROKER_URL)
+        app = Celery('tasks', backend=BACKEND, broker=BROKER_URL+LANGS[self.language])
+        
         params = self.gatherParameters()
         machineName = self.translateToMachineTaskName()
         nodeInfo = {}
@@ -247,7 +263,10 @@ class Node:
             taskInput = '{"format":"inline","name":"","data":"misdatos/hola_mundo.txt"}'
             node = 'tasks.worker_Python.binaryNode'
         else:
-            node = 'tasks.worker_Python.nodoPython'
+            print("self.language: ", self.language)
+            print("REMOTE_WORKERS[self.language]:" , REMOTE_WORKERS[self.language])
+            node = REMOTE_WORKERS[self.language]
+            #node = 'tasks.worker_Python.nodoPython'
             
         print("        Sending the task : ", taskName, " to server with parameters: ", taskInput)
         result = app.send_task(node, args=(taskName, taskInput))
@@ -258,7 +277,7 @@ class Node:
         return {
             'node'   : self.getID(),
             'start'  : r['info']['startTime'],
-            'end'    : r['info']['stopTime'],
+            'end'    : r['info']['stopTime'], 
             'lapsed' : r['info']['duration'],
             'code'   : code,
             'output' : r,
@@ -397,7 +416,10 @@ class Node:
             name = machineNameDictionary[self.getType()]
             return name
         except:
-            name = self.getType().split('.')[1] + '.userMethod'
+            if('PY' in self.language):
+                name = self.getType().split('.')[1] + '.userMethod'
+            else:
+                name = self.getType().split('.')[1]
             return name
 
     # TO DO: desñapizar

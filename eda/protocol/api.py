@@ -350,6 +350,7 @@ class UserSession(object):
     @with_key(key='user_elements')
     def setElement(self, params):
         # set_element: Used by the client to create a user-defined data analysis element.
+        print("params: ", params)
         command = createCommand(params, self)
         try:
             command.action()
@@ -367,7 +368,10 @@ class UserSession(object):
 #         threading.Thread(target=worker, args=(input,)).start()
 def worker(input):
     content = json.loads(input)
-    app = Celery('tasks', backend='rpc://', broker='amqp://guest:guest@rabbitmq')
+    #app = Celery('tasks', backend='rpc://', broker='amqp://guest:guest@rabbitmq')
+    app = Celery('tasks', backend='rpc://', broker='amqp://fusion:fusion@127.0.0.1/fusion_server')
+    
+    
     result = app.send_task("tasks.worker_Python.nodoPython", ['basicOps._operation', content])
     response = result.get()
     messageResponse = json.dumps(response, indent=4, sort_keys=True)
@@ -397,6 +401,7 @@ class CreateElement:
             nick=self.command['options']['name'],
             user=self.session.user
         )
+        print("element: ", element)
         element.name = self.command['options']['name'] 
         element.image = save_image(
             f'element_icons/{element.nick}.png',
@@ -421,10 +426,17 @@ class CreateElement:
         langCommand = {
             'python' : 'tasks.worker_Python.createTask',
             'matlab' : 'tasks.worker_Matlab.createTask',
-            #'fortran': 'None',
-            #'C': 'None',
+            'PY' : 'tasks.worker_Python.createTask',
+            'MA' : 'tasks.worker_Matlab.createTask',
             }
-        BROKER_URL = 'amqp://guest:guest@rabbitmq'
+        LANGS = {
+            'PY' :'python',
+            'MA': 'matlab',
+            'python' :'python',
+            'matlab' :'matlab'
+            }
+        #BROKER_URL = 'amqp://guest:guest@rabbitmq'
+        BROKER_URL = 'amqp://fusion:fusion@127.0.0.1/fusion_server'+LANGS[lang]
         BACKEND    = 'rpc://'
         app = Celery('tasks', backend=BACKEND, broker=BROKER_URL)
         print("lang", lang)
@@ -476,13 +488,14 @@ class CreateGroup:
 def save_image(filename, base64_content):
     icon = base64.b64decode(base64_content)
     os.makedirs(os.path.dirname(f'eda/static/config/{filename}'), exist_ok=True)
-    with open(filename, 'xb') as f:
-        f.write(icon)
+    #with open(filename, 'xb') as f:
+    #   f.write(icon)
     with open(f'eda/static/config/{filename}', 'xb') as f:
         f.write(icon)
-    result = File(open(filename, 'rb'))
-    result.name = filename
-    return result
+    f.close()
+    #result = File(open(os.path.abspath(filename), 'rb'))
+    #result.name = filename
+    return  os.path.dirname(f'eda/static/config/{filename}')
 
 
 class EditElement:
